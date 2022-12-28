@@ -3,6 +3,7 @@
 
 ### 화면 및 기능에 관련 파일들은 .php 파일로 구성한다.
 ### index.php 를 사용한다. url 입력 시 index.php 파일로 연결한다. 예) http://localhost/cmskorea_board -> index.php
+### index.php 파일에서는 로그인이 안되어 있는 경우 로그인 페이지로, 로그인이 되어 있는 경우 리스트 페이지로 자동 이동 시킨다.
 ### class 파일의 메서드는 필요에 의해 확장가능함.
 
 

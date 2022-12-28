@@ -6,6 +6,10 @@
  * @package  Board
  */
 /**
+ * @see Cmskorea_Baord_Member
+ */
+require_once 'member.php';
+/**
  * 씨엠에스코리아 사용자 인증 클래스
  *
  * @category Cmskorea
@@ -27,13 +31,11 @@ class Cmskorea_Board_Auth {
 
     /**
      * 생성자
-     * @param null|Cmskorea_Baord_Member null 또는 Cmskorea_Baord_Member 객체
+     *
      * @return void
      */
-    public function __construct($member = null) {
-        if (is_a($member, 'Cmskorea_Baord_Member')) {
-            $this->_member = $member;
-        }
+    public function __construct() {
+        $this->_member = new Cmskorea_Baord_Member();
     }
 
     /**
@@ -46,7 +48,7 @@ class Cmskorea_Board_Auth {
      */
     public function authenticate($id, $pw) {
         // Cmskorea_Baord_Member 로 위임
-        $authResult = $this->getMember()->authenticate($id, $pw);
+        $authResult = $this->_member->authenticate($id, $pw);
 
         // 로그인 성공 시 세션에 회원정보를 저장한다.
         $memberInfo = $this->_member->getMember($id);
