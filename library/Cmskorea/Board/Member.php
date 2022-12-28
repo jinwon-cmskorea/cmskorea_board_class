@@ -23,7 +23,7 @@ class Cmskorea_Baord_Member {
      *        )
      * @return Cmskorea_Baord_Member
      */
-    public function setMember(array $datas) {
+    public function registMember(array $datas) {
         return $this;
     }
 
@@ -40,6 +40,17 @@ class Cmskorea_Baord_Member {
      */
     public function getMember($id) {
         return array();
+    }
+
+    /**
+     * 로그인 인증
+     *
+     * @param string 아이디
+     * @param string 비밀번호
+     * @return string 로그인 성공 시 빈값|로그인 불능 시 불능메시지
+     */
+    public function authenticate($id, $pw) {
+        return '';
     }
 }
 

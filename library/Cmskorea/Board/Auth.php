@@ -20,22 +20,78 @@ class Cmskorea_Board_Auth {
     protected $_member;
 
     /**
+     * Session 네임스페이스
+     * @var string
+     */
+    const SESSION_NAMESPACE = 'cmskoreaMember';
+
+    /**
+     * 생성자
+     * @param null|Cmskorea_Baord_Member null 또는 Cmskorea_Baord_Member 객체
+     * @return void
+     */
+    public function __construct($member = null) {
+        if (is_a($member, 'Cmskorea_Baord_Member')) {
+            $this->_member = $member;
+        }
+    }
+
+    /**
      * 로그인 인증
+     *  - 로그인에 성공한 경우 세션에 로그인에 성공한 회원정보를 보관한다.
      *
      * @param string 아이디
      * @param string 비밀번호
-     * @return boolean
+     * @return string 로그인 성공 시 빈값|로그인 불능 시 불능메시지
      */
     public function authenticate($id, $pw) {
-        return true;
+        // Cmskorea_Baord_Member 로 위임
+        $authResult = $this->getMember()->authenticate($id, $pw);
+
+        // 로그인 성공 시 세션에 회원정보를 저장한다.
+        $memberInfo = $this->_member->getMember($id);
+
+        return $authResult;
+    }
+
+    /**
+     * 세션에 설정된 회원정보를 리턴한다.
+     *
+     * @throws Exception 설정된 회원정보가 없는 경우 예외처리
+     * @return array
+     */
+    public function getMember() {
+        if (!isset($_SESSION[self::SESSION_NAMESPACE]) || empty($_SESSION[self::SESSION_NAMESPACE])) {
+            throw new Exception('Member information is not set.');
+        }
+
+        return $_SESSION[self::SESSION_NAMESPACE];
+    }
+
+    /**
+     * 로그인 여부를 확인 한다.
+     *
+     * @return boolean
+     */
+    public function isLogin() {
+        try {
+            $memberInfo = $this->getMember();
+        } catch (Exception $e) {
+            return false;
+        }
+
+        return !empty($memberInfo) ? true : false;
     }
 
     /**
      * 로그아웃
+     *  - 로그인 시 생성된 세션을 파괴한다.
      *
      * @return boolean
      */
     public function logout() {
+        unset($_SESSION[self::SESSION_NAMESPACE]);
+
         return true;
     }
 }
