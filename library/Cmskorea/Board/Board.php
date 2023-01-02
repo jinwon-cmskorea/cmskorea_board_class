@@ -96,5 +96,15 @@ class Cmskorea_Board_Board {
     public function getFiles($boardPk) {
         return array();
     }
+
+    /**
+     * 업로드 한 파일을 삭제한다.
+     *
+     * @param number 파일고유키
+     * @return boolean
+     */
+    public function delFile($filePk) {
+        return true;
+    }
 }
 
