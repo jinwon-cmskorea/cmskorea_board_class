@@ -18,7 +18,9 @@ class Cmskorea_Board_Board {
      * @param string 작성자 아이디
      * @param array 작성할 내용
      *        array(
+     *            'memberPk' => '작성자고유키'
      *            'title'   => '제목',
+     *            'writer'  => '작성자',
      *            'content' => '내용'
      *        )
      * @return 글번호
@@ -33,11 +35,14 @@ class Cmskorea_Board_Board {
      * @param array 수정할 내용 (글번호 포함)
      *        array(
      *            'no'      => '글번호',
+     *            'title'   => '제목',
+     *            'writer'  => '작성자',
      *            'content' => '내용'
      *        )
      * @return boolean
      */
     public function editContent(array $datas) {
+        // updateTime 수정
         return true;
     }
 
@@ -68,6 +73,27 @@ class Cmskorea_Board_Board {
      * @return array 글 내용을 제외한 모든 데이터
      */
     public function getContents(array $conditions) {
+        return array();
+    }
+
+    /**
+     * 업로드된 파일을 등록한다.
+     *
+     * @param number 게시판 고유키
+     * @param array  $_FILES 함수의 내용
+     * @return boolean
+     */
+    public function addFile($boardPk, array $fileInfos) {
+        return true;
+    }
+
+    /**
+     * 게시물에 업로드된 파일들을 리턴한다.
+     *
+     * @param number 글번호
+     * @return array 글번호에 해당하는 파일데이터
+     */
+    public function getFiles($boardPk) {
         return array();
     }
 }
