@@ -5,8 +5,14 @@
  * @param void
  * @return void
  */
-$mysqli = new mysqli('192.168.0.215', 'worker-216', 'iln216', 'cmskorea_board');
+require_once 'dbInfo.php';
 
-if ($mysqli->connect_errno) {
-    die('connect Error:: '.$mysqli->connect_error);
+function dbCon() {
+    $mysqli = new mysqli(DBHOST, USERNAME, USERPW, DBNAME);
+    
+    if ($mysqli->connect_errno) {
+        die('connect Error:: '.$mysqli->connect_error);
+    }
+    
+    return ($mysqli);
 }

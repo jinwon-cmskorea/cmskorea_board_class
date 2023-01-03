@@ -62,6 +62,10 @@ class Cmskorea_Board_Member {
      * @return string 로그인 성공 시 빈값|로그인 불능 시 불능메시지
      */
     public function authenticate($id, $pw) {
+        $mysqli = dbCon();
+        $res = $mysqli->query("SELECT * FROM member WHERE id='{$id}'");
+        $row = $res->fetch_array(MYSQLI_ASSOC);
+        var_dump($row);
         return '';
     }
 }
