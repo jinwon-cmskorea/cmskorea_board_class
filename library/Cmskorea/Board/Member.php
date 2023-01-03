@@ -17,6 +17,27 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/wwwroot/cmskorea_board_class/configs/
  */
 class Cmskorea_Board_Member {
     /**
+     * DB연결 변수
+     *
+     * @var mysqli_connect 로 부터 리턴 받음
+     */
+    protected $_mysqli;
+    
+    /**
+     * 생성자
+     * @brief mysqli 객체를 생성해서 멤버변수에 넣어줌
+     *
+     * @return void
+     */
+    public function __construct() {
+        $this->_mysqli = mysqli_connect(DBHOST, USERNAME, USERPW, DBNAME);
+        if (!$this->_mysqli) {
+            die("DB 접속중 문제가 발생했습니다. : ".mysqli_connect_error());
+        }
+    }
+    
+
+    /**
      * 회원을 등록한다.
      * 동일한 아이디의 회원을 등록 할 수 없다.
      *
@@ -62,10 +83,9 @@ class Cmskorea_Board_Member {
      * @return string 로그인 성공 시 빈값|로그인 불능 시 불능메시지
      */
     public function authenticate($id, $pw) {
-        $mysqli = dbCon();
-        $res = $mysqli->query("SELECT * FROM member WHERE id='{$id}'");
-        $row = $res->fetch_array(MYSQLI_ASSOC);
-        var_dump($row);
+        $res = mysqli_query($this->_mysqli ,"SELECT * FROM member WHERE id='{$id}'");
+        $row = mysqli_fetch_array($res);
+        
         return '';
     }
 }

@@ -1,18 +1,8 @@
 <?php
 /**
- * @brief 데이터베이스 연결
- *
- * @param void
- * @return void
+ * @brief DB 연결정보
  */
-require_once 'dbInfo.php';
-
-function dbCon() {
-    $mysqli = new mysqli(DBHOST, USERNAME, USERPW, DBNAME);
-    
-    if ($mysqli->connect_errno) {
-        die('connect Error:: '.$mysqli->connect_error);
-    }
-    
-    return ($mysqli);
-}
+const DBHOST = '192.168.0.215';
+const USERNAME = 'worker-216';
+const USERPW = 'iln216';
+const DBNAME = 'cmskorea_board';

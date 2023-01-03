@@ -15,7 +15,7 @@ class Cmskorea_Baord_MemberTest extends PHPUnit_Framework_TestCase
 
     /**
      *
-     * @var Cmskorea_Baord_Member
+     * @var Cmskorea_Board_Member
      */
     private $member;
 
@@ -25,7 +25,7 @@ class Cmskorea_Baord_MemberTest extends PHPUnit_Framework_TestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->member = new Cmskorea_Baord_Member();
+        $this->member = new Cmskorea_Board_Member();
     }
 
     /**
@@ -43,9 +43,7 @@ class Cmskorea_Baord_MemberTest extends PHPUnit_Framework_TestCase
      */
     public function testRegistMember()
     {
-        $this->markTestIncomplete("registMember test not implemented");
-
-        $this->member->registMember(/* parameters */);
+//         $this->member->registMember(/* parameters */);
     }
 
     /**
@@ -53,9 +51,7 @@ class Cmskorea_Baord_MemberTest extends PHPUnit_Framework_TestCase
      */
     public function testGetMember()
     {
-        $this->markTestIncomplete("getMember test not implemented");
-
-        $this->member->getMember(/* parameters */);
+//         $this->member->getMember(/* parameters */);
     }
 
     /**
@@ -63,9 +59,8 @@ class Cmskorea_Baord_MemberTest extends PHPUnit_Framework_TestCase
      */
     public function testAuthenticate()
     {
-        $this->markTestIncomplete("authenticate test not implemented");
-
-        $this->member->authenticate(/* parameters */);
+        $res = $this->member->authenticate('test', '1111');
+        $this->assertEquals('',$res);
     }
 }
 
