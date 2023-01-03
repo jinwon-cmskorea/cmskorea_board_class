@@ -75,6 +75,10 @@ class Cmskorea_Board_Member {
         $fId = mysqli_real_escape_string($this->_mysqli, $id);
         $sql = "SELECT * FROM member where id='{$fId}'";
         $res = mysqli_query($this->_mysqli, $sql);
+        if (!$res) {
+            return array();
+        }
+        
         $row = mysqli_fetch_array($res);
         
         return array(
@@ -105,10 +109,8 @@ class Cmskorea_Board_Member {
         $res = mysqli_query($this->_mysqli ,$sql);
         $row = mysqli_fetch_array($res);
         
-        if (!isset($row['id'])) {
-            return "존재하지 않는 아이디입니다.";
-        } else if (md5($fPw) != $row['pw']) {
-            return "비밀번호가 일치하지않습니다.";
+        if (!isset($row['id']) || md5($fPw) != $row['pw']) {
+            return "아이디 또는 비밀번호가 일치하지 않습니다.";
         }
         
         return '';

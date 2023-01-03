@@ -8,6 +8,29 @@ require_once __DIR__.'/bootstrap.php';
  */
 require_once '/Cmskorea/Board/Member.php';
 /**
+ * Cmskorea_Board_Member 테스트를 위한 클래스
+ * Cmskorea_Board_MemberTestClass
+ */
+class Cmskorea_Board_MemberTestClass extends Cmskorea_Board_Member {
+    /**
+     * 테스트를 위한 생성자 변경
+     */
+    public function __construct() {
+        $this->_mysqli = mysqli_connect(DBHOST, USERNAME, USERPW, 'cmskorea_board_test');
+        if (!$this->_mysqli) {
+            die("DB 접속중 문제가 발생했습니다. : ".mysqli_connect_error());
+        }
+    }
+    
+    /**
+     * 테스트를 위해 mysqli 객체 접근
+     * @return mysqli_connect
+     */
+    public function getMysqli() {
+        return $this->_mysqli;
+    }
+}
+/**
  * Cmskorea_Baord_Member test case.
  */
 class Cmskorea_Baord_MemberTest extends PHPUnit_Framework_TestCase
@@ -15,7 +38,7 @@ class Cmskorea_Baord_MemberTest extends PHPUnit_Framework_TestCase
 
     /**
      *
-     * @var Cmskorea_Board_Member
+     * @var Cmskorea_Board_MemberTestClass
      */
     private $member;
 
@@ -25,7 +48,9 @@ class Cmskorea_Baord_MemberTest extends PHPUnit_Framework_TestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->member = new Cmskorea_Board_Member();
+        $this->member = new Cmskorea_Board_MemberTestClass();
+        $sql = "INSERT INTO member(id, pw, name, telNumber, insertTime) VALUES ('test', MD5('1111'), '테스터', '01012341234', NOW())";
+        $res = mysqli_query($this->member->getMysqli(), $sql);
     }
 
     /**
@@ -33,6 +58,8 @@ class Cmskorea_Baord_MemberTest extends PHPUnit_Framework_TestCase
      */
     protected function tearDown()
     {
+        $sql = "DELETE FROM member WHERE id='test'";
+        $res = mysqli_query($this->member->getMysqli(), $sql);
         $this->member = null;
 
         parent::tearDown();
@@ -52,11 +79,10 @@ class Cmskorea_Baord_MemberTest extends PHPUnit_Framework_TestCase
     public function testGetMember()
     {
 //         $this->member->getMember(/* parameters */);
-        $testArray = array (
-            'id'        => 'test',
-            'name'      => '테스트',
-            'telNumber' => '01012341234'
-        );
+        $testSql = "SELECT id, name, telNumber FROM member where id='test'";
+        $testRes = mysqli_query($this->member->getMysqli(), $testSql);
+        $testArray = mysqli_fetch_assoc($testRes);
+        
         $res = $this->member->getMember('test');
         $this->assertEquals($testArray, $res);
         $res = $this->member->getMember('notuser');
@@ -75,9 +101,9 @@ class Cmskorea_Baord_MemberTest extends PHPUnit_Framework_TestCase
         $res = $this->member->authenticate('test', '1111');
         $this->assertEquals('', $res);
         $res = $this->member->authenticate('notuser', '1111');
-        $this->assertEquals("존재하지 않는 아이디입니다.", $res);
+        $this->assertEquals("아이디 또는 비밀번호가 일치하지 않습니다.", $res);
         $res = $this->member->authenticate('test', '1234');
-        $this->assertEquals("비밀번호가 일치하지않습니다.", $res);
+        $this->assertEquals("아이디 또는 비밀번호가 일치하지 않습니다.", $res);
     }
 }
 
