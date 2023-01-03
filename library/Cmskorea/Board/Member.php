@@ -14,6 +14,9 @@
 class Cmskorea_Baord_Member {
     /**
      * 회원을 등록한다.
+     * 동일한 아이디의 회원을 등록 할 수 없다.
+     *
+     * @throws Exception 동일한 아이디의 회원이 존재하는 경우
      * @param array 회원가입정보
      *        array(
      *            'id'        => '아이디',
@@ -24,6 +27,11 @@ class Cmskorea_Baord_Member {
      * @return Cmskorea_Baord_Member
      */
     public function registMember(array $datas) {
+        try {
+            // 동일한 아이디의 회원의 존재여부 체크
+        } catch (Exception $e) {
+            throw new Exception('Member with the same ID exists.');
+        }
         return $this;
     }
 
