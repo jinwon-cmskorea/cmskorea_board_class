@@ -52,6 +52,15 @@ class Cmskorea_Baord_MemberTest extends PHPUnit_Framework_TestCase
     public function testGetMember()
     {
 //         $this->member->getMember(/* parameters */);
+        $testArray = array (
+            'id'        => 'test',
+            'name'      => '테스트',
+            'telNumber' => '01012341234'
+        );
+        $res = $this->member->getMember('test');
+        $this->assertEquals($testArray, $res);
+        $res = $this->member->getMember('notuser');
+        $this->assertNotEquals($testArray, $res);
     }
 
     /**
@@ -59,8 +68,16 @@ class Cmskorea_Baord_MemberTest extends PHPUnit_Framework_TestCase
      */
     public function testAuthenticate()
     {
+        $res = $this->member->authenticate('', '1111');
+        $this->assertEquals("아이디를 입력해주세요.", $res);
+        $res = $this->member->authenticate('test', '');
+        $this->assertEquals("비밀번호를 입력해주세요.", $res);
         $res = $this->member->authenticate('test', '1111');
-        $this->assertEquals('',$res);
+        $this->assertEquals('', $res);
+        $res = $this->member->authenticate('notuser', '1111');
+        $this->assertEquals("존재하지 않는 아이디입니다.", $res);
+        $res = $this->member->authenticate('test', '1234');
+        $this->assertEquals("비밀번호가 일치하지않습니다.", $res);
     }
 }
 

@@ -67,6 +67,14 @@ class Cmskorea_Board_Auth {
             throw new Exception('Member information is not set.');
         }
 
+//         $a = array(
+//             self::SESSION_NAMESPACE => array(
+//                 'id'    => '',
+//                 'name'  => '',
+//                 'telNumber' => ''
+//             )
+//         );
+//         return $a[self::SESSION_NAMESPACE];
         return $_SESSION[self::SESSION_NAMESPACE];
     }
 

@@ -72,7 +72,16 @@ class Cmskorea_Board_Member {
      *        )
      */
     public function getMember($id) {
-        return array();
+        $fId = mysqli_real_escape_string($this->_mysqli, $id);
+        $sql = "SELECT * FROM member where id='{$fId}'";
+        $res = mysqli_query($this->_mysqli, $sql);
+        $row = mysqli_fetch_array($res);
+        
+        return array(
+            'id'        => $row['id'],
+            'name'      => $row['name'],
+            'telNumber' => $row['telNumber']
+        );
     }
 
     /**
@@ -83,8 +92,24 @@ class Cmskorea_Board_Member {
      * @return string 로그인 성공 시 빈값|로그인 불능 시 불능메시지
      */
     public function authenticate($id, $pw) {
-        $res = mysqli_query($this->_mysqli ,"SELECT * FROM member WHERE id='{$id}'");
+        if (!$id) {
+            return "아이디를 입력해주세요.";
+        } else if (!$pw) {
+            return "비밀번호를 입력해주세요.";
+        }
+        
+        $fId = mysqli_real_escape_string($this->_mysqli, $id);
+        $fPw = mysqli_real_escape_string($this->_mysqli, $pw);
+        
+        $sql = "SELECT * FROM member WHERE id='{$fId}'";
+        $res = mysqli_query($this->_mysqli ,$sql);
         $row = mysqli_fetch_array($res);
+        
+        if (!isset($row['id'])) {
+            return "존재하지 않는 아이디입니다.";
+        } else if (md5($fPw) != $row['pw']) {
+            return "비밀번호가 일치하지않습니다.";
+        }
         
         return '';
     }
