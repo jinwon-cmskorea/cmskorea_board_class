@@ -6,12 +6,16 @@
  * @package  Board
  */
 /**
+ * @see dbCon.php
+ */
+require_once $_SERVER['DOCUMENT_ROOT'] . '/wwwroot/cmskorea_board_class/configs/dbConfig.php';
+/**
  * 씨엠에스코리아 게시판 회원 클래스
  *
  * @category Cmskorea
  * @package  Board
  */
-class Cmskorea_Baord_Member {
+class Cmskorea_Board_Member {
     /**
      * 회원을 등록한다.
      * 동일한 아이디의 회원을 등록 할 수 없다.
