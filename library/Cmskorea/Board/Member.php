@@ -114,13 +114,11 @@ class Cmskorea_Board_Member {
         $sql = "SELECT id, name, telNumber FROM member where id='{$fId}'";
         $res = mysqli_query($this->_mysqli, $sql);
         if (!$res) {
-            //mysqli_close($this->_mysqli);
             return array();
         }
         
         $row = mysqli_fetch_assoc($res);
         if ($row == NULL) {
-            //mysqli_close($this->_mysqli);
             return array();
         }
         

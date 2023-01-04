@@ -60,17 +60,17 @@ class Cmskorea_Baord_MemberTest extends PHPUnit_Framework_TestCase
     {
         $sql = "DELETE FROM member";
         $res = mysqli_query($this->member->getMysqli(), $sql);
+        mysqli_close($this->member->getMysqli());
         $this->member = null;
 
         parent::tearDown();
     }
 
     /**
-     * Tests Exception Cmskorea_Baord_Member->registMember()
+     * Tests Duplicate Cmskorea_Baord_Member->registMember()
      */
-    public function testRegistMemberException()
+    public function testRegistMemberDuplicate()
     {
-//         $this->member->registMember(/* parameters */);
         /* 아이디 중복 검사 */
         $test1 = array(
             'id' => 'test',
@@ -81,41 +81,137 @@ class Cmskorea_Baord_MemberTest extends PHPUnit_Framework_TestCase
         
         try {
             $this->member->registMember($test1);
+            $this->assertFalse(false);
         } catch(Exception $e) {
             $this->assertEquals('이미 동일한 아이디가 존재합니다.',$e->getMessage());
-            $this->assertTrue(true);
         }
-        $this->assertFalse(false);
-        
-        /* 입력값 검증 검사 */
-        $test2 = array(
-            'id' => 'test123',
-            'pw' => '1234',//특수문자 없음
-            'name' => '테스터',
-            'telNumber' => '010-1234-1234'
-        );
-        try {
-            $this->member->registMember($test2);
-        } catch(Exception $e) {
-            $this->assertEquals('입력 형식을 지켜주세요.',$e->getMessage());
-            $this->assertTrue(true);
-        }
-        $this->assertFalse(false);
-        
-        /* 입력값 미입력 검사 */
-        $test3 = array(
-            'id' => '',//아이디 미 입력
+    }
+    
+    /**
+     * Tests WrongInput Cmskorea_Baord_Member->registMember()
+     */
+    public function testRegistMemberWrongInput()
+    {
+        /* 입력값 검증 검사 
+         * 아이디는 영문, 숫자만
+         */
+        $wrongId = array(
+            'id' => '잘못됐어요',
             'pw' => '1234@',
             'name' => '테스터',
             'telNumber' => '010-1234-1234'
         );
         try {
-            $this->member->registMember($test3);
+            $this->member->registMember($wrongId);
+            $this->assertFalse(false);
+        } catch(Exception $e) {
+            $this->assertEquals('입력 형식을 지켜주세요.',$e->getMessage());
+        }
+        
+        /* 비밀번호에 특수문자 없음 */
+        $wrongPw = array(
+            'id' => 'test123',
+            'pw' => '1234',
+            'name' => '테스터',
+            'telNumber' => '010-1234-1234'
+        );
+        try {
+            $this->member->registMember($wrongPw);
+            $this->assertFalse(false);
+        } catch(Exception $e) {
+            $this->assertEquals('입력 형식을 지켜주세요.',$e->getMessage());
+        }
+        /* 이름은 한글, 영어만 가능 */
+        $wrongName = array(
+            'id' => 'test1234',
+            'pw' => '1234@',
+            'name' => '123',
+            'telNumber' => '010-1234-1234'
+        );
+        try {
+            $this->member->registMember($wrongName);
+            $this->assertFalse(false);
+        } catch(Exception $e) {
+            $this->assertEquals('입력 형식을 지켜주세요.',$e->getMessage());
+        }
+        
+        /* 휴대번호 형식 지켜야함 */
+        $wrongTel = array(
+            'id' => 'test12345',
+            'pw' => '1234@',
+            'name' => '123',
+            'telNumber' => '010-1234-12345'
+        );
+        try {
+            $this->member->registMember($wrongTel);
+            $this->assertFalse(false);
+        } catch(Exception $e) {
+            $this->assertEquals('입력 형식을 지켜주세요.',$e->getMessage());
+        }
+    }
+    
+    /**
+     * Tests NotInput Cmskorea_Baord_Member->registMember()
+     */
+    public function testRegistMemberNotInput()
+    {
+        /* 입력값 미입력 검사
+         * 아이디 미 입력
+         */
+        $notId = array(
+            'id' => '',
+            'pw' => '1234@',
+            'name' => '테스터',
+            'telNumber' => '010-1234-1234'
+        );
+        try {
+            $this->member->registMember($notId);
+            $this->assertFalse(false);
         } catch(Exception $e) {
             $this->assertEquals('필수 항목을 모두 입력해주세요.',$e->getMessage());
-            $this->assertTrue(true);
         }
-        $this->assertFalse(false);
+        
+        /* 비밀번호 미 입력 */
+        $notPw = array(
+            'id' => 'testPw',
+            'pw' => '',
+            'name' => '테스터',
+            'telNumber' => '010-1234-1234'
+        );
+        try {
+            $this->member->registMember($notPw);
+            $this->assertFalse(false);
+        } catch(Exception $e) {
+            $this->assertEquals('필수 항목을 모두 입력해주세요.',$e->getMessage());
+        }
+        
+        /* 이름 미 입력 */
+        $notName = array(
+            'id' => 'testName',
+            'pw' => '1234@',
+            'name' => '',
+            'telNumber' => '010-1234-1234'
+        );
+        try {
+            $this->member->registMember($notName);
+            $this->assertFalse(false);
+        } catch(Exception $e) {
+            $this->assertEquals('필수 항목을 모두 입력해주세요.',$e->getMessage());
+        }
+        
+        /* 휴대번호 미 입력 */
+        $notTel = array(
+            'id' => 'testTel',
+            'pw' => '1234@',
+            'name' => '테스터',
+            'telNumber' => ''
+        );
+        try {
+            $this->member->registMember($notTel);
+            $this->assertFalse(false);
+        } catch(Exception $e) {
+            $this->assertEquals('필수 항목을 모두 입력해주세요.',$e->getMessage());
+        }
     }
     
     /**
