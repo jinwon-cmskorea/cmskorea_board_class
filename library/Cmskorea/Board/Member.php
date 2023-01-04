@@ -42,6 +42,8 @@ class Cmskorea_Board_Member {
      * 동일한 아이디의 회원을 등록 할 수 없다.
      *
      * @throws Exception 동일한 아이디의 회원이 존재하는 경우
+     *                   필수 항목을 입력하지 않았을 경우
+     *                   입력 형식을 지키지 않았을 경우
      * @param array 회원가입정보
      *        array(
      *            'id'        => '아이디',
@@ -57,10 +59,22 @@ class Cmskorea_Board_Member {
         $nameReg = "/[가-힣A-Za-z]+$/";
         $telReg = "/^(010|011|016|017|018|019|02)-[0-9]{3,4}-[0-9]{4}$/";
         
-        if (!$datas['id'] || !$datas['pw'] || !$datas['name'] || !$datas['telNumber']) {
-            throw new Exception('필수 항목을 모두 입력해주세요.');
-        } else if (!preg_match($idReg, $datas['id']) || !preg_match($pwReg, $datas['pw']) || !preg_match($nameReg, $datas['name']) || !preg_match($telReg, $datas['telNumber'])) {
-            throw new Exception('입력 형식을 지켜주세요.');
+        $manageArrays = array(
+            'id'        => $idReg,
+            'pw'        => $pwReg,
+            'name'      => $nameReg,
+            'telNumber' => $telReg
+        );
+        
+        foreach ($manageArrays as $field => $reg) {
+            if (!$datas[$field]) {
+                throw new Exception('필수 항목을 모두 입력해주세요.');
+            }
+            if ($reg) {
+                if (!preg_match($reg, $datas[$field])) {
+                    throw new Exception('입력 형식을 지켜주세요.');
+                }
+            }
         }
         
         $fId = mysqli_real_escape_string($this->_mysqli, $datas['id']);
@@ -68,9 +82,9 @@ class Cmskorea_Board_Member {
         $fName = mysqli_real_escape_string($this->_mysqli, $datas['name']);
         $fTelNumber = mysqli_real_escape_string($this->_mysqli, $datas['telNumber']);
         
-        $sql1 = "SELECT * FROM member WHERE id='{$fId}'";
+        $sql1 = "SELECT id FROM member WHERE id='{$fId}'";
         $res = mysqli_query($this->_mysqli, $sql1);
-        $searchRow = mysqli_fetch_array($res);
+        $searchRow = mysqli_num_rows($res);
         if ($searchRow) {
             throw new Exception('이미 동일한 아이디가 존재합니다.');
         }
@@ -97,19 +111,20 @@ class Cmskorea_Board_Member {
      */
     public function getMember($id) {
         $fId = mysqli_real_escape_string($this->_mysqli, $id);
-        $sql = "SELECT * FROM member where id='{$fId}'";
+        $sql = "SELECT id, name, telNumber FROM member where id='{$fId}'";
         $res = mysqli_query($this->_mysqli, $sql);
         if (!$res) {
+            //mysqli_close($this->_mysqli);
             return array();
         }
         
-        $row = mysqli_fetch_array($res);
+        $row = mysqli_fetch_assoc($res);
+        if ($row == NULL) {
+            //mysqli_close($this->_mysqli);
+            return array();
+        }
         
-        return array(
-            'id'        => $row['id'],
-            'name'      => $row['name'],
-            'telNumber' => $row['telNumber']
-        );
+        return $row;
     }
 
     /**
@@ -129,9 +144,9 @@ class Cmskorea_Board_Member {
         $fId = mysqli_real_escape_string($this->_mysqli, $id);
         $fPw = mysqli_real_escape_string($this->_mysqli, $pw);
         
-        $sql = "SELECT * FROM member WHERE id='{$fId}'";
+        $sql = "SELECT id, pw FROM member WHERE id='{$fId}'";
         $res = mysqli_query($this->_mysqli ,$sql);
-        $row = mysqli_fetch_array($res);
+        $row = mysqli_fetch_assoc($res);
         
         if (!isset($row['id']) || md5($fPw) != $row['pw']) {
             return "아이디 또는 비밀번호가 일치하지 않습니다.";
