@@ -52,11 +52,24 @@ class Cmskorea_Board_Member {
      * @return Cmskorea_Baord_Member
      */
     public function registMember(array $datas) {
-        try {
-            // 동일한 아이디의 회원의 존재여부 체크
-        } catch (Exception $e) {
-            throw new Exception('Member with the same ID exists.');
+        $fId = mysqli_real_escape_string($this->_mysqli, $datas['id']);
+        $fPw = mysqli_real_escape_string($this->_mysqli, $datas['pw']);
+        $fName = mysqli_real_escape_string($this->_mysqli, $datas['name']);
+        $fTelNumber = mysqli_real_escape_string($this->_mysqli, $datas['telNumber']);
+        
+        $sql1 = "SELECT * FROM member WHERE id='{$fId}'";
+        $res = mysqli_query($this->_mysqli, $sql1);
+        $searchRow = mysqli_fetch_array($res);
+        if ($searchRow) {
+            throw new Exception('이미 동일한 아이디가 존재합니다.');
         }
+        
+        $md5Pw = md5($fPw);
+        $processedTel = str_replace('-', '', $fTelNumber);
+        $insertTime = date("Y-m-d H:i:s");
+        $sql2 = "INSERT INTO member(id, pw, name, telNumber, insertTime) VALUES ('{$fId}', '{$md5Pw}', '{$fName}', '{$processedTel}', '{$insertTime}')";
+        $res2 = mysqli_query($this->_mysqli, $sql2);
+        
         return $this;
     }
 

@@ -66,11 +66,49 @@ class Cmskorea_Baord_MemberTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * Tests Exception Cmskorea_Baord_Member->registMember()
+     */
+    public function testRegistMemberException()
+    {
+//         $this->member->registMember(/* parameters */);
+        $test1 = array(
+            'id' => 'test',
+            'pw' => '1234',
+            'name' => '테스터',
+            'telNumber' => '010-1234-1234'
+        );
+        
+        try {
+            $this->member->registMember($test1);
+        } catch(Exception $e) {
+            $this->assertEquals('이미 동일한 아이디가 존재합니다.',$e->getMessage());
+            $this->assertTrue(true);
+        }
+        $this->assertFalse(false);
+    }
+    
+    /**
      * Tests Cmskorea_Baord_Member->registMember()
      */
     public function testRegistMember()
     {
-//         $this->member->registMember(/* parameters */);
+        $id = "notOverlapId";
+        $test2 = array(
+            'id' => $id,
+            'pw' => '1234',
+            'name' => '중복아님',
+            'telNumber' => '010-4321-4321'
+        );
+        try {
+            $result = $this->member->registMember($test2);
+        } catch(Exception $e) {
+            $this->assertFalse(false);//예외를 던지면 실패한 것
+        }
+        
+        $expacted = $this->member->getMember($id);
+        unset($test2['pw']);
+        $test2['telNumber'] = str_replace('-', '', $test2['telNumber']);
+        $this->assertEquals($expacted, $test2);
     }
 
     /**
