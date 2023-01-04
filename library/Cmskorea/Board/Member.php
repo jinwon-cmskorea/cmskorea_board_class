@@ -52,6 +52,17 @@ class Cmskorea_Board_Member {
      * @return Cmskorea_Baord_Member
      */
     public function registMember(array $datas) {
+        $idReg = "/^[A-Za-z0-9]+$/";
+        $pwReg = "/[A-Za-z0-9][~`!@#$%\^&*()-+=]+$/";
+        $nameReg = "/[가-힣A-Za-z]+$/";
+        $telReg = "/^(010|011|016|017|018|019|02)-[0-9]{3,4}-[0-9]{4}$/";
+        
+        if (!$datas['id'] || !$datas['pw'] || !$datas['name'] || !$datas['telNumber']) {
+            throw new Exception('필수 항목을 모두 입력해주세요.');
+        } else if (!preg_match($idReg, $datas['id']) || !preg_match($pwReg, $datas['pw']) || !preg_match($nameReg, $datas['name']) || !preg_match($telReg, $datas['telNumber'])) {
+            throw new Exception('입력 형식을 지켜주세요.');
+        }
+        
         $fId = mysqli_real_escape_string($this->_mysqli, $datas['id']);
         $fPw = mysqli_real_escape_string($this->_mysqli, $datas['pw']);
         $fName = mysqli_real_escape_string($this->_mysqli, $datas['name']);

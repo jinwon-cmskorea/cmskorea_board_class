@@ -49,7 +49,7 @@ class Cmskorea_Baord_MemberTest extends PHPUnit_Framework_TestCase
     {
         parent::setUp();
         $this->member = new Cmskorea_Board_MemberTestClass();
-        $sql = "INSERT INTO member(id, pw, name, telNumber, insertTime) VALUES ('test', MD5('1111'), '테스터', '01012341234', NOW())";
+        $sql = "INSERT INTO member(id, pw, name, telNumber, insertTime) VALUES ('test', MD5('1111@'), '테스터', '01012341234', NOW())";
         $res = mysqli_query($this->member->getMysqli(), $sql);
     }
 
@@ -58,7 +58,7 @@ class Cmskorea_Baord_MemberTest extends PHPUnit_Framework_TestCase
      */
     protected function tearDown()
     {
-        $sql = "DELETE FROM member WHERE id='test'";
+        $sql = "DELETE FROM member";
         $res = mysqli_query($this->member->getMysqli(), $sql);
         $this->member = null;
 
@@ -71,9 +71,10 @@ class Cmskorea_Baord_MemberTest extends PHPUnit_Framework_TestCase
     public function testRegistMemberException()
     {
 //         $this->member->registMember(/* parameters */);
+        /* 아이디 중복 검사 */
         $test1 = array(
             'id' => 'test',
-            'pw' => '1234',
+            'pw' => '1234@',
             'name' => '테스터',
             'telNumber' => '010-1234-1234'
         );
@@ -85,6 +86,36 @@ class Cmskorea_Baord_MemberTest extends PHPUnit_Framework_TestCase
             $this->assertTrue(true);
         }
         $this->assertFalse(false);
+        
+        /* 입력값 검증 검사 */
+        $test2 = array(
+            'id' => 'test123',
+            'pw' => '1234',//특수문자 없음
+            'name' => '테스터',
+            'telNumber' => '010-1234-1234'
+        );
+        try {
+            $this->member->registMember($test2);
+        } catch(Exception $e) {
+            $this->assertEquals('입력 형식을 지켜주세요.',$e->getMessage());
+            $this->assertTrue(true);
+        }
+        $this->assertFalse(false);
+        
+        /* 입력값 미입력 검사 */
+        $test3 = array(
+            'id' => '',//아이디 미 입력
+            'pw' => '1234@',
+            'name' => '테스터',
+            'telNumber' => '010-1234-1234'
+        );
+        try {
+            $this->member->registMember($test3);
+        } catch(Exception $e) {
+            $this->assertEquals('필수 항목을 모두 입력해주세요.',$e->getMessage());
+            $this->assertTrue(true);
+        }
+        $this->assertFalse(false);
     }
     
     /**
@@ -93,22 +124,22 @@ class Cmskorea_Baord_MemberTest extends PHPUnit_Framework_TestCase
     public function testRegistMember()
     {
         $id = "notOverlapId";
-        $test2 = array(
+        $test1 = array(
             'id' => $id,
-            'pw' => '1234',
+            'pw' => '1234@',
             'name' => '중복아님',
             'telNumber' => '010-4321-4321'
         );
         try {
-            $result = $this->member->registMember($test2);
+            $result = $this->member->registMember($test1);
         } catch(Exception $e) {
             $this->assertFalse(false);//예외를 던지면 실패한 것
         }
         
         $expacted = $this->member->getMember($id);
-        unset($test2['pw']);
-        $test2['telNumber'] = str_replace('-', '', $test2['telNumber']);
-        $this->assertEquals($expacted, $test2);
+        unset($test1['pw']);
+        $test1['telNumber'] = str_replace('-', '', $test1['telNumber']);
+        $this->assertEquals($expacted, $test1);
     }
 
     /**
@@ -136,7 +167,7 @@ class Cmskorea_Baord_MemberTest extends PHPUnit_Framework_TestCase
         $this->assertEquals("아이디를 입력해주세요.", $res);
         $res = $this->member->authenticate('test', '');
         $this->assertEquals("비밀번호를 입력해주세요.", $res);
-        $res = $this->member->authenticate('test', '1111');
+        $res = $this->member->authenticate('test', '1111@');
         $this->assertEquals('', $res);
         $res = $this->member->authenticate('notuser', '1111');
         $this->assertEquals("아이디 또는 비밀번호가 일치하지 않습니다.", $res);
