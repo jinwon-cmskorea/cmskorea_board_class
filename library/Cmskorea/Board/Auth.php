@@ -8,7 +8,7 @@
 /**
  * @see Cmskorea_Baord_Member
  */
-require_once 'member.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/wwwroot/cmskorea_board_class/library/Cmskorea/Board/Member.php';
 /**
  * 씨엠에스코리아 사용자 인증 클래스
  *
@@ -19,7 +19,7 @@ class Cmskorea_Board_Auth {
     /**
      * 씨엠에스코리아 사용자 클래스
      *
-     * @var Cmskorea_Baord_Member
+     * @var Cmskorea_Board_Member
      */
     protected $_member;
 
@@ -28,14 +28,14 @@ class Cmskorea_Board_Auth {
      * @var string
      */
     const SESSION_NAMESPACE = 'cmskoreaMember';
-
+    
     /**
      * 생성자
      *
      * @return void
      */
     public function __construct() {
-        $this->_member = new Cmskorea_Baord_Member();
+        $this->_member = new Cmskorea_Board_Member();
     }
 
     /**
@@ -52,7 +52,10 @@ class Cmskorea_Board_Auth {
 
         // 로그인 성공 시 세션에 회원정보를 저장한다.
         $memberInfo = $this->_member->getMember($id);
-
+        if ($memberInfo) {
+            $_SESSION[self::SESSION_NAMESPACE] = $memberInfo;
+        }
+        
         return $authResult;
     }
 
@@ -67,14 +70,6 @@ class Cmskorea_Board_Auth {
             throw new Exception('Member information is not set.');
         }
 
-//         $a = array(
-//             self::SESSION_NAMESPACE => array(
-//                 'id'    => '',
-//                 'name'  => '',
-//                 'telNumber' => ''
-//             )
-//         );
-//         return $a[self::SESSION_NAMESPACE];
         return $_SESSION[self::SESSION_NAMESPACE];
     }
 

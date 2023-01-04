@@ -142,11 +142,10 @@ class Cmskorea_Board_Member {
         $fId = mysqli_real_escape_string($this->_mysqli, $id);
         $fPw = mysqli_real_escape_string($this->_mysqli, $pw);
         
-        $sql = "SELECT id, pw FROM member WHERE id='{$fId}'";
-        $res = mysqli_query($this->_mysqli ,$sql);
+        $sql = "SELECT id, pw FROM member WHERE id='{$fId}' AND pw=MD5('{$fPw}')";
+        $res = mysqli_query($this->_mysqli, $sql);
         $row = mysqli_fetch_assoc($res);
-        
-        if (!isset($row['id']) || md5($fPw) != $row['pw']) {
+        if (!$row) {
             return "아이디 또는 비밀번호가 일치하지 않습니다.";
         }
         
