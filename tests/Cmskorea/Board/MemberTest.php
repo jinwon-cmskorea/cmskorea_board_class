@@ -81,7 +81,7 @@ class Cmskorea_Baord_MemberTest extends PHPUnit_Framework_TestCase
         
         try {
             $this->member->registMember($test1);
-            $this->assertFalse(false);
+            $this->assertFalse(true);
         } catch(Exception $e) {
             $this->assertEquals('이미 동일한 아이디가 존재합니다.',$e->getMessage());
         }
@@ -103,7 +103,7 @@ class Cmskorea_Baord_MemberTest extends PHPUnit_Framework_TestCase
         );
         try {
             $this->member->registMember($wrongId);
-            $this->assertFalse(false);
+            $this->assertFalse(true);
         } catch(Exception $e) {
             $this->assertEquals('입력 형식을 지켜주세요.',$e->getMessage());
         }
@@ -117,7 +117,7 @@ class Cmskorea_Baord_MemberTest extends PHPUnit_Framework_TestCase
         );
         try {
             $this->member->registMember($wrongPw);
-            $this->assertFalse(false);
+            $this->assertFalse(true);
         } catch(Exception $e) {
             $this->assertEquals('입력 형식을 지켜주세요.',$e->getMessage());
         }
@@ -130,7 +130,7 @@ class Cmskorea_Baord_MemberTest extends PHPUnit_Framework_TestCase
         );
         try {
             $this->member->registMember($wrongName);
-            $this->assertFalse(false);
+            $this->assertFalse(true);
         } catch(Exception $e) {
             $this->assertEquals('입력 형식을 지켜주세요.',$e->getMessage());
         }
@@ -144,7 +144,7 @@ class Cmskorea_Baord_MemberTest extends PHPUnit_Framework_TestCase
         );
         try {
             $this->member->registMember($wrongTel);
-            $this->assertFalse(false);
+            $this->assertFalse(true);
         } catch(Exception $e) {
             $this->assertEquals('입력 형식을 지켜주세요.',$e->getMessage());
         }
@@ -166,7 +166,7 @@ class Cmskorea_Baord_MemberTest extends PHPUnit_Framework_TestCase
         );
         try {
             $this->member->registMember($notId);
-            $this->assertFalse(false);
+            $this->assertFalse(true);
         } catch(Exception $e) {
             $this->assertEquals('필수 항목을 모두 입력해주세요.',$e->getMessage());
         }
@@ -180,7 +180,7 @@ class Cmskorea_Baord_MemberTest extends PHPUnit_Framework_TestCase
         );
         try {
             $this->member->registMember($notPw);
-            $this->assertFalse(false);
+            $this->assertFalse(true);
         } catch(Exception $e) {
             $this->assertEquals('필수 항목을 모두 입력해주세요.',$e->getMessage());
         }
@@ -194,7 +194,7 @@ class Cmskorea_Baord_MemberTest extends PHPUnit_Framework_TestCase
         );
         try {
             $this->member->registMember($notName);
-            $this->assertFalse(false);
+            $this->assertFalse(true);
         } catch(Exception $e) {
             $this->assertEquals('필수 항목을 모두 입력해주세요.',$e->getMessage());
         }
@@ -208,7 +208,7 @@ class Cmskorea_Baord_MemberTest extends PHPUnit_Framework_TestCase
         );
         try {
             $this->member->registMember($notTel);
-            $this->assertFalse(false);
+            $this->assertFalse(true);
         } catch(Exception $e) {
             $this->assertEquals('필수 항목을 모두 입력해주세요.',$e->getMessage());
         }
@@ -229,7 +229,7 @@ class Cmskorea_Baord_MemberTest extends PHPUnit_Framework_TestCase
         try {
             $result = $this->member->registMember($test1);
         } catch(Exception $e) {
-            $this->assertFalse(false);//예외를 던지면 실패한 것
+            $this->assertFalse(true);//예외를 던지면 실패한 것
         }
         
         $expacted = $this->member->getMember($id);
@@ -243,7 +243,6 @@ class Cmskorea_Baord_MemberTest extends PHPUnit_Framework_TestCase
      */
     public function testGetMember()
     {
-//         $this->member->getMember(/* parameters */);
         $testSql = "SELECT id, name, telNumber FROM member where id='test'";
         $testRes = mysqli_query($this->member->getMysqli(), $testSql);
         $testArray = mysqli_fetch_assoc($testRes);
