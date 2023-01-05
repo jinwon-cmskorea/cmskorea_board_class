@@ -84,6 +84,74 @@ class Cmskorea_Board_BoardTest extends PHPUnit_Framework_TestCase
         $row = mysqli_fetch_assoc($sqlRes);
         $this->assertEquals($row['pk'], $res);
     }
+    
+    /**
+     * Tests not input Cmskorea_Board_Board->addContent()
+     */
+    public function testAddContentNotInput()
+    {
+        //제목이 없을 경우
+        $testContent1 = array(
+            'memberPk'  => 3,
+            'title'     => '',
+            'writer'    => '테스터',
+            'content'   => '테스트 게시글입니다.'
+        );
+        try {
+            $res = $this->board->addContent($testContent1);
+            $this->assertFalse(true);
+        } catch (Exception $e) {
+            $this->assertEquals("필수 항목을 입력해주세요.", $e->getMessage());
+        }
+        
+        //작성자가 없을 경우
+        $testContent2 = array(
+            'memberPk'  => 3,
+            'title'     => '제목있어요',
+            'writer'    => '',
+            'content'   => '내용있어요'
+        );
+        try {
+            $res = $this->board->addContent($testContent2);
+            $this->assertFalse(true);
+        } catch (Exception $e) {
+            $this->assertEquals("필수 항목을 입력해주세요.", $e->getMessage());
+        }
+        
+        //내용이 없을 경우
+        $testContent3 = array(
+            'memberPk'  => 3,
+            'title'     => '제목있어요',
+            'writer'    => '작성자 있어요',
+            'content'   => ''
+        );
+        try {
+            $res = $this->board->addContent($testContent3);
+            $this->assertFalse(true);
+        } catch (Exception $e) {
+            $this->assertEquals("필수 항목을 입력해주세요.", $e->getMessage());
+        }
+    }
+    
+    /**
+     * Tests wrong writer Cmskorea_Board_Board->addContent()
+     */
+    public function testAddContentWrongWriter()
+    {
+        $testContent = array(
+            'memberPk'  => 3,
+            'title'     => 'test입니다.',
+            'writer'    => '이상한작성자@!$$',
+            'content'   => '테스트 게시글입니다.'
+        );
+        try {
+            $res = $this->board->addContent($testContent);
+            $this->assertFalse(true);
+        } catch (Exception $e) {
+            $this->assertEquals("이름은 한글, 영문, 숫자만 입력할 수 있습니다.", $e->getMessage());
+        }
+        
+    }
 
     /**
      * Tests Cmskorea_Board_Board->editContent()
