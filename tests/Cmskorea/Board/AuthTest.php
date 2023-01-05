@@ -151,6 +151,8 @@ class Cmskorea_Board_AuthTest extends PHPUnit_Framework_TestCase
     {
         $this->auth->authenticate('test', "1111@");
         $res = $this->auth->logout();
+        $arr = $_SESSION;//세션이 unset되어, 빈 배열인지 확인
+        $this->assertEmpty($arr);
         $this->assertEquals(true, $res);
     }
 }
