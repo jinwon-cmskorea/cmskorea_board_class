@@ -7,7 +7,31 @@ require_once __DIR__.'/bootstrap.php';
  * @see Cmskorea_Board_Board
  */
 require_once '/Cmskorea/Board/Board.php';
-
+/**
+ * Cmskorea_Board_Board 테스트를 위한 클래스
+ * Cmskorea_Board_BoardTestClass
+ */
+class Cmskorea_Board_BoardTestClass extends Cmskorea_Board_Board {
+    /**
+     * 생성자
+     * @brief mysqli 객체를 생성해서 멤버변수에 넣어줌
+     *
+     * @return void
+     */
+    public function __construct() {
+        $this->_mysqli = mysqli_connect(DBHOST, USERNAME, USERPW, 'cmskorea_board_test');
+        if (!$this->_mysqli) {
+            die("DB 접속중 문제가 발생했습니다. : ".mysqli_connect_error());
+        }
+    }
+    /**
+     * 테스트를 위해 mysqli 객체 접근
+     * @return mysqli_connect
+     */
+    public function getMysqli() {
+        return $this->_mysqli;
+    }
+}
 /**
  * Cmskorea_Board_Board test case.
  */
@@ -27,7 +51,7 @@ class Cmskorea_Board_BoardTest extends PHPUnit_Framework_TestCase
     {
         parent::setUp();
 
-        $this->board = new Cmskorea_Board_Board(/* parameters */);
+        $this->board = new Cmskorea_Board_BoardTestClass();
     }
 
     /**
@@ -35,6 +59,9 @@ class Cmskorea_Board_BoardTest extends PHPUnit_Framework_TestCase
      */
     protected function tearDown()
     {
+        $sql = "DELETE FROM board";
+        $res = mysqli_query($this->board->getMysqli(), $sql);
+        mysqli_close($this->board->getMysqli());
         $this->board = null;
 
         parent::tearDown();
@@ -45,9 +72,17 @@ class Cmskorea_Board_BoardTest extends PHPUnit_Framework_TestCase
      */
     public function testAddContent()
     {
-        $this->markTestIncomplete("addContent test not implemented");
-
-        $this->board->addContent(/* parameters */);
+        $testContent = array(
+            'memberPk'  => 3,
+            'title'     => 'test입니다.',
+            'writer'    => '테스터',
+            'content'   => '테스트 게시글입니다.'
+        );
+        $res = $this->board->addContent($testContent);
+        $sql = "SELECT pk FROM board WHERE memberPK='3'";
+        $sqlRes = mysqli_query($this->board->getMysqli(), $sql);
+        $row = mysqli_fetch_assoc($sqlRes);
+        $this->assertEquals($row['pk'], $res);
     }
 
     /**

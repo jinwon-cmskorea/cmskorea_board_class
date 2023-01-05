@@ -6,6 +6,10 @@
  * @package  Board
  */
 /**
+ * @see dbCon.php
+ */
+require_once $_SERVER['DOCUMENT_ROOT'] . '/wwwroot/cmskorea_board_class/configs/dbConfig.php';
+/**
  * 씨엠에스코리아 게시판 클래스
  *
  * @category Cmskorea
@@ -13,9 +17,35 @@
  */
 class Cmskorea_Board_Board {
     /**
+     * DB연결 변수
+     *
+     * @var mysqli_connect 로 부터 리턴 받음
+     */
+    protected $_mysqli;
+    /**
+     * 씨엠에스코리아 인증 클래스
+     *
+     * @var Cmskorea_Board_Auth
+     */
+    protected $_auth;
+    
+    /**
+     * 생성자
+     * @brief mysqli 객체를 생성해서 멤버변수에 넣어줌
+     *
+     * @return void
+     */
+    public function __construct() {
+        $this->_mysqli = mysqli_connect(DBHOST, USERNAME, USERPW, DBNAME);
+        if (!$this->_mysqli) {
+            die("DB 접속중 문제가 발생했습니다. : ".mysqli_connect_error());
+        }
+    }
+    /**
      * 글을 작성한다.
      *
-     * @param string 작성자 아이디
+     * @throws Exception 필수 항목을 입력하지 않았을 경우
+     *                   이름 작성 조건을 지키지않았을 경우
      * @param array 작성할 내용
      *        array(
      *            'memberPk' => '작성자고유키'
@@ -25,8 +55,22 @@ class Cmskorea_Board_Board {
      *        )
      * @return 글번호
      */
-    public function addContent($id, array $datas) {
-        return 1;
+    public function addContent(array $datas) {
+        if (!$datas['title'] || !$datas['writer'] || !$datas['content']) {
+            throw new Exception("필수 항목을 입력해주세요.");
+        } else if (!preg_match("/[가-힣A-Za-z]+$/", $datas['writer'])) {
+            throw new Exception("이름은 한글, 영문, 숫자만 입력할 수 있습니다.");
+        } else {
+            $fTitle = mysqli_real_escape_string($this->_mysqli, $datas['title']);
+            $fWriter = mysqli_real_escape_string($this->_mysqli, $datas['writer']);
+            $fContent = mysqli_real_escape_string($this->_mysqli, $datas['content']);
+            
+            $sql = "INSERT INTO board(memberPk, title, writer, content, insertTime, updateTime) VALUES ('{$datas['memberPk']}', '{$fTitle}', '{$fWriter}', '{$fContent}', now(), now())";
+            $res = mysqli_query($this->_mysqli, $sql);
+            $insertedNum = mysqli_insert_id($this->_mysqli);
+        }
+        
+        return $insertedNum;
     }
 
     /**
