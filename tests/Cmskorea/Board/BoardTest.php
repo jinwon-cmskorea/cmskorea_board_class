@@ -259,9 +259,22 @@ class Cmskorea_Board_BoardTest extends PHPUnit_Framework_TestCase
      */
     public function testDelContent()
     {
-        $this->markTestIncomplete("delContent test not implemented");
-
-        $this->board->delContent(/* parameters */);
+        $testContent = array(
+            'memberPk' => '30',
+            'title'   => '삭제될 게시글입니다.',
+            'writer'  => '테스터',
+            'content' => '불쌍한 게시글'
+        );
+        //게시글이 삭제되어 true 반환하는지 확인
+        $boardNo = $this->board->addContent($testContent);
+        $res = $this->board->delContent($boardNo);
+        $this->assertTrue($res);
+        
+        //게시글이 삭제되었는지 확인
+        $sql = "SELECT title FROM board WHERE pk={$boardNo}";
+        $res2 = mysqli_query($this->board->getMysqli(), $sql);
+        $count = mysqli_num_rows($res2);
+        $this->assertEquals(0, $count);
     }
 
     /**

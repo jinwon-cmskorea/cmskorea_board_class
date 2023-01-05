@@ -129,7 +129,13 @@ class Cmskorea_Board_Board {
      * @return boolean
      */
     public function delContent($no) {
-        return true;
+        $sql = "DELETE FROM board WHERE pk={$no}";
+        $res = mysqli_query($this->_mysqli, $sql);
+        if ($res == true) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
