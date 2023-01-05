@@ -150,7 +150,6 @@ class Cmskorea_Board_BoardTest extends PHPUnit_Framework_TestCase
         } catch (Exception $e) {
             $this->assertEquals("이름은 한글, 영문, 숫자만 입력할 수 있습니다.", $e->getMessage());
         }
-        
     }
 
     /**

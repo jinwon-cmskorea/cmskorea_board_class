@@ -41,10 +41,31 @@ class Cmskorea_Board_Board {
             die("DB 접속중 문제가 발생했습니다. : ".mysqli_connect_error());
         }
     }
+    
+    /**
+     * 게시글을 체크한다
+     *
+     * @throws Exception 필수 항목을 입력하지 않았을 경우
+     *                   이름 작성 조건을 지키지않았을 경우
+     * @param array 게시글 내용(작성, 수정)
+     *        array(
+     *            'title'   => '제목',
+     *            'writer'  => '작성자',
+     *            'content' => '내용'
+     *        )
+     */
+    protected function _checkDatas(array $datas) {
+        if (!$datas['title'] || !$datas['writer'] || !$datas['content']) {
+            throw new Exception("필수 항목을 입력해주세요.");
+        } else if (!preg_match("/[가-힣A-Za-z]+$/", $datas['writer'])) {
+            throw new Exception("이름은 한글, 영문, 숫자만 입력할 수 있습니다.");
+        }
+    }
     /**
      * 글을 작성한다.
      *
-     * @throws Exception 필수 항목을 입력하지 않았을 경우
+     * @throws Exception _checkDatas 메소드에 의해 발생
+     *                   필수 항목을 입력하지 않았을 경우
      *                   이름 작성 조건을 지키지않았을 경우
      * @param array 작성할 내용
      *        array(
@@ -56,11 +77,9 @@ class Cmskorea_Board_Board {
      * @return 글번호
      */
     public function addContent(array $datas) {
-        if (!$datas['title'] || !$datas['writer'] || !$datas['content']) {
-            throw new Exception("필수 항목을 입력해주세요.");
-        } else if (!preg_match("/[가-힣A-Za-z]+$/", $datas['writer'])) {
-            throw new Exception("이름은 한글, 영문, 숫자만 입력할 수 있습니다.");
-        } else {
+        try {
+            $this->_checkDatas($datas);
+            
             $fTitle = mysqli_real_escape_string($this->_mysqli, $datas['title']);
             $fWriter = mysqli_real_escape_string($this->_mysqli, $datas['writer']);
             $fContent = mysqli_real_escape_string($this->_mysqli, $datas['content']);
@@ -68,8 +87,9 @@ class Cmskorea_Board_Board {
             $sql = "INSERT INTO board(memberPk, title, writer, content, insertTime, updateTime) VALUES ('{$datas['memberPk']}', '{$fTitle}', '{$fWriter}', '{$fContent}', now(), now())";
             $res = mysqli_query($this->_mysqli, $sql);
             $insertedNum = mysqli_insert_id($this->_mysqli);
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
         }
-        
         return $insertedNum;
     }
 
