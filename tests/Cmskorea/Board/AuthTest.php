@@ -117,6 +117,16 @@ class Cmskorea_Board_AuthTest extends PHPUnit_Framework_TestCase
         );
         $res = $this->auth->getMember();
         $this->assertEquals($ans, $res);
+        session_unset();//이전 세션 삭제
+        
+        $this->auth->authenticate('wrong', "1234@");
+        try {
+            $res = $this->auth->getMember();
+            $this->assertFalse(true);
+        } catch(Exception $e) {
+            $this->assertEquals('Member information is not set.',$e->getMessage());
+        }
+        
     }
 
     /**
@@ -127,6 +137,11 @@ class Cmskorea_Board_AuthTest extends PHPUnit_Framework_TestCase
         $this->auth->authenticate('test', "1111@");
         $res = $this->auth->isLogin();
         $this->assertEquals(true, $res);
+        session_unset();//이전 세션 삭제
+        
+        $this->auth->authenticate('wrong', "1234@");
+        $res = $this->auth->isLogin();
+        $this->assertEquals(false, $res);
     }
 
     /**
