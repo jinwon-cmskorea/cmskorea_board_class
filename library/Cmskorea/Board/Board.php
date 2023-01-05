@@ -145,7 +145,16 @@ class Cmskorea_Board_Board {
      * @return array 글번호에 해당하는 데이터 전체
      */
     public function getContent($no) {
-        return array();
+        $sql = "SELECT * FROM board WHERE pk={$no}";
+        $res = mysqli_query($this->_mysqli, $sql);
+        $count = mysqli_num_rows($res);
+        //만약 count 가 0이면, 작성되지않은 게시글이거나, 잘못된 접근이므로 빈 배열 리턴
+        if ($count == 0) {
+            return array();
+        } else {
+            $row = mysqli_fetch_assoc($res);
+        }
+        return $row;
     }
 
     /**

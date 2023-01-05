@@ -282,9 +282,26 @@ class Cmskorea_Board_BoardTest extends PHPUnit_Framework_TestCase
      */
     public function testGetContent()
     {
-        $this->markTestIncomplete("getContent test not implemented");
-
-        $this->board->getContent(/* parameters */);
+        $testContent = array(
+            'memberPk'      => '11',
+            'title'         => '조회용',
+            'writer'        => '조회테스트',
+            'content'       => '조회테스트'
+        );
+        $boardNo = $this->board->addContent($testContent);
+        //추가된 게시글 데이터 불러오기
+        $sql = "SELECT * FROM board WHERE pk={$boardNo}";
+        $res = mysqli_query($this->board->getMysqli(), $sql);
+        $testRow = mysqli_fetch_assoc($res);
+        
+        //메소드가 데이터를 잘 가져오는지 확인
+        $getRow = $this->board->getContent($boardNo);
+        $this->assertEquals($testRow, $getRow);
+        
+        //존재하지 않는 게시글 참조
+        $wrongNo = 123123;
+        $getRow2 = $this->board->getContent($wrongNo);
+        $this->assertEquals(array(), $getRow2);
     }
 
     /**
