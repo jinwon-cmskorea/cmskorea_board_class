@@ -15,7 +15,6 @@ class Cmskorea_Board_Board {
     /**
      * 글을 작성한다.
      *
-     * @param string 작성자 아이디
      * @param array 작성할 내용
      *        array(
      *            'memberPk' => '작성자고유키'
@@ -25,7 +24,7 @@ class Cmskorea_Board_Board {
      *        )
      * @return 글번호
      */
-    public function addContent($id, array $datas) {
+    public function addContent(array $datas) {
         return 1;
     }
 
