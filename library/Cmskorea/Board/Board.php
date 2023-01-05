@@ -107,6 +107,18 @@ class Cmskorea_Board_Board {
      */
     public function editContent(array $datas) {
         // updateTime 수정
+        try {
+            $this->_checkDatas($datas);
+            
+            $fTitle = mysqli_real_escape_string($this->_mysqli, $datas['title']);
+            $fWriter = mysqli_real_escape_string($this->_mysqli, $datas['writer']);
+            $fContent = mysqli_real_escape_string($this->_mysqli, $datas['content']);
+            
+            $sql = "UPDATE board SET title='{$fTitle}', writer='{$fWriter}', content='{$fContent}', updateTime=now() WHERE pk='{$datas['no']}'";
+            $res = mysqli_query($this->_mysqli, $sql);
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
+        }
         return true;
     }
 

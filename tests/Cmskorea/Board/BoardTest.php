@@ -157,9 +157,101 @@ class Cmskorea_Board_BoardTest extends PHPUnit_Framework_TestCase
      */
     public function testEditContent()
     {
-        $this->markTestIncomplete("editContent test not implemented");
-
-        $this->board->editContent(/* parameters */);
+        $testContent = array(
+            'memberPk'  => 10,
+            'title'     => '수정 전',
+            'writer'    => '테스터수정전',
+            'content'   => '게시글수정전'
+        );
+        $contentNo = $this->board->addContent($testContent);
+        sleep(1);//수정 시간을 다르게 하기 위해 sleep 사용
+        $editDatas = array(
+            'no'        => $contentNo,
+            'title'     => '수정 후',
+            'writer'    => '테스터수정후',
+            'content'   => '게시글수정후'
+        );
+        $editRes = $this->board->editContent($editDatas);
+        $this->assertEquals(true, $editRes);
+        
+        //테스트용 배열과 실제 수정된 내용이 동일한지 확인
+        $sql = "SELECT pk AS no, title, writer, content FROM board WHERE pk='{$contentNo}'";
+        $searchRes = mysqli_query($this->board->getMysqli(), $sql);
+        $row = mysqli_fetch_assoc($searchRes);
+        $this->assertEquals($editDatas, $row);
+        
+        //작성 시간과 수정 시간이 다른지 확인
+        $sql2 = "SELECT insertTime, updateTime FROM board WHERE pk='{$contentNo}'";
+        $searchRes2 = mysqli_query($this->board->getMysqli(), $sql2);
+        $row2 = mysqli_fetch_assoc($searchRes2);
+        $this->assertNotEquals($row2['insertTime'], $row2['updateTime']);
+    }
+    
+    /**
+     * Tests not input Cmskorea_Board_Board->editContent()
+     */
+    public function testEditContentNotInput()
+    {
+        //제목이 없을 경우
+        $testContent1 = array(
+            'memberPk'  => 20,
+            'title'     => '',
+            'writer'    => '테스터수정',
+            'content'   => '게시글수정'
+        );
+        try {
+            $this->board->editContent($testContent1);
+            $this->assertFalse(true);
+        } catch (Exception $e) {
+            $this->assertEquals("필수 항목을 입력해주세요.", $e->getMessage());
+        }
+        
+        //작성자가 없을 경우
+        $testContent2 = array(
+            'memberPk'  => 20,
+            'title'     => '제목수정',
+            'writer'    => '',
+            'content'   => '게시글수정'
+        );
+        try {
+            $this->board->editContent($testContent2);
+            $this->assertFalse(true);
+        } catch (Exception $e) {
+            $this->assertEquals("필수 항목을 입력해주세요.", $e->getMessage());
+        }
+        
+        //내용이 없을 경우
+        $testContent3 = array(
+            'memberPk'  => 20,
+            'title'     => '제목수정',
+            'writer'    => '테스터수정',
+            'content'   => ''
+        );
+        try {
+            $this->board->editContent($testContent3);
+            $this->assertFalse(true);
+        } catch (Exception $e) {
+            $this->assertEquals("필수 항목을 입력해주세요.", $e->getMessage());
+        }
+    }
+    
+    /**
+     * Tests wrong writer Cmskorea_Board_Board->editContent()
+     */
+    public function testEditContentWrongWriter()
+    {
+        $testContent = array(
+            'memberPk'  => 20,
+            'title'     => 'test입니다.',
+            'writer'    => '이상한수정자@!$$',
+            'content'   => '테스트 수정 게시글입니다.'
+        );
+        try {
+            $res = $this->board->editContent($testContent);
+            $this->assertFalse(true);
+        } catch (Exception $e) {
+            $this->assertEquals("이름은 한글, 영문, 숫자만 입력할 수 있습니다.", $e->getMessage());
+        }
     }
 
     /**
