@@ -57,7 +57,7 @@ class Cmskorea_Board_Board {
     protected function _checkDatas(array $datas) {
         if (!$datas['title'] || !$datas['writer'] || !$datas['content']) {
             throw new Exception("필수 항목을 입력해주세요.");
-        } else if (!preg_match("/[가-힣A-Za-z]+$/", $datas['writer'])) {
+        } else if (!preg_match("/[가-힣A-Za-z0-9]+$/", $datas['writer'])) {
             throw new Exception("이름은 한글, 영문, 숫자만 입력할 수 있습니다.");
         }
     }
@@ -147,12 +147,10 @@ class Cmskorea_Board_Board {
     public function getContent($no) {
         $sql = "SELECT * FROM board WHERE pk={$no}";
         $res = mysqli_query($this->_mysqli, $sql);
-        $count = mysqli_num_rows($res);
+        $row = mysqli_fetch_assoc($res);
         //만약 count 가 0이면, 작성되지않은 게시글이거나, 잘못된 접근이므로 빈 배열 리턴
-        if ($count == 0) {
+        if ($row == NULL) {
             return array();
-        } else {
-            $row = mysqli_fetch_assoc($res);
         }
         return $row;
     }
@@ -161,10 +159,70 @@ class Cmskorea_Board_Board {
      * 조건에 해당하는 글들을 리턴한다.
      *
      * @param array 조회조건(모든 글을 리턴하는 경우 빈배열)
+     *        array(
+     *            'categoty'        => '검색 카테고리',
+     *            'search'          => '검색 내용',
+     *            'fieldName'       => '정렬할 필드이름',
+     *            'order'           => '정렬 방식',
+     *            'start'           => '출력 시작 번호',
+     *            'per'             => '출력 갯수'
+     *        )
      * @return array 글 내용을 제외한 모든 데이터
      */
     public function getContents(array $conditions) {
-        return array();
+        $conditionArr = array(
+            'writer',
+            'title',
+            'insertTime'
+        );
+        $fieldNameArr = array(
+            'pk',
+            'title',
+            'writer',
+            'insertTime'
+        );
+        /*
+         * 조회조건이 없으면
+         * SELECT pk, memberPk, title, writer, insertTime, updateTime FROM board ORDER BY pk DESC LIMIT 0, 10
+         * 이 조립됨
+         * 조건에 따라 sql이 조립됨
+         */
+        $sql = "SELECT pk, memberPk, title, writer, insertTime, updateTime FROM board";
+        
+        //검색 조건이 있을 경우
+        if (array_key_exists('category', $conditions) && array_key_exists('search', $conditions)) {
+            $sql .= " WHERE";
+            foreach ($conditionArr as $condition) {
+                if ($conditions['category'] == $condition) {
+                    $sql .= " {$conditions['category']} LIKE '%{$conditions['search']}%'";
+                    break;
+                }
+            }
+        }
+        //정렬 조건이 있을 경우
+        if (array_key_exists('fieldName', $conditions) && array_key_exists('order', $conditions)) {
+            $sql .= " ORDER BY";
+            foreach ($fieldNameArr as $fieldCon) {
+                if ($conditions['fieldName'] == $fieldCon) {
+                    $sql .= " {$conditions['fieldName']} {$conditions['order']}";
+                    break;
+                }
+            }
+        } else {
+            $sql .= " ORDER BY pk DESC";
+        }
+        //페이징 조건이 있을 경우
+        if (array_key_exists('start', $conditions)) {
+            $sql .= " LIMIT {$conditions['start']}, 10";
+        } else {
+            $sql .= " LIMIT 0, 10";
+        }
+        $res = mysqli_query($this->_mysqli, $sql);
+        $rowArrays = array();
+        while ($row = mysqli_fetch_assoc($res)) {
+            array_push($rowArrays, $row);
+        }
+        return $rowArrays;
     }
 
     /**
