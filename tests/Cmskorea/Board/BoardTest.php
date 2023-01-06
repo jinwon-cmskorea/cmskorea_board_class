@@ -433,5 +433,26 @@ class Cmskorea_Board_BoardTest extends PHPUnit_Framework_TestCase
         $getRes10 = $this->board->getContents($conditionArr10);
         $this->assertEquals($originArrays10, $getRes10);
     }
+    
+    /**
+     * Tests Cmskorea_Board_Board->addFile()
+     */
+    public function testAddFile() {
+        ;
+    }
+    
+    /**
+     * Tests Cmskorea_Board_Board->getFiles()
+     */
+    public function testGetFiles() {
+        ;
+    }
+    
+    /**
+     * Tests Cmskorea_Board_Board->delFile()
+     */
+    public function testDelFile() {
+        ;
+    }
 }
 
