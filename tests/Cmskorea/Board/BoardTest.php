@@ -61,6 +61,9 @@ class Cmskorea_Board_BoardTest extends PHPUnit_Framework_TestCase
     {
         $sql = "DELETE FROM board";
         $res = mysqli_query($this->board->getMysqli(), $sql);
+        
+        $sql2 = "DELETE FROM file";
+        $res2 = mysqli_query($this->board->getMysqli(), $sql2);
         mysqli_close($this->board->getMysqli());
         $this->board = null;
 
@@ -438,7 +441,41 @@ class Cmskorea_Board_BoardTest extends PHPUnit_Framework_TestCase
      * Tests Cmskorea_Board_Board->addFile()
      */
     public function testAddFile() {
-        ;
+        //테스트용 이미지 파일 생성
+        $imageFile = imagecreatetruecolor(50, 50);
+        $bgColor = imagecolorallocate($imageFile, 255, 0, 0);
+        imagefill($imageFile, 0, 0, $bgColor);
+        $testFilePath = __DIR__.'/tempDestination/test.png';
+        imagepng($imageFile, $testFilePath);
+        imagedestroy($imageFile);
+        
+        $fileArr = array (
+            'uploadTag1' => array(
+                'name'      => 'test.png',
+                'type'      => 'image/png',
+                'tmp_name'  => 'tempTest.png',
+                'error'     => UPLOAD_ERR_OK,
+                'size'      => 132
+            )
+        );
+        $fp = fopen($testFilePath, 'rb');
+        $blob = file_get_contents($testFilePath);
+        fclose($fp);
+        
+        //1. 테스트 파일 업로드 및 db 내용과 동일한지 확인
+        $fileArr['uploadTag1']['content'] = $blob;
+        $this->board->addFile(1, $fileArr);
+        
+        $sql = "SELECT boardPk, filename, fileType, fileSize FROM file WHERE boardPk=1";
+        $res = mysqli_query($this->board->getMysqli(), $sql);
+        $row = mysqli_fetch_assoc($res);
+        $testArr = array(
+            'boardPk'       => '1',
+            'filename'      => 'test.png',
+            'fileType'      => 'png',
+            'fileSize'      => '132'
+        );
+        $this->assertEquals($row, $testArr);
     }
     
     /**

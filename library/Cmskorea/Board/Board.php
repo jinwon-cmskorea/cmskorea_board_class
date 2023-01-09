@@ -230,9 +230,46 @@ class Cmskorea_Board_Board {
      *
      * @param number 게시판 고유키
      * @param array  $_FILES 함수의 내용
+     *        array(
+     *            '태그 name' => array (
+     *                'name'      => '파일 원래 이름',
+     *                'type'      => '파일의 mime 형식',
+     *                'tmp_name'  => '업로드된 파일 임시 이름',
+     *                'error'     => '업로드와 관련된 에러 코드',
+     *                'size'      => '업로드 파일 크기를 바이트로 표현',
+     *                'content'   => '파일의 내용'
+     *            )
+     *        )
      * @return boolean
      */
     public function addFile($boardPk, array $fileInfos) {
+        $allowFiles = array(
+            'jpeg', 'jpg', 'gif', 'png', 'pdf'
+        );
+        $fileInfoKey = array_keys($fileInfos);
+        $fileTagName = $fileInfoKey[0];
+        $fileType = explode('/', $fileInfos[$fileTagName]['type']);
+        if (!in_array($fileType[1], $allowFiles)) {
+            return false;
+        } else if ($fileInfos[$fileTagName]['error'] > 0) { //파일 업로드 시 에러가 존재하면 false 반환
+            return false;
+        } else if ($fileInfos[$fileTagName]['size'] > 3145728) {//파일 업로드 시 3MB 초과하면 false 반환
+            return false;
+        } else {
+            $sql1 = "INSERT INTO file(boardPk, filename, fileType, fileSize, insertTime) VALUES ({$boardPk}, '{$fileInfos[$fileTagName]['name']}', '{$fileType[1]}', {$fileInfos[$fileTagName]['size']}, now())";
+            $res1 = mysqli_query($this->_mysqli, $sql1);
+            if (!$res1)
+                echo mysqli_error($this->_mysqli);
+            $filePk = mysqli_insert_id($this->_mysqli);
+            
+            $content = $fileInfos[$fileTagName]['content'];
+            $content2 = mysqli_real_escape_string($this->_mysqli, $content);
+            
+            $sql2 = "INSERT INTO file_details(filePk, content) VALUSE ({$filePk}, '{$content}')";
+            $res2 = mysqli_query($this->_mysqli, $sql2);
+            if (!$res2)
+                echo mysqli_error($this->_mysqli);
+        }
         return true;
     }
 
