@@ -459,9 +459,7 @@ class Cmskorea_Board_BoardTest extends PHPUnit_Framework_TestCase
             'error'     => UPLOAD_ERR_OK,
             'size'      => 132
         );
-        $fp = fopen($testFilePath, 'rb');
         $blob = file_get_contents($testFilePath);
-        fclose($fp);
         
         //1. 테스트 파일 업로드 및 db 내용과 동일한지 확인
         $fileArr['content'] = $blob;
@@ -523,13 +521,75 @@ class Cmskorea_Board_BoardTest extends PHPUnit_Framework_TestCase
         $fileArr4['content'] = $blob;
         $testRes4 = $this->board->addFile(4, $fileArr4);
         $this->assertEquals(false, $testRes4);
+        
+        //생성한 테스트용 이미지 파일 삭제
+        unlink($testFilePath);
     }
     
     /**
      * Tests Cmskorea_Board_Board->getFiles()
      */
     public function testGetFiles() {
-        ;
+        //테스트용 이미지 파일 생성
+        $imageFile = imagecreatetruecolor(50, 50);
+        $bgColor = imagecolorallocate($imageFile, 255, 0, 0);
+        imagefill($imageFile, 0, 0, $bgColor);
+        $testFilePath = __DIR__.'/tempDestination/test.png';
+        imagepng($imageFile, $testFilePath);
+        imagedestroy($imageFile);
+        
+        //첫번째 파일 업로드
+        $fileArr1 = array (
+            'name'      => 'test1.png',
+            'type'      => 'image/png',
+            'tmp_name'  => 'tempTest1.png',
+            'error'     => UPLOAD_ERR_OK,
+            'size'      => 132
+        );
+        $blob = file_get_contents($testFilePath);
+        $fileArr1['content'] = $blob;
+        $this->board->addFile(1, $fileArr1);
+        
+        //두번째 파일 업로드
+        $fileArr2 = array (
+            'name'      => 'test2.png',
+            'type'      => 'image/png',
+            'tmp_name'  => 'tempTest2.png',
+            'error'     => UPLOAD_ERR_OK,
+            'size'      => 132
+        );
+        $fileArr2['content'] = $blob;
+        $this->board->addFile(1, $fileArr2);
+        
+        //기대값 배열과 실제 불러온 배열이 동일한 지 확인
+        $getSql = "SELECT pk, insertTime FROM file WHERE boardPk=1";
+        $res = mysqli_query($this->board->getMysqli(), $getSql);
+        
+        $testArray = array();
+        $i = 1;
+        while ($row = mysqli_fetch_assoc($res)) {
+            $expect = array (
+                'pk'            => $row['pk'],
+                'boardPk'       => '1',
+                'filename'      => 'test'.$i.'.png',
+                'fileType'      => 'png',
+                'fileSize'      => '132',
+                'insertTime'    => $row['insertTime'],
+                'content'       => $blob
+            );
+            array_push($testArray, $expect);
+            $i++;
+        }
+        
+        $resultArray = $this->board->getFiles(1);
+        $this->assertEquals($testArray, $resultArray);
+        
+        //파일 업로드하지 않은 게시글에서 파일을 가져올 때
+        $resultArray2 = $this->board->getFiles(10);//빈 배열 반환
+        $this->assertEquals(array(), $resultArray2);
+        
+        //생성한 테스트용 이미지 파일 삭제
+        unlink($testFilePath);
     }
     
     /**

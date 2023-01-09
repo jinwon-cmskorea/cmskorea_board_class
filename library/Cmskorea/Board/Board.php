@@ -254,16 +254,18 @@ class Cmskorea_Board_Board {
         } else {
             $sql1 = "INSERT INTO file(boardPk, filename, fileType, fileSize, insertTime) VALUES ({$boardPk}, '{$fileInfos['name']}', '{$fileType[1]}', {$fileInfos['size']}, now())";
             $res1 = mysqli_query($this->_mysqli, $sql1);
-            if (!$res1)
-                echo mysqli_error($this->_mysqli);
+            if (!$res1) {
+                return false;
+            }
             $filePk = mysqli_insert_id($this->_mysqli);
             
             $content = $fileInfos['content'];
             
             $sql2 = "INSERT INTO file_details(filePk, content) VALUES ({$filePk}, '{$content}')";
             $res2 = mysqli_query($this->_mysqli, $sql2);
-            if (!$res2)
-                echo mysqli_error($this->_mysqli);
+            if (!$res2) {
+                return false;
+            }
         }
         return true;
     }
@@ -273,9 +275,35 @@ class Cmskorea_Board_Board {
      *
      * @param number 글번호
      * @return array 글번호에 해당하는 파일데이터
+     *         array (
+     *             'index(최대 2개)' => array (
+     *                 'pk'         => '파일 고유키',
+     *                 'boardPk'    => '게시판 고유키',
+     *                 'filename'   => '파일명',
+     *                 'fileType'   => '파일타입',
+     *                 'fileSize'   => '파일크기',
+     *                 'insertTime' => '등록시간',
+     *                 'content'    => '파일 내용'
+     *             )
+     *         )
      */
     public function getFiles($boardPk) {
-        return array();
+        $sql = "SELECT * FROM file WHERE boardPk={$boardPk}";
+        $res = mysqli_query($this->_mysqli, $sql);
+        
+        $boardFiles = array();
+        while ($row = mysqli_fetch_assoc($res)) {
+            if ($row == NULL) {
+                return array();
+            }
+            $sql2 = "SELECT content FROM file_details WHERE filePk={$row['pk']}";
+            $res2 = mysqli_query($this->_mysqli, $sql2);
+            $row2 = mysqli_fetch_assoc($res2);
+            
+            $row['content'] = $row2['content'];
+            array_push($boardFiles, $row);
+        }
+        return $boardFiles;
     }
 
     /**
