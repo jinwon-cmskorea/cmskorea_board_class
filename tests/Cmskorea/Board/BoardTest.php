@@ -64,6 +64,9 @@ class Cmskorea_Board_BoardTest extends PHPUnit_Framework_TestCase
         
         $sql2 = "DELETE FROM file";
         $res2 = mysqli_query($this->board->getMysqli(), $sql2);
+        
+        $sql3 = "DELETE FROM file_details";
+        $res3 = mysqli_query($this->board->getMysqli(), $sql3);
         mysqli_close($this->board->getMysqli());
         $this->board = null;
 
@@ -450,32 +453,76 @@ class Cmskorea_Board_BoardTest extends PHPUnit_Framework_TestCase
         imagedestroy($imageFile);
         
         $fileArr = array (
-            'uploadTag1' => array(
-                'name'      => 'test.png',
-                'type'      => 'image/png',
-                'tmp_name'  => 'tempTest.png',
-                'error'     => UPLOAD_ERR_OK,
-                'size'      => 132
-            )
+            'name'      => 'test.png',
+            'type'      => 'image/png',
+            'tmp_name'  => 'tempTest.png',
+            'error'     => UPLOAD_ERR_OK,
+            'size'      => 132
         );
         $fp = fopen($testFilePath, 'rb');
         $blob = file_get_contents($testFilePath);
         fclose($fp);
         
         //1. 테스트 파일 업로드 및 db 내용과 동일한지 확인
-        $fileArr['uploadTag1']['content'] = $blob;
+        $fileArr['content'] = $blob;
         $this->board->addFile(1, $fileArr);
         
-        $sql = "SELECT boardPk, filename, fileType, fileSize FROM file WHERE boardPk=1";
+        $sql = "SELECT pk, boardPk, filename, fileType, fileSize FROM file WHERE boardPk=1";
         $res = mysqli_query($this->board->getMysqli(), $sql);
         $row = mysqli_fetch_assoc($res);
         $testArr = array(
+            'pk'            => $row['pk'],
             'boardPk'       => '1',
             'filename'      => 'test.png',
             'fileType'      => 'png',
             'fileSize'      => '132'
         );
         $this->assertEquals($row, $testArr);
+        
+        $sql2 = "SELECT filePk, content FROM file_details WHERE filePk={$row['pk']}";
+        $res2 = mysqli_query($this->board->getMysqli(), $sql2);
+        $row2 = mysqli_fetch_assoc($res2);
+        $testFileDetail = array(
+            'filePk'    => $row2['filePk'],
+            'content'   => $blob
+        );
+        $this->assertEquals($row2, $testFileDetail);
+        
+        //2. 허용되지 않은 파일 입력시
+        $fileArr2 = array (
+            'name'      => 'test.blabla',
+            'type'      => 'text/css',
+            'tmp_name'  => 'tempTest.blabla',
+            'error'     => UPLOAD_ERR_OK,
+            'size'      => 132
+        );
+        $fileArr2['content'] = $blob;
+        $testRes2 = $this->board->addFile(2, $fileArr2);
+        $this->assertEquals(false, $testRes2);
+        
+        //3. 3MB 초과 파일 업로드시
+        $fileArr3 = array (
+            'name'      => 'test.blabla',
+            'type'      => 'text/css',
+            'tmp_name'  => 'tempTest.blabla',
+            'error'     => UPLOAD_ERR_OK,
+            'size'      => 3200000
+        );
+        $fileArr3['content'] = $blob;
+        $testRes3 = $this->board->addFile(3, $fileArr3);
+        $this->assertEquals(false, $testRes3);
+        
+        //4. 파일 업로드 시 error 발생 시
+        $fileArr4 = array (
+            'name'      => 'test.png',
+            'type'      => 'image/png',
+            'tmp_name'  => 'tempTest.png',
+            'error'     => UPLOAD_ERR_INI_SIZE,
+            'size'      => 132
+        );
+        $fileArr4['content'] = $blob;
+        $testRes4 = $this->board->addFile(4, $fileArr4);
+        $this->assertEquals(false, $testRes4);
     }
     
     /**
