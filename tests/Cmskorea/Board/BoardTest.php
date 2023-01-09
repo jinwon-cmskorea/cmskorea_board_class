@@ -596,7 +596,48 @@ class Cmskorea_Board_BoardTest extends PHPUnit_Framework_TestCase
      * Tests Cmskorea_Board_Board->delFile()
      */
     public function testDelFile() {
-        ;
+        //테스트용 이미지 파일 생성
+        $imageFile = imagecreatetruecolor(50, 50);
+        $bgColor = imagecolorallocate($imageFile, 255, 0, 0);
+        imagefill($imageFile, 0, 0, $bgColor);
+        $testFilePath = __DIR__.'/tempDestination/test.png';
+        imagepng($imageFile, $testFilePath);
+        imagedestroy($imageFile);
+        
+        //파일 업로드
+        $fileArr1 = array (
+            'name'      => 'test.png',
+            'type'      => 'image/png',
+            'tmp_name'  => 'tempTest1.png',
+            'error'     => UPLOAD_ERR_OK,
+            'size'      => 132
+        );
+        $blob = file_get_contents($testFilePath);
+        $fileArr1['content'] = $blob;
+        $this->board->addFile(20, $fileArr1);
+        
+        //업로드 파일 pk 가져오기
+        $sql = "SELECT pk FROM file WHERE boardPk=20";
+        $res = mysqli_query($this->board->getMysqli(), $sql);
+        $row = mysqli_fetch_assoc($res);
+        
+        //가져온 pk를 이용해서 업로드 파일 삭제
+        $delResult = $this->board->delFile($row['pk']);
+        $this->assertTrue($delResult);
+        
+        //실제로 삭제되었는지 레코드 갯수로 확인
+        $sql2 = "SELECT pk FROM file WHERE pk={$row['pk']}";
+        $res2 = mysqli_query($this->board->getMysqli(), $sql2);
+        $cnt = mysqli_num_rows($res2);
+        $this->assertEquals(0, $cnt);
+        
+        $sql3 = "SELECT filePk FROM file_details WHERE filePk={$row['pk']}";
+        $res3 = mysqli_query($this->board->getMysqli(), $sql3);
+        $cnt2 = mysqli_num_rows($res3);
+        $this->assertEquals(0, $cnt2);
+        
+        //생성한 테스트용 이미지 파일 삭제
+        unlink($testFilePath);
     }
 }
 

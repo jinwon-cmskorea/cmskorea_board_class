@@ -313,6 +313,17 @@ class Cmskorea_Board_Board {
      * @return boolean
      */
     public function delFile($filePk) {
+        $sql = "DELETE FROM file WHERE pk={$filePk}";
+        $res = mysqli_query($this->_mysqli, $sql);
+        if ($res === false) {
+            return false;
+        }
+        
+        $sql2 = "DELETE FROM file_details WHERE filePk={$filePk}";
+        $res2 = mysqli_query($this->_mysqli, $sql2);
+        if ($res2 === false) {
+            return false;
+        }
         return true;
     }
 }
