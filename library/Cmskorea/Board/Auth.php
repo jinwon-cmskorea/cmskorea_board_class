@@ -8,7 +8,7 @@
 /**
  * @see Cmskorea_Baord_Member
  */
-require_once $_SERVER['DOCUMENT_ROOT'] . '/wwwroot/cmskorea_board_class/library/Cmskorea/Board/Member.php';
+require_once __DIR__ . '/Member.php';
 /**
  * 씨엠에스코리아 사용자 인증 클래스
  *

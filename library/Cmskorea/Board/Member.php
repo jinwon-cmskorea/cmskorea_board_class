@@ -8,7 +8,7 @@
 /**
  * @see dbCon.php
  */
-require_once $_SERVER['DOCUMENT_ROOT'] . '/wwwroot/cmskorea_board_class/configs/dbConfig.php';
+require_once __DIR__ . '/../../../configs/dbConfig.php';
 /**
  * 씨엠에스코리아 게시판 회원 클래스
  *
