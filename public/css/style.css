@@ -63,7 +63,7 @@
 	padding-top: 10%;
 	padding-bottom: 10%;
 	*/
-	padding: 0 5% 0 5%
+	padding-left: 3%;
 }
 
 .signup-center {
@@ -74,40 +74,57 @@
 }
 
 .signup-title {
-	font-size: 20px;
+	font-size: medium;
 	margin-top: 10%;
-	margin-bottom: 10%;
+	margin-bottom: 45%;
+	margin-left: -6%;
 }
 
 .signup-title .subtitle {
-	color: gray;
+	color: rgb(132, 151, 176);
 	padding: 10px;
 }
 
 .category-design {
-	background-color: rgb(112, 173, 71);
-	color: white;
+	background-color: rgb(191, 191, 191);
+	color: black;
 	text-align: center;
 	padding: 7px;
+	font-size: 11px;
 }
 
 .signup-button {
 	float: right;
+	margin: 50px 0 20px;
 }
 
 .signup-button .submit-btn {
-	background-color: rgb(255, 192, 0);
-	margin: 10px;
+	background-color: rgb(112, 173, 71);
+	margin-right: 10px;
 	color: white;
-	padding-left: 20px;
-	padding-right: 20px;
+	padding-left: 45px;
+	padding-right: 45px;
+	border: none;
 }
 .signup-button .cancle-btn {
-	background-color: rgb(118, 113, 113);
-	margin: 10px;
-	color: white;
-	padding-left: 20px;
-    padding-right: 20px;
+	background-color: rgb(255, 255, 255);
+    margin-left: 10px;
+	padding-left: 45px;
+    padding-right: 45px;
+    border: 1px solid rgb(166, 166, 166);
+}
+
+.myForm-control2 {
+    display: block;
+    width: 100%;
+    height: 32px;
+    padding: 6px 12px;
+    font-size: 14px;
+    line-height: 1.42857143;
+    color: #555;
+    background-color: #fff;
+    background-image: none;
+    border: 1px solid black;
 }
 
 /* boardList.php css 요소 */
