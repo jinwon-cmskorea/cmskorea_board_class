@@ -25,13 +25,13 @@
                 <div class="form-group">
                     <label for="inputPw" class="col-sm-2 category-design">비밀번호</label>
                     <div class="col-sm-10">
-                        <input type="password" class="myForm-control2" pattern="[A-Za-z0-9]+" title="영문, 숫자" id="inputPw" name="userPw" required>
+                        <input type="password" class="myForm-control2" pattern="[A-Za-z0-9~`!@#$%\^&*()-+=]+" title="영문, 숫자, 특수문자 1개이상" id="inputPw" name="userPw" required>
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="inputName" class="col-sm-2 category-design">이름</label>
                     <div class="col-sm-10">
-                        <input type="text" class="myForm-control2" id="inputName" pattern="[가-힣]+" title="한글 이름만 가능합니다." name="userName" required>
+                        <input type="text" class="myForm-control2" id="inputName" pattern="[A-Za-z가-힣]+" title="한글, 영어 이름만 가능합니다." name="userName" required>
                     </div>
                 </div>
                 <div class="form-group">
