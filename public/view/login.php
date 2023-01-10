@@ -1,5 +1,13 @@
 <?php 
     require_once __DIR__ . '/../AutoLoad.php';
+    
+    session_start();
+    
+    $auth = new Cmskorea_Board_Auth();
+    if ($auth->isLogin()) {
+        echo "<script type=\"text/javascript\">alert('이미 로그인하셨습니다.');</script>";
+        echo "<script type=\"text/javascript\">location.href='./boardList.php';</script>";
+    }
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -21,7 +29,7 @@
 	            </div>
 	            <div class="des-padding">아이디 / 비밀번호를 입력해 주세요.</div>
 	        </div>
-	        <form class="form-horizontal" action="./loginOk.php" method="post">
+	        <form class="form-horizontal" action="../process/loginOk.php" method="post">
 	            <div class="form-group">
 	                <label for="inputId" class="col-sm-2 control-label-left">아이디</label>
 	                <div class="col-sm-10">
@@ -35,7 +43,7 @@
 	                </div>
 	            </div>
 	            <input type="submit" class="btn-block login-btn" value="로그인">
-	            <input type="button" class="col-sm-2 col-sm-offset-10 signup-btn" onclick="location.href='../html/signup.html';" value="회원가입">
+	            <input type="button" class="col-sm-2 col-sm-offset-10 signup-btn" onclick="location.href='./signup.php';" value="회원가입">
 	        </form>
         </div>
     </div>
