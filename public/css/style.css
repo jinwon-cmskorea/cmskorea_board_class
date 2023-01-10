@@ -1,0 +1,284 @@
+/* login.html css 요소 */
+.sep-line {
+	margin: 30px 0 5px;
+	padding-bottom: 9px;
+	border-bottom: 1px solid rgb(208, 206, 206);
+	font-size: large;
+	color: rgb(89, 89, 89);
+}
+
+.center {
+	display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.control-label-left {
+	padding-top: 7px;
+    margin-bottom: 0;
+    text-align: left;
+}
+
+.des-padding {
+	padding: 5px 0 15px
+}
+
+/*
+input:invalid {
+	border: 1px solid rgb(208, 206, 206);
+}
+*/
+
+.signup-btn {
+	background-color: rgb(91, 155, 213);
+	color: #fff;
+}
+
+/* signup.html css 요소 */
+.fence {
+	border: 1px solid black;
+	/*
+	padding-top: 10%;
+	padding-bottom: 10%;
+	*/
+	padding: 0 5% 0 5%
+}
+
+.signup-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.signup-title {
+	font-size: 20px;
+	margin-top: 10%;
+	margin-bottom: 10%;
+}
+
+.signup-title .subtitle {
+	color: gray;
+	padding: 10px;
+}
+
+.category-design {
+	background-color: rgb(112, 173, 71);
+	color: white;
+	text-align: center;
+	padding: 7px;
+}
+
+.signup-button {
+	float: right;
+}
+
+.signup-button .submit-btn {
+	background-color: rgb(255, 192, 0);
+	margin: 10px;
+	color: white;
+	padding-left: 20px;
+	padding-right: 20px;
+}
+.signup-button .cancle-btn {
+	background-color: rgb(118, 113, 113);
+	margin: 10px;
+	color: white;
+	padding-left: 20px;
+    padding-right: 20px;
+}
+
+/* boardList.php css 요소 */
+
+.menubar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: rgb(89, 89, 89);
+    width: 100%;
+    min-height: 50px;
+}
+
+.menutitle {
+    font-size: 30px;
+    color: white;
+    padding: 10px;
+}
+
+.info-group {
+    display: flex;
+    align-items: center;
+    margin-right: 20px;
+    margin-left: 20px;
+}
+
+.user-info {
+    color: white;
+    padding: 10px;
+}
+
+.logout-btn {
+    color: black;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+/* boardList.php - 페이지 상단 요소 */
+.list-title {
+	font-size: x-large;
+	padding-top: 10px;
+	padding-bottom: 15px;
+}
+
+.list-descript {
+	font-size: medium;
+	border: 1px solid rgb(191, 191, 191);
+	border-radius: 8px;
+	padding-top: 10px;
+	padding-bottom: 10px;
+}
+
+.small-ele {
+	color: rgb(132, 151, 76);
+}
+
+/* boardList.php - 게시글 상단 요소 */
+.board-upper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding : 10px;
+}
+
+.selectbox {
+	width: 100px;
+	background-color: rgb(191, 191, 191);
+	border: 1px solid rgb(191, 191, 191);
+	color: white;
+	padding: 4px 0 4px;
+	text-align: center;
+}
+
+.s-input {
+    border: 1px solid rgb(191, 191, 191);
+}
+
+.s-button {
+    background-color: rgb(143, 170, 220);
+    border-radius: 4px;
+    padding: 4px 30px 4px 30px;
+    color: white;
+}
+
+.write-btn {
+	padding-left: 30px;
+	padding-right: 30px;
+}
+
+.view-btn {
+	background-color: rgb(255, 192, 0);
+	color: white;
+	padding-right: 20px;
+	padding-left: 20px;
+}
+
+.del-btn {
+	background-color: rgb(255, 0, 0);
+    color: white;
+    padding-right: 20px;
+    padding-left: 20px;
+}
+
+/* boardList.php - 게시글 리스트 요소 */
+.add-top-line {
+	border-top: 1px solid rgb(191, 191, 191);
+}
+
+.list-body {
+	margin-top: 50px;
+}
+
+.add-bottom-line {
+    border-bottom: 1px solid rgb(191, 191, 191);
+}
+
+/* boardLis.phpt - 게시글 하단 페이징 요소 */
+.pagination > li > a {
+	float: none;
+}
+
+/* logoutOk.html css 요소 */
+.logout-text {
+	font-size: large;
+	margin: 20px;
+	padding-top: 15px;
+}
+
+.logoutOk-btn {
+	margin-bottom : 20px;
+	padding-top: 15px;
+	padding-bottom: 15px;
+	font-size: large;
+}
+
+/* writeBoard.php 요소 */
+.control-label-center {
+    padding-top: 7px;
+    padding-bottom: 7px;
+    text-align: center;
+    background-color: rgb(191, 191, 191);
+    color: white;
+}
+
+.write-btn-style {
+	padding-top: 10px;
+	padding-bottom: 10px;
+}
+
+.space-form {
+	margin-left: 15px;
+}
+
+/* viewBoard.php 요소 */
+.view-box {
+	margin: 150px 30px 0 30px;
+}
+
+.page-header-custom {
+    font-size: x-large;
+    margin-top: 50px;
+    padding: 10px 0 10px;
+    border-bottom: 3px dashed #eee;
+}
+
+.info {
+	font-size: 15px;
+	float: right;
+	margin-top: 15px;
+	color: rgb(127, 127, 127);
+}
+
+.writer-info {
+	font-weight: bold;
+}
+
+.space {
+	margin-right: 10px;
+	margin-left: 10px;
+}
+
+.text-box {
+	width: 100%;
+	height: 500px;
+	border-bottom: 3px dashed #eee;
+	margin-bottom: 20px;
+	font-size: 20px;
+	line-height: 250%;
+}
+
+.list-btn {
+	background-color: white;
+	color: black;
+	border: 1px solid rgb(127, 127, 127);
+}
