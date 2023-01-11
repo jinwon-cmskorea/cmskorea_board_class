@@ -240,8 +240,25 @@
 }
 
 /* boardList.php - 게시글 리스트 요소 */
+th, td {
+    text-align: center;
+    vertical-align: middle;
+}
+th {
+    padding: 15px 0;
+}
+
+td {
+    padding: 10px 0;
+}
+
+.myTable {
+    width: 100%;
+}
+
 .add-top-line {
-	border-top: 1px solid rgb(191, 191, 191);
+    border-top: 1px solid rgb(191, 191, 191);
+    border-bottom: 1px solid rgb(191, 191, 191);
 }
 
 .list-body {

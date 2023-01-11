@@ -3,13 +3,21 @@
     
     session_start();
     
+    //인스턴스 생성
     $auth = new Cmskorea_Board_Auth();
+    $board = new Cmskorea_Board_Board();
     
+    //로그인하지 않은 유저가 접근하면 로그인 페이지로 리다이렉션
     if (!$auth->isLogin()) {
         echo "<script type=\"text/javascript\">alert('먼저 로그인을 진행해주세요.');</script>";
         echo "<script type=\"text/javascript\">document.location.href='./login.php';</script>";
     }
+    
+    //세션을 불러오기 위한 코드
     $memberSession = $auth->getMember();
+    
+    //조건에 따라 게시글을 불러오는 코드
+    $posts = $board->getContents(array());
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -54,6 +62,39 @@
                 <input class="btn bg-primary write-btn" type="button" onclick="location.href='./writeBoard.php';" value="작    성">
             </div>
         </div>
+        <!-- 검색 부분, 작성버튼 끝-->
+        <!-- 게시글 리스트 테이블  -->
+        <table class="myTable">
+            <thead class="add-top-line">
+                <tr>
+                    <th class="col-sm-1">번호</th>
+                    <th class="col-sm-7">제목</th>
+                    <th class="col-sm-1">작성자</th>
+                    <th class="col-sm-1">작성일자</th>
+                    <th class="col-sm-2">작업</th>
+                </tr>
+            <thead>
+            <tbody>
+                <?php 
+                for ($i = 0; $i < 10; $i++) {
+                    $ymd = substr($posts[$i]['insertTime'], 0, 10);
+                    //입력된 내용 필터링
+                    $escapedTitle = htmlspecialchars($posts[$i]['title']);
+                    $escapedWriter = htmlspecialchars($posts[$i]['writer']);
+                ?>
+                <tr class="add-bottom-line">
+                    <td><?php echo $posts[$i]['pk']; ?></td>
+                    <td style="text-align: left;"><?php echo $escapedTitle; ?></td>
+                    <td><?php echo $escapedWriter; ?></td>
+                    <td><?php echo $ymd; ?></td>
+                    <td></td>
+                </tr>
+                <?php 
+                }
+                ?>
+            </tbody>
+        </table>
+        <!-- 게시글 리스트 테이블 끝 -->
     </div>
 </body>
 </html>
