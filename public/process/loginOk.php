@@ -13,7 +13,7 @@ $res = $auth->authenticate($_POST['userId'], $_POST['userPw']);
 
 //로그인 성공시 빈값을 리턴받음, 실패시 불능 메세지를 리턴 받음
 if ($res) {
-    echo "<script type=\"text/javascript\">alert('.$res.')</script>";
+    echo "<script type=\"text/javascript\">alert('$res')</script>";
     echo "<script type=\"text/javascript\">history.back(-1)</script>";
 } else {
     header('location: ../view/boardList.php');

@@ -49,7 +49,10 @@ class Cmskorea_Board_Auth {
     public function authenticate($id, $pw) {
         // Cmskorea_Baord_Member 로 위임
         $authResult = $this->_member->authenticate($id, $pw);
-
+        //로그인 실패로 인해 메세지를 받았을 경우 메세지 리턴
+        if ($authResult) {
+            return $authResult;
+        }
         // 로그인 성공 시 세션에 회원정보를 저장한다.
         $memberInfo = $this->_member->getMember($id);
         if ($memberInfo) {
