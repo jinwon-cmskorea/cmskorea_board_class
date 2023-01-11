@@ -9,8 +9,7 @@
         echo "<script type=\"text/javascript\">alert('먼저 로그인을 진행해주세요.');</script>";
         echo "<script type=\"text/javascript\">document.location.href='./login.php';</script>";
     }
-    
-    var_dump($auth->getMember());
+    $memberSession = $auth->getMember();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -20,12 +19,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/bootstrap/css/bootstrap.css" type="text/css">
     <link rel="stylesheet" href="../css/style.css" type="text/css">
+    <script src="../js/jquery-3.6.3.min.js" type="text/javascript"></script>
     <script src="../css/bootstrap/js/bootstrap.js" type="javascript"></script>
     <title>게시글 리스트</title>
 </head>
 <body>
-    <?php 
-    echo "게시판 페이지에 어서오세요"; 
-    ?>
+    <?php include_once __DIR__ . '/commonHeader.php';?>
 </body>
 </html>
