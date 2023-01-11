@@ -248,16 +248,30 @@
 
 /* logoutOk.html css 요소 */
 .logout-text {
-	font-size: large;
-	margin: 20px;
-	padding-top: 15px;
+    font-size: large;
+    margin: 30px 20px 20px;
+}
+
+.containerFooter {
+    display: flex;
+    justify-content: space-between;
+}
+
+.threeMsg {
+    height: 60px;
+    line-height: 90px;
+    margin-left: 20px;
+    color: rgb(127, 127, 127);
 }
 
 .logoutOk-btn {
-	margin-bottom : 20px;
-	padding-top: 15px;
-	padding-bottom: 15px;
-	font-size: large;
+    margin-top : 20px;
+    margin-bottom : 20px;
+    padding: 10px 25px;
+    font-size: medium;
+    background-color: rgb(68, 114, 196);
+    border: none;
+    color: white;
 }
 
 /* writeBoard.php 요소 */
