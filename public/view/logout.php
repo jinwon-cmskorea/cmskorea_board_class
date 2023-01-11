@@ -1,9 +1,23 @@
+<?php 
+    require_once __DIR__ . '/../AutoLoad.php';
+    
+    session_start();
+    
+    //Auth 의 logout 메소드로 세션 제거
+    $auth = new Cmskorea_Board_Auth();
+    $auth->logout();
+    session_destroy();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 3초 후 이동 시키는 메타 태그 -->
+    <?php 
+        echo "<meta http-equiv='refresh' content='3; url=../index.php'>";
+    ?>
     <link rel="stylesheet" href="../css/bootstrap/css/bootstrap.css" type="text/css">
     <link rel="stylesheet" href="../css/style.css" type="text/css">
     <script src="../css/bootstrap/js/bootstrap.js" type="javascript"></script>
