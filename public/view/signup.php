@@ -11,6 +11,8 @@
     <title>회원가입</title>
     <script type="text/javascript">
         $(document).ready(function() {
+            //초기 제출 버튼 배경색 설정
+            $(".submit-btn").css("background-color", "rgb(200, 200, 200)");
             //id 중복 체크 변수
             var idOk = false;
             //아이디를 입력받는 #inputId 에서 keyup 이벤트 발생 시
@@ -51,10 +53,13 @@
                     }
                 }
                 //입력값이 모두 들어있고, 아이디 중복체크를 통과했으면 제출 비활성화 해제
-                if (!isEmpty && idOk)
+                if (!isEmpty && idOk) {
                     $(".submit-btn").attr("disabled", false);
-                else
+                    $(".submit-btn").css("background-color", "rgb(112, 173, 71)");
+                } else {
                     $(".submit-btn").attr("disabled", true);
+                    $(".submit-btn").css("background-color", "rgb(200, 200, 200)");
+                }
             });
         });
     </script>
