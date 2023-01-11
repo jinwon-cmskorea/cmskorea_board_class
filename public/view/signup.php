@@ -6,8 +6,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/bootstrap/css/bootstrap.css" type="text/css">
     <link rel="stylesheet" href="../css/style.css" type="text/css">
-    <script src="../css/bootstrap/js/bootstrap.js" type="javascript"></script>
+    <script src="../js/jquery-3.6.3.min.js" type="text/javascript"></script>
+    <script src="../css/bootstrap/js/bootstrap.js" type="text/javascript"></script>
     <title>회원가입</title>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            //아이디를 입력받는 #inputId 에서 keyup 이벤트 발생 시
+            $("#inputId").on("keyup", function() {
+                var self = $(this);
+                var userId = self.val();
+                //ajax를 통해 checkDup.php 에 입력된 id 전송
+                $.ajax({
+                    url: "../process/checkIdDup.php",
+                    method: "POST",
+                    data: {'userId' : userId},
+                    dataType: "json",
+                    success: function(receive) {
+                        if (receive.status == 1) {
+                            alert("중복된 아이디입니다.");
+                            self.focus();
+                            $(".submit-btn").attr("disabled", true);
+                        } else {
+                            $(".submit-btn").attr("disabled", false);
+                        }
+                    }
+                });
+            });
+        });
+    </script>
 </head>
 <body>
     <div class="container signup-center">
