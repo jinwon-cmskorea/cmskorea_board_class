@@ -47,6 +47,28 @@
     $start -= 1;//배열 0번째부터 가져와야 하므로 1을 빼줌
     $startPage = (($nowPageBlock - 1) * 10) + 1;//페이지 시작 번호
     
+    //정렬에 필요한 변수 선언
+    $fieldName = 'pk';
+    if (isset($_GET['fieldName']) && $_GET['fieldName']) {
+        $fieldName = $_GET['fieldName'];
+    }
+    
+    /*
+     * 어떤 필드를 정렬할 것인지, 그리고 정렬 기호를 적용할 필드를
+     * 변수에 지정
+     */
+    if (isset($_GET['order']) && $_GET['order']) {
+        $order = $_GET['order'];
+        if ($order == 'DESC') {
+            $orderChar = '▼';
+        } else {
+            $orderChar = '▲';
+        }
+    } else {
+        $order = 'DESC';
+        $orderChar = '▼';
+    }
+    
     //정렬, 검색, 페이징 여부를 확인하기 위한 배열 선언
     $conditionCheck = array('category', 'search', 'fieldName', 'order');
     
@@ -60,6 +82,20 @@
     $conditions['start'] = $start;
     //조건에 따라 게시글을 불러오는 코드
     $posts = $board->getContents($conditions);
+    
+    /*
+     * 어떤 필드를 정렬할 것인지, 그리고 정렬 기호를 적용할 필드의
+     * 테이블 헤더 눌렀을 경우, 해당 요소의 내용 변경
+     */
+    echo "
+        <script type=\"text/javascript\">
+            document.addEventListener(\"DOMContentLoaded\", function() {
+                var element = document.getElementById(\"{$fieldName}\");
+                var changeField = element.innerText + ' ' + \"{$orderChar}\";
+                element.innerText = changeField;
+            });
+        </script>
+    ";
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -72,6 +108,13 @@
     <script src="../js/jquery-3.6.3.min.js" type="text/javascript"></script>
     <script src="../css/bootstrap/js/bootstrap.js" type="javascript"></script>
     <title>게시글 리스트</title>
+    <script type="text/javascript">
+        function sortTable(fieldName) {
+            var fieldName = fieldName;
+            var order = "<?php echo $order == 'DESC' ? 'ASC' : 'DESC'; ?>";
+            window.location.href = "./boardList.php?page=<?php echo $page;?>&fieldName=" + fieldName + "&order=" + order;
+        }
+    </script>
 </head>
 <body>
     <?php include_once __DIR__ . '/commonHeader.php';?>
@@ -109,10 +152,10 @@
         <table class="myTable">
             <thead class="add-top-line">
                 <tr>
-                    <th class="col-sm-1">번호</th>
-                    <th class="col-sm-7">제목</th>
-                    <th class="col-sm-1">작성자</th>
-                    <th class="col-sm-1">작성일자</th>
+                    <th class="col-sm-1" id="pk" onclick="sortTable('pk')" style="cursor: pointer;">번호</th>
+                    <th class="col-sm-6" id="title" onclick="sortTable('title')" style="cursor: pointer;">제목</th>
+                    <th class="col-sm-1" id="writer" onclick="sortTable('writer')" style="cursor: pointer;">작성자</th>
+                    <th class="col-sm-2" id="insertTime" onclick="sortTable('insertTime')" style="cursor: pointer;">작성일자</th>
                     <th class="col-sm-2">작업</th>
                 </tr>
             <thead>
@@ -150,7 +193,7 @@
                 if ($page == 1) {
                     echo "<li class='disabled'><a href=\"#\">First</a></li>";
                 } else {
-                    echo "<li><a href=\"boardList.php?page=1\">First</a></li>";
+                    echo "<li><a href=\"boardList.php?page=1&fieldName={$fieldName}&order={$order}\">First</a></li>";
                 }
                 
                 //시작 페이지를 기준으로 출력해야할 페이지 갯수 구하기
@@ -159,30 +202,33 @@
                 //이전 페이지 블록으로 이동하기
                 $prevPage = ($startPage - 10) + 9;
                 if ($prevPage >= 1) {
-                    echo "<li><a href=\"boardList.php?page={$prevPage}\">&lt</a></li>";
+                    echo "<li><a href=\"boardList.php?page={$prevPage}&fieldName={$fieldName}&order={$order}\">&lt</a></li>";
                 } else {
                     echo "<li class='disabled'><a href=\"#\">&lt</a></li>";
                 }
                 
+                //페이지 만들기
                 for ($i = $startPage; $i <= $endPage; $i++) {
+                    $makeUrl = basename($_SERVER['PHP_SELF']) . "?page={$i}";
+                    
                     if ($page == $i) {
-                        echo "<li class='active'><a href=\"boardList.php?page={$i}\">$i</a></li>";
+                        echo "<li class='active'><a href=\"{$makeUrl}&fieldName={$fieldName}&order={$order}\">$i</a></li>";
                     } else {
-                        echo "<li><a href=\"boardList.php?page={$i}\">$i</a></li>";
+                        echo "<li><a href=\"{$makeUrl}&fieldName={$fieldName}&order={$order}\">$i</a></li>";
                     }
                 }
                 
                 //다음 페이지 블록으로 이동하기
                 $nextBlock = $startPage + 10;
                 if ($nextBlock <= $totalPageCnt) {
-                    echo "<li><a href=\"boardList.php?page={$nextBlock}\">&gt</a></li>";
+                    echo "<li><a href=\"boardList.php?page={$nextBlock}&fieldName={$fieldName}&order={$order}\">&gt</a></li>";
                 } else {
                     echo "<li class='disabled'><a href=\"#\">&gt</a></li>";
                 }
                 
                 //마지막 페이지로 이동
                 if ($page < $totalPageCnt) {
-                    echo "<li><a href=\"boardList.php?page={$totalPageCnt}\">Last</a></li>";
+                    echo "<li><a href=\"boardList.php?page={$totalPageCnt}&fieldName={$fieldName}&order={$order}\">Last</a></li>";
                 } else {
                     echo "<li class='disabled'><a href=\"#\">Last</a></li>";
                 }
