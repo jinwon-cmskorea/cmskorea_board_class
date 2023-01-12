@@ -105,7 +105,7 @@ class Cmskorea_Baord_MemberTest extends PHPUnit_Framework_TestCase
             $this->member->registMember($wrongId);
             $this->assertFalse(true);
         } catch(Exception $e) {
-            $this->assertEquals('입력 형식을 지켜주세요.',$e->getMessage());
+            $this->assertEquals('아이디 입력 형식을 지켜주세요.',$e->getMessage());
         }
         
         /* 비밀번호에 특수문자 없음 */
@@ -119,7 +119,7 @@ class Cmskorea_Baord_MemberTest extends PHPUnit_Framework_TestCase
             $this->member->registMember($wrongPw);
             $this->assertFalse(true);
         } catch(Exception $e) {
-            $this->assertEquals('입력 형식을 지켜주세요.',$e->getMessage());
+            $this->assertEquals('비밀번호 입력 형식을 지켜주세요.',$e->getMessage());
         }
         /* 이름은 한글, 영어만 가능 */
         $wrongName = array(
@@ -132,21 +132,21 @@ class Cmskorea_Baord_MemberTest extends PHPUnit_Framework_TestCase
             $this->member->registMember($wrongName);
             $this->assertFalse(true);
         } catch(Exception $e) {
-            $this->assertEquals('입력 형식을 지켜주세요.',$e->getMessage());
+            $this->assertEquals('이름 입력 형식을 지켜주세요.',$e->getMessage());
         }
         
         /* 휴대번호 형식 지켜야함 */
         $wrongTel = array(
             'id' => 'test12345',
             'pw' => '1234@',
-            'name' => '123',
+            'name' => '테스터',
             'telNumber' => '010-1234-12345'
         );
         try {
             $this->member->registMember($wrongTel);
             $this->assertFalse(true);
         } catch(Exception $e) {
-            $this->assertEquals('입력 형식을 지켜주세요.',$e->getMessage());
+            $this->assertEquals('휴대전화 입력 형식을 지켜주세요.',$e->getMessage());
         }
     }
     

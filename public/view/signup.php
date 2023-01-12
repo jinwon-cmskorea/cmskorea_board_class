@@ -92,7 +92,7 @@
                 <div class="form-group">
                     <label for="inputPhone" class="col-sm-2 category-design">휴대전화</label>
                     <div class="col-sm-10">
-                        <input type="text" class="myForm-control2" pattern="[0-9]{2,3}-[0-9]{3,4}-[0-9]{4}" title="ex)010-0000-0000, 02-000-0000 또는 02-0000-0000" id="inputPhone" name="userPhone" required>
+                        <input type="text" class="myForm-control2" pattern="[0-9]{3}-[0-9]{3,4}-[0-9]{4}" title="ex)000-0000-0000 또는 000-000-0000" id="inputPhone" name="userPhone" required>
                     </div>
                 </div>
                 <div class="signup-button">
