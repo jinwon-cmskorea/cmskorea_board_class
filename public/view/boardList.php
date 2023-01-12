@@ -87,7 +87,12 @@
                     <td style="text-align: left;"><?php echo $escapedTitle; ?></td>
                     <td><?php echo $escapedWriter; ?></td>
                     <td><?php echo $ymd; ?></td>
-                    <td></td>
+                    <td>
+                    	<div style="text-align: center;">
+                            <input class="btn view-btn" type="button" onclick="location.href='./viewBoard.php?pk=<?php echo $posts[$i]['pk']; ?>';" value="조회">
+                            <input class="btn del-btn btn-delete" name="delete-btn" type="button" value="삭제" data-no="<?php echo $posts[$i]['pk']; ?>">
+                        </div>
+                    </td>
                 </tr>
                 <?php 
                 }
