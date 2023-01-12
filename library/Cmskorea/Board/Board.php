@@ -164,8 +164,7 @@ class Cmskorea_Board_Board {
      *            'search'          => '검색 내용',
      *            'fieldName'       => '정렬할 필드이름',
      *            'order'           => '정렬 방식',
-     *            'start'           => '출력 시작 번호',
-     *            'per'             => '출력 갯수'
+     *            'start'           => '출력 시작 번호'
      *        )
      * @return array 글 내용을 제외한 모든 데이터
      */
