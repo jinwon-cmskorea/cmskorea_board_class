@@ -55,7 +55,7 @@ class Cmskorea_Board_Member {
      */
     public function registMember(array $datas) {
         $idReg = "/^[A-Za-z0-9]+$/";
-        $pwReg = "/[A-Za-z0-9][~`!@#$%\^&*()-+=]+$/";
+        $pwReg = "/(?=.*[~`!@#$%\^&*()-+=])[A-Za-z0-9~`!@#$%\^&*()-+=]+$/";
         $nameReg = "/[가-힣A-Za-z]+$/";
         $telReg = "/^(010|011|016|017|018|019|02)-[0-9]{3,4}-[0-9]{4}$/";
         
@@ -65,6 +65,12 @@ class Cmskorea_Board_Member {
             'name'      => $nameReg,
             'telNumber' => $telReg
         );
+        $manageKors = array(
+            'id'        => "아이디",
+            'pw'        => "비밀번호",
+            'name'      => "이름",
+            'telNumber' => "휴대전화"
+        );
         
         foreach ($manageArrays as $field => $reg) {
             if (!$datas[$field]) {
@@ -72,7 +78,9 @@ class Cmskorea_Board_Member {
             }
             if ($reg) {
                 if (!preg_match($reg, $datas[$field])) {
-                    throw new Exception('입력 형식을 지켜주세요.');
+                    foreach ($manageKors as $korKey => $korValue) {
+                        if ($field == $korKey) throw new Exception($korValue.' 입력 형식을 지켜주세요.');
+                    }
                 }
             }
         }
