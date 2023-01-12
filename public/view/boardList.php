@@ -1,5 +1,6 @@
 <?php 
     require_once __DIR__ . '/../AutoLoad.php';
+    require_once __DIR__ . '/../../configs/dbConfig.php';
     
     session_start();
     
@@ -13,11 +14,48 @@
         echo "<script type=\"text/javascript\">document.location.href='./login.php';</script>";
     }
     
+    //레코드 갯수를 가져오기 위해 db 연결
+    $connect = mysqli_connect(DBHOST, USERNAME, USERPW, DBNAME);
+    if (!$connect) {
+        die("DB 접속중 문제가 발생했습니다. : ".mysqli_connect_error());
+    }
+    
     //세션을 불러오기 위한 코드
     $memberSession = $auth->getMember();
     
+    /*
+     * 페이징을 위한 코드
+     * 1. 현재 페이지 저장, 레코드 갯수 구하기
+     */
+    if (isset($_GET['page']) && $_GET['page']) {
+        $page = $_GET['page'];
+    } else {
+        $page = 1;
+    }
+    
+    $sql = "SELECT pk FROM board";
+    $res = mysqli_query($connect, $sql);
+    $recordCnt = mysqli_num_rows($res);
+    
+    $totalPageCnt = ceil($recordCnt / 10);//전체 페이지 갯수
+    $totalPageBlock = ceil($totalPageCnt / 10);//페이지 블록 갯수(ex: 1~10 : 1번블록, 11~20 : 2번 블록..)
+    $nowPageBlock = ceil($page / 10);//현재 페이지가 속해있는 블록(ex: 7번 페이지는 1번 블록에 속함)
+    $start = (($page - 1) * 10) + 1;//가져올 레코드 시작 번호
+    $startPage = (($nowPageBlock - 1) * 10) + 1;//페이지 시작 번호
+    
+    //정렬, 검색, 페이징 여부를 확인하기 위한 배열 선언
+    $conditionCheck = array('category', 'search', 'fieldName', 'order');
+    
+    //상태 값이 들어있으면 배열에 삽입
+    $conditions = array();
+    foreach ($conditionCheck as $condition) {
+        if (isset($_GET['$condition']) && $_GET['$condition']) {
+            $conditions[$condition] = $_GET[$condition];
+        }
+    }
+    $conditions['start'] = $start;
     //조건에 따라 게시글을 불러오는 코드
-    $posts = $board->getContents(array());
+    $posts = $board->getContents($conditions);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -100,6 +138,20 @@
             </tbody>
         </table>
         <!-- 게시글 리스트 테이블 끝 -->
+        <!-- 페이징 버튼 -->
+        <nav class="text-center">
+            <ul class="pagination">
+                <li><a href="#">First</a></li>
+                <li><a href="#">&lt</a></li>
+                <?php 
+                for ($i = 1; $i <= 10; $i++) {
+                    echo "<li><a href='#'>$i</a></li>";
+                }
+                ?>
+                <li><a href="#">&gt</a></li>
+                <li><a href="#">Last</a></li>
+            </ul>
+        </nav>
     </div>
 </body>
 </html>
