@@ -24,6 +24,21 @@
     $memberSession = $auth->getMember();
     
     /*
+     * 검색 관련 코드(검색 눌렀을 경우 작동)
+     * 검색값이 존재하면 변수 저장
+     */
+    if (isset($_GET['category']) && $_GET['category'] && isset($_GET['search']) && $_GET['search']) {
+        $category = $_GET['category'];
+        $search = $_GET['search'];
+    }
+    
+    //전체 레코드 갯수 저장
+    $totalSql = "SELECT COUNT(pk) AS count FROM board";
+    $totalRes = mysqli_query($connect, $totalSql);
+    $totalRow = mysqli_fetch_assoc($totalRes);
+    $totalCnt = $totalRow['count'];
+    
+    /*
      * 페이징을 위한 코드
      * 1. 현재 페이지 저장, 레코드 갯수 구하기
      */
@@ -34,7 +49,11 @@
     }
     
     // 2. 전체 레코드 갯수 구하기
-    $sql = "SELECT COUNT(pk) AS count FROM board";
+    if (isset($category) && isset($search) && $category && $search) {
+        $sql = "SELECT COUNT(pk) AS count FROM board WHERE {$category} LIKE '%{$search}%'";
+    } else {
+        $sql = "SELECT COUNT(pk) AS count FROM board";
+    }
     $res = mysqli_query($connect, $sql);
     $row = mysqli_fetch_assoc($res);
     $recordCnt = $row['count'];
@@ -68,6 +87,10 @@
         $order = 'DESC';
         $orderChar = '▼';
     }
+    
+    /* 현재 url 저장 */
+    $present = basename($_SERVER["PHP_SELF"])."?".$_SERVER["QUERY_STRING"];
+    $urlArr = explode("&", $present);
     
     //정렬, 검색, 페이징 여부를 확인하기 위한 배열 선언
     $conditionCheck = array('category', 'search', 'fieldName', 'order');
@@ -112,7 +135,11 @@
         function sortTable(fieldName) {
             var fieldName = fieldName;
             var order = "<?php echo $order == 'DESC' ? 'ASC' : 'DESC'; ?>";
-            window.location.href = "./boardList.php?page=<?php echo $page;?>&fieldName=" + fieldName + "&order=" + order;
+            <?php if (isset($category) && isset($search)) {?>
+                window.location.href = "<?php echo $urlArr[0]."&".$urlArr[1]."&".$urlArr[2];?>&fieldName=" + fieldName + "&order=" + order;
+            <?php } else {?>
+                window.location.href = "boardList.php?page=<?php echo $page;?>&fieldName=" + fieldName + "&order=" + order;
+            <?php }?>
         }
     </script>
 </head>
@@ -135,14 +162,14 @@
             <form action="./boardList.php" method="get">
                 <input type="hidden" name="page" value="1" />
                 <select class="selectbox" id="category" name="category">
-                    <option value="writer" <?php //echo (isset($category) && $category == 'writer') ? 'selected' : ''; ?>>작성자</option>
-                    <option value="title" <?php //echo (isset($category) && $category == 'title') ? 'selected' : ''; ?>>제목</option>
-                    <option value="insertTime" <?php //echo (isset($category) && $category == 'insertTime') ? 'selected' : ''; ?>>작성일자</option>
+                    <option value="writer" <?php echo (isset($category) && $category == 'writer') ? 'selected' : ''; ?>>작성자</option>
+                    <option value="title" <?php echo (isset($category) && $category == 'title') ? 'selected' : ''; ?>>제목</option>
+                    <option value="insertTime" <?php echo (isset($category) && $category == 'insertTime') ? 'selected' : ''; ?>>작성일자</option>
                 </select>
-                <input class="s-input" type="text" name="search" autocomplete="off" value="<?php //echo (isset($search) && $search) ? $search : ''; ?>">
+                <input class="s-input" type="text" name="search" autocomplete="off" value="<?php echo (isset($search) && $search) ? $search : ''; ?>">
                 <input class="btn s-button" type="submit" value="검색">
             </form>
-            <div class="searchCnt"> 00 / 1,000 건</div>
+            <div class="searchCnt"><?php echo $recordCnt . "/" . $totalCnt . " 건";?></div>
             <div>
                 <input class="btn bg-primary write-btn" type="button" onclick="location.href='./writeBoard.php';" value="작    성">
             </div>
@@ -161,7 +188,7 @@
             <thead>
             <tbody>
                 <?php 
-                for ($i = 0; $i < 10; $i++) {
+                for ($i = 0; $i < count($posts); $i++) {
                     $ymd = substr($posts[$i]['insertTime'], 0, 10);
                     //입력된 내용 필터링
                     $escapedTitle = htmlspecialchars($posts[$i]['title']);
@@ -193,7 +220,11 @@
                 if ($page == 1) {
                     echo "<li class='disabled'><a href=\"#\">First</a></li>";
                 } else {
-                    echo "<li><a href=\"boardList.php?page=1&fieldName={$fieldName}&order={$order}\">First</a></li>";
+                    if (isset($category) && isset($search)) {
+                        echo "<li><a href=\"boardList.php?page=1&category={$category}&search={$search}&fieldName={$fieldName}&order={$order}\">First</a></li>";
+                    } else {
+                        echo "<li><a href=\"boardList.php?page=1&fieldName={$fieldName}&order={$order}\">First</a></li>";
+                    }
                 }
                 
                 //시작 페이지를 기준으로 출력해야할 페이지 갯수 구하기
@@ -202,14 +233,22 @@
                 //이전 페이지 블록으로 이동하기
                 $prevPage = ($startPage - 10) + 9;
                 if ($prevPage >= 1) {
-                    echo "<li><a href=\"boardList.php?page={$prevPage}&fieldName={$fieldName}&order={$order}\">&lt</a></li>";
+                    if (isset($category) && isset($search)) {
+                        echo "<li><a href=\"boardList.php?page={$prevPage}&category={$category}&search={$search}&fieldName={$fieldName}&order={$order}\">&lt</a></li>";
+                    } else {
+                        echo "<li><a href=\"boardList.php?page={$prevPage}&fieldName={$fieldName}&order={$order}\">&lt</a></li>";
+                    }
                 } else {
                     echo "<li class='disabled'><a href=\"#\">&lt</a></li>";
                 }
                 
                 //페이지 만들기
                 for ($i = $startPage; $i <= $endPage; $i++) {
-                    $makeUrl = basename($_SERVER['PHP_SELF']) . "?page={$i}";
+                    if (isset($category) && isset($search)) {
+                        $makeUrl = basename($_SERVER['PHP_SELF']) . "?page={$i}&category={$category}&search={$search}";
+                    } else {
+                        $makeUrl = basename($_SERVER['PHP_SELF']) . "?page={$i}";
+                    }
                     
                     if ($page == $i) {
                         echo "<li class='active'><a href=\"{$makeUrl}&fieldName={$fieldName}&order={$order}\">$i</a></li>";
@@ -221,14 +260,22 @@
                 //다음 페이지 블록으로 이동하기
                 $nextBlock = $startPage + 10;
                 if ($nextBlock <= $totalPageCnt) {
-                    echo "<li><a href=\"boardList.php?page={$nextBlock}&fieldName={$fieldName}&order={$order}\">&gt</a></li>";
+                    if (isset($category) && isset($search)) {
+                        echo "<li><a href=\"boardList.php?page={$nextBlock}&category={$category}&search={$search}&fieldName={$fieldName}&order={$order}\">&gt</a></li>";
+                    } else {
+                        echo "<li><a href=\"boardList.php?page={$nextBlock}&fieldName={$fieldName}&order={$order}\">&gt</a></li>";
+                    }
                 } else {
                     echo "<li class='disabled'><a href=\"#\">&gt</a></li>";
                 }
                 
                 //마지막 페이지로 이동
                 if ($page < $totalPageCnt) {
-                    echo "<li><a href=\"boardList.php?page={$totalPageCnt}&fieldName={$fieldName}&order={$order}\">Last</a></li>";
+                    if (isset($category) && isset($search)) {
+                        echo "<li><a href=\"boardList.php?page={$totalPageCnt}&category={$category}&search={$search}&fieldName={$fieldName}&order={$order}\">Last</a></li>";
+                    } else {
+                        echo "<li><a href=\"boardList.php?page={$totalPageCnt}&fieldName={$fieldName}&order={$order}\">Last</a></li>";
+                    }
                 } else {
                     echo "<li class='disabled'><a href=\"#\">Last</a></li>";
                 }
