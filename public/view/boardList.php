@@ -33,14 +33,18 @@
         $page = 1;
     }
     
-    $sql = "SELECT pk FROM board";
+    // 2. 전체 레코드 갯수 구하기
+    $sql = "SELECT COUNT(pk) AS count FROM board";
     $res = mysqli_query($connect, $sql);
-    $recordCnt = mysqli_num_rows($res);
+    $row = mysqli_fetch_assoc($res);
+    $recordCnt = $row['count'];
     
+    // 3. 페이징 관련 변수 선언
     $totalPageCnt = ceil($recordCnt / 10);//전체 페이지 갯수
     $totalPageBlock = ceil($totalPageCnt / 10);//페이지 블록 갯수(ex: 1~10 : 1번블록, 11~20 : 2번 블록..)
     $nowPageBlock = ceil($page / 10);//현재 페이지가 속해있는 블록(ex: 7번 페이지는 1번 블록에 속함)
     $start = (($page - 1) * 10) + 1;//가져올 레코드 시작 번호
+    $start -= 1;//배열 0번째부터 가져와야 하므로 1을 빼줌
     $startPage = (($nowPageBlock - 1) * 10) + 1;//페이지 시작 번호
     
     //정렬, 검색, 페이징 여부를 확인하기 위한 배열 선언
@@ -49,7 +53,7 @@
     //상태 값이 들어있으면 배열에 삽입
     $conditions = array();
     foreach ($conditionCheck as $condition) {
-        if (isset($_GET['$condition']) && $_GET['$condition']) {
+        if (isset($_GET[$condition]) && $_GET[$condition]) {
             $conditions[$condition] = $_GET[$condition];
         }
     }
@@ -141,17 +145,51 @@
         <!-- 페이징 버튼 -->
         <nav class="text-center">
             <ul class="pagination">
-                <li><a href="#">First</a></li>
-                <li><a href="#">&lt</a></li>
-                <?php 
-                for ($i = 1; $i <= 10; $i++) {
-                    echo "<li><a href='#'>$i</a></li>";
+                <?php
+                //첫 페이지로 이동
+                if ($page == 1) {
+                    echo "<li class='disabled'><a href=\"#\">First</a></li>";
+                } else {
+                    echo "<li><a href=\"boardList.php?page=1\">First</a></li>";
+                }
+                
+                //시작 페이지를 기준으로 출력해야할 페이지 갯수 구하기
+                $endPage = ($startPage + 10) <= $totalPageCnt ? ($startPage + 10) - 1 : $totalPageCnt;
+                
+                //이전 페이지 블록으로 이동하기
+                $prevPage = ($startPage - 10) + 9;
+                if ($prevPage >= 1) {
+                    echo "<li><a href=\"boardList.php?page={$prevPage}\">&lt</a></li>";
+                } else {
+                    echo "<li class='disabled'><a href=\"#\">&lt</a></li>";
+                }
+                
+                for ($i = $startPage; $i <= $endPage; $i++) {
+                    if ($page == $i) {
+                        echo "<li class='active'><a href=\"boardList.php?page={$i}\">$i</a></li>";
+                    } else {
+                        echo "<li><a href=\"boardList.php?page={$i}\">$i</a></li>";
+                    }
+                }
+                
+                //다음 페이지 블록으로 이동하기
+                $nextBlock = $startPage + 10;
+                if ($nextBlock <= $totalPageCnt) {
+                    echo "<li><a href=\"boardList.php?page={$nextBlock}\">&gt</a></li>";
+                } else {
+                    echo "<li class='disabled'><a href=\"#\">&gt</a></li>";
+                }
+                
+                //마지막 페이지로 이동
+                if ($page < $totalPageCnt) {
+                    echo "<li><a href=\"boardList.php?page={$totalPageCnt}\">Last</a></li>";
+                } else {
+                    echo "<li class='disabled'><a href=\"#\">Last</a></li>";
                 }
                 ?>
-                <li><a href="#">&gt</a></li>
-                <li><a href="#">Last</a></li>
             </ul>
         </nav>
+        <!-- 페이징 버튼 끝 -->
     </div>
 </body>
 </html>
