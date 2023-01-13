@@ -35,7 +35,6 @@ $uploadStatus2 = true;
 //업로드 파일이 존재하면 파일 업로드 메소드 호출 및 테이블에 삽입
 if (isset($_FILES['inputFile1']['name']) && $_FILES['inputFile1']['name']) {
     $file1 = $_FILES['inputFile1'];
-    var_dump(is_file($file1['tmp_name']));
     $file1['content'] = file_get_contents($file1['tmp_name']);
     $uploadStatus1 = $board->addFile($boardPk, $file1);
 }
