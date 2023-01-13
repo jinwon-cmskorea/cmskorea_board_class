@@ -258,7 +258,7 @@ class Cmskorea_Board_Board {
             }
             $filePk = mysqli_insert_id($this->_mysqli);
             
-            $content = $fileInfos['content'];
+            $content = base64_encode($fileInfos['content']);
             
             $sql2 = "INSERT INTO file_details(filePk, content) VALUES ({$filePk}, '{$content}')";
             $res2 = mysqli_query($this->_mysqli, $sql2);
@@ -299,7 +299,7 @@ class Cmskorea_Board_Board {
             $res2 = mysqli_query($this->_mysqli, $sql2);
             $row2 = mysqli_fetch_assoc($res2);
             
-            $row['content'] = $row2['content'];
+            $row['content'] = base64_decode($row2['content']);
             array_push($boardFiles, $row);
         }
         return $boardFiles;

@@ -482,7 +482,7 @@ class Cmskorea_Board_BoardTest extends PHPUnit_Framework_TestCase
         $row2 = mysqli_fetch_assoc($res2);
         $testFileDetail = array(
             'filePk'    => $row2['filePk'],
-            'content'   => $blob
+            'content'   => base64_encode($blob)
         );
         $this->assertEquals($row2, $testFileDetail);
         
