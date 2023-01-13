@@ -185,7 +185,7 @@
     <!-- 검색, 작성, 게시글 리스트, 페이징 등  -->
     <div class="col-sm-12 list-body">
         <div class="board-upper">
-            <form action="./boardList.php" method="get">
+            <form class="search-form" action="./boardList.php" method="get">
                 <input type="hidden" name="page" value="1" />
                 <select class="selectbox" id="category" name="category">
                     <option value="writer" <?php echo (isset($category) && $category == 'writer') ? 'selected' : ''; ?>>작성자</option>
