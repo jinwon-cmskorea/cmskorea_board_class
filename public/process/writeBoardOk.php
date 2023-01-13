@@ -6,7 +6,6 @@ require_once __DIR__ . '/../AutoLoad.php';
 
 $board = new Cmskorea_Board_Board();
 
-var_dump($_POST['memberPk']);
 //작성한 게시글 정보를 배열에 삽입
 $addContentArr = array(
     'memberPk'  => $_POST['memberPk'],
@@ -52,7 +51,6 @@ if (isset($_FILES['inputFile2']['name']) && $_FILES['inputFile2']['name']) {
 if ($boardPk && $uploadStatus1 && $uploadStatus2) {
     echo "<script>location.href='../view/boardList.php?message=success'</script>";
 } else {
-//     echo "<script type=\"text/javascript\">alert('게시글 작성 중 문제가 발생했습니다.')</script>";
-//     echo "<script type=\"text/javascript\">history.back(-1)</script>";
-    echo var_dump($boardPk) . ", " . var_dump($uploadStatus1) . ", " . var_dump($uploadStatus2);
+    echo "<script type=\"text/javascript\">alert('게시글 작성 중 문제가 발생했습니다.')</script>";
+    echo "<script type=\"text/javascript\">history.back(-1)</script>";
 }
