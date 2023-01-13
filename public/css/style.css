@@ -180,7 +180,7 @@
 }
 
 .small-ele {
-	color: rgb(132, 151, 76);
+	color: rgb(132, 151, 176);
 }
 
 /* boardList.php - 게시글 상단 요소 */
@@ -271,7 +271,7 @@ td {
     border-bottom: 1px solid rgb(191, 191, 191);
 }
 
-/* boardLis.phpt - 게시글 하단 페이징 요소 */
+/* boardList.php - 게시글 하단 페이징 요소 */
 .pagination > li > a {
 	float: none;
 }
@@ -305,6 +305,13 @@ td {
 }
 
 /* writeBoard.php 요소 */
+.list-descript2 {
+    font-size: medium;
+    border: 1px solid rgb(191, 191, 191);
+    border-radius: 8px;
+    padding: 15px 10px;
+}
+
 .control-label-center {
     padding-top: 7px;
     padding-bottom: 7px;
