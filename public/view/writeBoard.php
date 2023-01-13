@@ -6,7 +6,6 @@
     $auth = new Cmskorea_Board_Auth();
     $memberSession = $auth->getMember();
     
-    
 ?>
 <!DOCTYPE HTML>
 <html lang="en">
@@ -35,28 +34,42 @@
     <!-- 상단 설명 끝 -->
     <!-- 게시글 내용 작성 -->
     <div class="col-sm-10 col-sm-offset-1 list-body">
-        <form class="form-horizontal" action="../process/writeBoardOk.php" method="post">
+        <form class="form-horizontal" enctype="multipart/form-data" action="../process/writeBoardOk.php" method="post">
             <div class="form-group">
                  <label for="inputTitle" class="col-sm-1 control-label-center">제   목</label>
                 <div class="col-sm-11">
-                    <input type="text" class="form-control space-form" id="inputTitle" name="title" required>
+                    <input type="text" class="myForm-control2 space-form" id="inputTitle" name="title" required>
                 </div>
             </div>
             <div class="form-group">
                 <label for="inputContent" class="col-sm-1 control-label-center">내   용</label>
                 <div class="col-sm-11">
-                    <textarea class="form-control space-form" rows="10" id="inputContent" name="content" required></textarea>
+                    <textarea class="myForm-control2-textarea space-form" rows="10" id="inputContent" name="content" required></textarea>
                 </div>
             </div>
             <div class="form-group">
                 <label for="inputWriter" class="col-sm-1 control-label-center">작성자</label>
-                <div class="col-sm-2">
-                    <input type="text" class="form-control space-form" id="inputWriter" name="writer" pattern="[가-힣]+" title="한글 이름만 가능합니다." required>
+                <div class="col-sm-3">
+                    <input type="text" class="myForm-control2 space-form input-wrier" id="inputWriter" name="writer" pattern="[가-힣]+" title="한글 이름만 가능합니다." value="<?php echo $memberSession['name']; ?>" required>
                 </div>
             </div>
             <div class="form-group">
-                <input type="submit" class="btn bg-primary col-sm-6 write-btn-style" value="등   록">
-                <input type="button" class="btn col-sm-6 cancle-btn write-btn-style" onclick="location.href='./boardList.php';" value="취소">
+                <label for="inputWriter" class="col-sm-1 control-label-center input-file" style="font-size: 12px;">파일업로드</label>
+                <div class="col-sm-3">
+                    <input type="hidden" name="MAX_FILE_SIZE" value="3145728">
+                    <input type="file" class="myForm-control2 space-form" id="inputFile1" name="inputFile1">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="inputWriter" class="col-sm-1 control-label-center input-file" style="font-size: 12px;">파일업로드</label>
+                <div class="col-sm-3">
+                    <input type="hidden" name="MAX_FILE_SIZE" value="3145728">
+                    <input type="file" class="myForm-control2 space-form" id="inputFile2" name="inputFile2">
+                </div>
+            </div>
+            <div class="write-button">
+                <input type="submit" class="submit-btn write-btn-style" value="작   성">
+                <input type="button" class="cancle-btn write-btn-style" onclick="location.href='./boardList.php';" value="취   소">
             </div>
         <form>
     </div>
