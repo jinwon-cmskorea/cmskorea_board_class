@@ -1,11 +1,20 @@
 <?php 
     session_start();
     require_once __DIR__ . '/../AutoLoad.php';
+    require_once __DIR__ . '/../../configs/dbConfig.php';
+    
+    $connect = mysqli_connect(DBHOST, USERNAME, USERPW, DBNAME);
+    if (!$connect) {
+        die("DB 접속중 문제가 발생했습니다. : ".mysqli_connect_error());
+    }
     
     //세션을 불러오기 위한 인스턴스 및 메소드
     $auth = new Cmskorea_Board_Auth();
     $memberSession = $auth->getMember();
     
+    $sql = "SELECT pk FROM member WHERE id='{$memberSession['id']}'";
+    $res = mysqli_query($connect, $sql);
+    $row = mysqli_fetch_assoc($res);
 ?>
 <!DOCTYPE HTML>
 <html lang="en">
@@ -35,6 +44,7 @@
     <!-- 게시글 내용 작성 -->
     <div class="col-sm-10 col-sm-offset-1 list-body">
         <form class="form-horizontal" enctype="multipart/form-data" action="../process/writeBoardOk.php" method="post">
+            <input type="hidden" name="memberPk" value="<?php echo $row['pk']; ?>">
             <div class="form-group">
                  <label for="inputTitle" class="col-sm-1 control-label-center">제   목</label>
                 <div class="col-sm-11">
@@ -50,18 +60,18 @@
             <div class="form-group">
                 <label for="inputWriter" class="col-sm-1 control-label-center">작성자</label>
                 <div class="col-sm-3">
-                    <input type="text" class="myForm-control2 space-form input-wrier" id="inputWriter" name="writer" pattern="[가-힣]+" title="한글 이름만 가능합니다." value="<?php echo $memberSession['name']; ?>" required>
+                    <input type="text" class="myForm-control2 space-form input-wrier" id="inputWriter" name="writer" pattern="[가-힣A-Za-z0-9]+" title="한글, 영문, 숫자 입력가능합니다." value="<?php echo $memberSession['name']; ?>" required>
                 </div>
             </div>
             <div class="form-group">
-                <label for="inputWriter" class="col-sm-1 control-label-center input-file" style="font-size: 12px;">파일업로드</label>
+                <label for="inputFile1" class="col-sm-1 control-label-center input-file" style="font-size: 12px;">파일업로드</label>
                 <div class="col-sm-3">
                     <input type="hidden" name="MAX_FILE_SIZE" value="3145728">
                     <input type="file" class="myForm-control2 space-form" id="inputFile1" name="inputFile1">
                 </div>
             </div>
             <div class="form-group">
-                <label for="inputWriter" class="col-sm-1 control-label-center input-file" style="font-size: 12px;">파일업로드</label>
+                <label for="inputFile2" class="col-sm-1 control-label-center input-file" style="font-size: 12px;">파일업로드</label>
                 <div class="col-sm-3">
                     <input type="hidden" name="MAX_FILE_SIZE" value="3145728">
                     <input type="file" class="myForm-control2 space-form" id="inputFile2" name="inputFile2">

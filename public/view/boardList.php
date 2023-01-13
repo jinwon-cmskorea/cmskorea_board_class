@@ -157,6 +157,17 @@
                 });
             }
         });
+        
+        //게시글 작성에 성공했을 시, 모든 요소가 로드된 후 알림띄우기
+        $(window).on("load", function() {
+            var urlParams = new URL(location.href).searchParams;
+            var tag = urlParams.get('message');
+            
+            if (tag == "success") {
+                alert("게시글이 생성되었습니다.");
+                history.replaceState({}, null, location.pathname);
+            }
+        });
     
         function sortTable(fieldName) {
             var fieldName = fieldName;
