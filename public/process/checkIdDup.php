@@ -17,11 +17,11 @@ $userId = $_POST['userId'];
 if (isset($userId) && $userId) {
     $fUserId = mysqli_real_escape_string($connect, $userId);
     
-    $sql = "SELECT id FROM member WHERE id='{$fUserId}'";
+    $sql = "SELECT COUNT(id) AS count FROM member WHERE id='{$fUserId}'";
     $res = mysqli_query($connect, $sql);
-    $count = mysqli_num_rows($res);
+    $count = mysqli_fetch_assoc($res);
     
-    if ($count > 0) {
+    if ($count['count'] > 0) {
         $status = 1;
     } else {
         $status = 0;
