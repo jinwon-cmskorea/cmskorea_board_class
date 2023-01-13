@@ -48,7 +48,7 @@
         $page = 1;
     }
     
-    // 2. 전체 레코드 갯수 구하기
+    // 2.현재 검색 조건에서의 레코드 갯수 구하기
     if (isset($category) && isset($search) && $category && $search) {
         $sql = "SELECT COUNT(pk) AS count FROM board WHERE {$category} LIKE '%{$search}%'";
     } else {
@@ -132,6 +132,32 @@
     <script src="../css/bootstrap/js/bootstrap.js" type="javascript"></script>
     <title>게시글 리스트</title>
     <script type="text/javascript">
+        //삭제 버튼 눌렀을 때, 게시글 삭제 과정 수행
+        $(document).on("click", ".btn-delete", function() {
+            var pk = $(this).data('pk');//data-pk 의 data를 가져옴
+            
+            if (confirm("정말 게시글을 삭제하시겠습니까?")) {
+                //ajax를 통해 deleteOk.php 에 'pk' 전달, 제시글 삭제 수행
+                $.ajax({
+                    url: "../process/deleteOk.php",
+                    method: "POST",
+                    data: {"pk" : pk},
+                    dataType: "json",
+                    success: function(receive) {
+                        if (receive.status == 1) {
+                            alert("게시글이 삭제되었습니다.");
+                            window.location.reload();
+                        } else {
+                            alert("삭제 중 문제가 발생했습니다.");
+                        }
+                    },
+                    error: function() {
+                        alert("삭제 중 문제가 발생했습니다.");
+                    }
+                });
+            }
+        });
+    
         function sortTable(fieldName) {
             var fieldName = fieldName;
             var order = "<?php echo $order == 'DESC' ? 'ASC' : 'DESC'; ?>";
@@ -202,7 +228,7 @@
                     <td>
                     	<div style="text-align: center;">
                             <input class="btn view-btn" type="button" onclick="location.href='./viewBoard.php?pk=<?php echo $posts[$i]['pk']; ?>';" value="조회">
-                            <input class="btn del-btn btn-delete" name="delete-btn" type="button" value="삭제" data-no="<?php echo $posts[$i]['pk']; ?>">
+                            <input class="btn del-btn btn-delete" name="delete-btn" type="button" value="삭제" data-pk="<?php echo $posts[$i]['pk']; ?>">
                         </div>
                     </td>
                 </tr>
