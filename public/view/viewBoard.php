@@ -6,8 +6,8 @@
     
     require_once __DIR__ . '/../AutoLoad.php';
     
-    
     $auth = new Cmskorea_Board_Auth();
+    $board = new Cmskorea_Board_Board();
     
     /* 로그인하지 않았다면 로그인 페이지로 이동 */
     if (!$auth->isLogin()) {
@@ -21,6 +21,19 @@
         $pk = $_GET['pk'];
     }
     
+    /*
+     * 없는 게시글 번호이면 리스트로 리다이렉션
+     * 있는 게시글 번호이면 내용 전시
+     */
+    $getRes = $board->getContent($pk);
+    if ($getRes == NULL) {
+        echo "<script type=\"text/javascript\">alert('존재하지 않는 게시글입니다.');</script>";
+        echo "<script type=\"text/javascript\">document.location.href='./boardList.php';</script>";
+    }
+    
+    $fTitle = htmlspecialchars($getRes['title']);
+    $fWriter = htmlspecialchars($getRes['writer']);
+    $fContent = htmlspecialchars($getRes['content']);
 ?>
 <!DOCTYPE html>
     <html lang="en">
@@ -53,18 +66,29 @@
         <!-- 게시글 조회 작성 -->
         <div class="view-box">
             <div class="page-header-custom">
-                    <?php ?>
+                    <?php echo $fTitle; ?>
                     <div class="info">
-                        <small class="space writer-info"><?php ?></small>
-                        <small class="space"><?php ?></small>
+                        <small class="space writer-info">작성자 &emsp; &emsp; : <?php echo $fWriter; ?></small>
                     </div>
             </div>
-            <div class="col-sm-12 text-box">
-                <?php  ?>
+            <div class="text-box">
+                <?php echo nl2br($fContent); ?>
             </div>
-            <div class="col-sm-12">
-                <input type="submit" class="btn btn-warning col-sm-6 write-btn-style" onclick="location.href='./editBoard.php?no=<?php echo $row['no']; ?>';" value="수   정">
-                <input type="button" class="btn list-btn col-sm-6 write-btn-style" onclick="location.href='./boardList.php';" value="리스트">
+            <div class="file-info">
+                 <li>등록된 파일1.jpg</li>
+                 <li>등록된 파일2.jpg</li>
+            </div>
+            <div class="time-info">
+                 <div class="line">
+                     <div class="time-title">등록시간 &emsp; &nbsp; &nbsp; &nbsp; :&nbsp;&nbsp;</div><?php echo $getRes['insertTime']; ?>
+                 </div>
+                 <div class="line">
+                     <div class="time-title">마지막 수정시간 :&nbsp; </div> <?php echo $getRes['updateTime']; ?>
+                 </div>
+            </div>
+            <div class="write-button">
+                <input type="submit" class="submit-btn" onclick="location.href='./editBoard.php?pk=<?php ?>';" value="수 &emsp; 정">
+                <input type="button" class="cancle-btn" onclick="location.href='./boardList.php';" value="닫 &emsp; 기">
             </div>
         </div>
         <!-- 게시글 내용 조회 끝 -->

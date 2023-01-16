@@ -78,8 +78,8 @@
                 </div>
             </div>
             <div class="write-button">
-                <input type="submit" class="submit-btn write-btn-style" value="작   성">
-                <input type="button" class="cancle-btn write-btn-style" onclick="location.href='./boardList.php';" value="취   소">
+                <input type="submit" class="submit-btn" value="작   성">
+                <input type="button" class="cancle-btn" onclick="location.href='./boardList.php';" value="취   소">
             </div>
         <form>
     </div>
