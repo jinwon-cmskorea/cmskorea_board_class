@@ -91,7 +91,7 @@
                  </div>
             </div>
             <div class="write-button">
-                <input type="submit" class="submit-btn" onclick="location.href='./editBoard.php?pk=<?php ?>';" value="수 &emsp; 정">
+                <input type="submit" class="submit-btn" onclick="location.href='./editBoard.php?pk=<?php echo $getRes['pk']; ?>';" value="수 &emsp; 정">
                 <input type="button" class="cancle-btn" onclick="location.href='./boardList.php';" value="닫 &emsp; 기">
             </div>
         </div>
