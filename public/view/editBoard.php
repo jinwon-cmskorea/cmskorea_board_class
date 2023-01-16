@@ -90,9 +90,15 @@ $fContent = htmlspecialchars($getRes['content']);
                     <input type="file" class="myForm-control2 space-form" id="inputFile2" name="inputFile2">
                 </div>
             </div>
-            <div class="write-button">
-                <input type="submit" class="submit-btn" value="수 &emsp; 정">
-                <input type="button" class="cancle-btn" onclick="location.href='./boardList.php';" value="취 &emsp; 소">
+            <div class="time-info2">
+                 <div class="line">
+                     <div class="time-title">마지막 수정시간 : </div> 
+                     <div class="update-time"><?php echo $getRes['updateTime']; ?></div>
+                     <div class="write-button">
+                         <input type="submit" class="submit-btn" value="수 &emsp; 정">
+                         <input type="button" class="cancle-btn" onclick="location.href='./boardList.php';" value="취 &emsp; 소">
+                     </div>
+                 </div>
             </div>
         <form>
     </div>

@@ -450,3 +450,19 @@ td {
 	color: black;
 	border: 1px solid rgb(127, 127, 127);
 }
+
+/* editBoard.php 요소 */
+.time-info2 {
+    font-size: medium;
+    margin-left: -15px;
+}
+
+.line {
+    display: flex;
+    margin: 5px 0;
+    justify-content: space-between;
+}
+
+.update-time {
+    margin-right: 49%;
+}
