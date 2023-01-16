@@ -463,6 +463,10 @@ td {
     justify-content: space-between;
 }
 
+.file-name {
+    margin: 0 10px 15px;
+}
+
 .update-time {
     margin-right: 49%;
 }
