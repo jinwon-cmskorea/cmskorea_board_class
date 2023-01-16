@@ -75,8 +75,12 @@
                 <?php echo nl2br($fContent); ?>
             </div>
             <div class="file-info">
-                 <li>등록된 파일1.jpg</li>
-                 <li>등록된 파일2.jpg</li>
+                 <?php 
+                    $fileArrays = $board->getFiles($pk);
+                    for ($i = 0; $i < count($fileArrays); $i++) {
+                        echo "<li><a class='file-link' href='../process/fileDownload.php?pk={$pk}&filename={$fileArrays[$i]['filename']}'>{$fileArrays[$i]['filename']}</a></li>";
+                    }
+                 ?>
             </div>
             <div class="time-info">
                  <div class="line">

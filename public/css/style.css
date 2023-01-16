@@ -425,6 +425,11 @@ td {
     border-bottom: 3px dashed #eee;
 }
 
+.file-link {
+    text-decoration: none;
+    color: rgb(127, 127, 127);
+}
+
 .time-info {
     padding: 20px;
     font-size: medium;
