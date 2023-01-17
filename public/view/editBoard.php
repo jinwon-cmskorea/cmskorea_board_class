@@ -82,7 +82,7 @@ $fContent = htmlspecialchars($getRes['content']);
     <!-- 상단 설명 끝 -->
     <!-- 게시글 내용 작성 -->
     <div class="col-sm-10 col-sm-offset-1 list-body">
-        <form class="form-horizontal" enctype="multipart/form-data" action="../process/editBoardOk.php" method="post">
+        <form class="form-horizontal" enctype="multipart/form-data" action="../process/editBoardOk.php" method="post" onsubmit="return confirm('게시글을 수정하시겠습니까?');">
             <input type="hidden" name="no" value="<?php echo $getRes['pk']; ?>">
             <div class="form-group">
                  <label for="inputTitle" class="col-sm-1 control-label-center">제   목</label>
