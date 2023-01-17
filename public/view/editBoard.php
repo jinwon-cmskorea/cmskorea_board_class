@@ -40,7 +40,33 @@ $fContent = htmlspecialchars($getRes['content']);
     <script src="../js/jquery-3.6.3.min.js" type="text/javascript"></script>
     <script src="../css/bootstrap/js/bootstrap.js" type="javascript"></script>
     <title>게시글 수정</title>
-    </head>
+    <script type="text/javascript">
+        //선택한 첨부 파일을 삭제하는 js코드
+        $(document).on("click", ".del-file-btn", function() {
+            var filePk = $(this).data('filepk');
+            
+            if (confirm("첨부파일을 삭제하시겠습니까?")) {
+                $.ajax({
+                    url: "../process/fileDelete.php",
+                    method: "POST",
+                    data: {"filePk" : filePk},
+                    dataType: "json",
+                    success: function(receive) {
+                        if (receive.status == 1) {
+                            alert("해당 파일을 삭제했습니다.");
+                            window.location.reload();
+                        } else {
+                            alert("파일을 삭제하는 도중 문제가 발생했습니다.");
+                        }
+                    },
+                    error: function() {
+                        alert("파일을 삭제하는 도중 문제가 발생했습니다.");
+                    }
+                });
+            }
+        });
+    </script>
+</head>
 <body>
     <?php include_once __DIR__ . '/commonHeader.php';?>
     <!-- 상단 설명 -->
@@ -72,8 +98,13 @@ $fContent = htmlspecialchars($getRes['content']);
             </div>
             <div class="col-sm-11 col-sm-offset-1">
                 <div style="display: flex;">
-                    <div class="file-name">ㆍ 등록된파일1.jpg <input class="del-file-btn" type="button" value="X"></div>
-                    <div class="file-name">ㆍ 등록된파일2.jpg <input class="del-file-btn" type="button" value="X"></div>
+                <?php 
+                    //작성된 게시물에 첨부되어있는 파일 불러오기
+                    $fileArrays = $board->getFiles($pk);
+                    for ($i = 0; $i < count($fileArrays); $i++) {
+                        echo "<div class='file-name'>ㆍ {$fileArrays[$i]['filename']} <input class='del-file-btn' type='button' value='X' data-filepk=\"{$fileArrays[$i]['pk']}\"></div>";
+                    }
+                ?>
                 </div>
             </div>
             <div class="form-group">
