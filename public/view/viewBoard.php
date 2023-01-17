@@ -74,14 +74,19 @@
             <div class="text-box">
                 <?php echo nl2br($fContent); ?>
             </div>
+            <!-- 첨부파일 리스트, 존재하지 않으면 보이지 않음 -->
+            <?php 
+                $fileArrays = $board->getFiles($pk);
+                if ($fileArrays) {
+            ?>
             <div class="file-info">
                  <?php 
-                    $fileArrays = $board->getFiles($pk);
                     for ($i = 0; $i < count($fileArrays); $i++) {
                         echo "<li><a class='file-link' href='../process/fileDownload.php?pk={$pk}&filename={$fileArrays[$i]['filename']}'>{$fileArrays[$i]['filename']}</a></li>";
                     }
                  ?>
             </div>
+            <?php }?>
             <div class="time-info">
                  <div class="line">
                      <div class="time-title">등록시간 &emsp; &nbsp; &nbsp; &nbsp; :&nbsp;&nbsp;</div><?php echo $getRes['insertTime']; ?>

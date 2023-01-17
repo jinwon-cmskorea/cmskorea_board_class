@@ -128,7 +128,7 @@ $fContent = htmlspecialchars($getRes['content']);
                 </div>
             </div>
             <div class="time-info2">
-                 <div class="line">
+                 <div class="line2">
                      <div class="time-title">마지막 수정시간 : <?php echo $getRes['updateTime']; ?></div>
                      <div class="write-button">
                          <input type="submit" class="submit-btn" value="수 &emsp; 정">
