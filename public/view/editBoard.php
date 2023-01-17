@@ -82,8 +82,8 @@ $fContent = htmlspecialchars($getRes['content']);
     <!-- 상단 설명 끝 -->
     <!-- 게시글 내용 작성 -->
     <div class="col-sm-10 col-sm-offset-1 list-body">
-        <form class="form-horizontal" enctype="multipart/form-data" action="../process/writeBoardOk.php" method="post">
-            <input type="hidden" name="memberPk" value="<?php echo $getRes['pk']; ?>">
+        <form class="form-horizontal" enctype="multipart/form-data" action="../process/editBoardOk.php" method="post">
+            <input type="hidden" name="no" value="<?php echo $getRes['pk']; ?>">
             <div class="form-group">
                  <label for="inputTitle" class="col-sm-1 control-label-center">제   목</label>
                 <div class="col-sm-11">
@@ -93,7 +93,7 @@ $fContent = htmlspecialchars($getRes['content']);
             <div class="form-group">
                 <label for="inputContent" class="col-sm-1 control-label-center">내   용</label>
                 <div class="col-sm-11">
-                    <textarea class="myForm-control2-textarea space-form" rows="10" id="inputContent" name="content" required><?php echo nl2br($fContent); ?></textarea>
+                    <textarea class="myForm-control2-textarea space-form" rows="10" id="inputContent" name="content" required><?php echo $fContent; ?></textarea>
                 </div>
             </div>
             <div class="col-sm-11 col-sm-offset-1">
