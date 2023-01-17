@@ -2,9 +2,18 @@
 /**
  * 게시글 수정 동작을 수행하는 페이지
  */
+session_start();
+
 require_once __DIR__ . '/../AutoLoad.php';
 
+$auth = new Cmskorea_Board_Auth();
 $board = new Cmskorea_Board_Board();
+
+//로그인하지 않은 유저가 접근하면 로그인 페이지로 리다이렉션
+if (!$auth->isLogin()) {
+    echo "<script type=\"text/javascript\">alert('먼저 로그인을 진행해주세요.');</script>";
+    echo "<script type=\"text/javascript\">document.location.href='../view/login.php';</script>";
+}
 
 //post 로 받아온 값들을 배열에 넣어줌
 $editDatas = array(

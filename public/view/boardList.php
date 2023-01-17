@@ -164,10 +164,10 @@
             var tag = urlParams.get('message');
             
             if (tag == "success") {
-                alert("게시글이 생성되었습니다.");
+                alert("새 글이 등록되었습니다.");
                 history.replaceState({}, null, location.pathname);
             } else if (tag == "editSuccess") {
-                alert("게시글이 수정되었습니다.");
+                alert("글이 수정되었습니다.");
                 history.replaceState({}, null, location.pathname);
             }
         });
