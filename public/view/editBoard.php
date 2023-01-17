@@ -72,14 +72,14 @@ $fContent = htmlspecialchars($getRes['content']);
             </div>
             <div class="col-sm-11 col-sm-offset-1">
                 <div style="display: flex;">
-                    <div class="file-name">ㆍ 등록된파일1.jpg<input type="button" value="X"></div>
-                    <div class="file-name">ㆍ 등록된파일2.jpg<input type="button" value="X"></div>
+                    <div class="file-name">ㆍ 등록된파일1.jpg <input class="del-file-btn" type="button" value="X"></div>
+                    <div class="file-name">ㆍ 등록된파일2.jpg <input class="del-file-btn" type="button" value="X"></div>
                 </div>
             </div>
             <div class="form-group">
                 <label for="inputWriter" class="col-sm-1 control-label-center">작성자</label>
                 <div class="col-sm-3">
-                    <input type="text" class="myForm-control2 space-form input-wrier" id="inputWriter" name="writer" pattern="[가-힣A-Za-z0-9]+" title="한글, 영문, 숫자 입력가능합니다." value="<?php echo $fWriter; ?>" required>
+                    <input type="text" class="myForm-control2 space-form" id="inputWriter" name="writer" pattern="[가-힣A-Za-z0-9]+" title="한글, 영문, 숫자 입력가능합니다." value="<?php echo $fWriter; ?>" required>
                 </div>
             </div>
             <div class="form-group">
@@ -98,8 +98,7 @@ $fContent = htmlspecialchars($getRes['content']);
             </div>
             <div class="time-info2">
                  <div class="line">
-                     <div class="time-title">마지막 수정시간 : </div> 
-                     <div class="update-time"><?php echo $getRes['updateTime']; ?></div>
+                     <div class="time-title">마지막 수정시간 : <?php echo $getRes['updateTime']; ?></div>
                      <div class="write-button">
                          <input type="submit" class="submit-btn" value="수 &emsp; 정">
                          <input type="button" class="cancle-btn" onclick="location.href='./boardList.php';" value="취 &emsp; 소">

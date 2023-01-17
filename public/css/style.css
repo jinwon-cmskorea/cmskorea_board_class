@@ -372,7 +372,7 @@ td {
     margin-left: 15px;
 }
 
-.input-wrier {
+.input-writer {
     color: rgb(191, 191, 191);
     text-align: center;
 }
@@ -452,6 +452,12 @@ td {
 }
 
 /* editBoard.php 요소 */
+.del-file-btn {
+    color: white;
+    background-color: rgb(237, 125, 49);
+    border: 2px solid rgb(174, 90, 33);
+}
+
 .time-info2 {
     font-size: medium;
     margin-left: -15px;

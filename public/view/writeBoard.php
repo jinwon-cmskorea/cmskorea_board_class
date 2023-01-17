@@ -60,7 +60,7 @@
             <div class="form-group">
                 <label for="inputWriter" class="col-sm-1 control-label-center">작성자</label>
                 <div class="col-sm-3">
-                    <input type="text" class="myForm-control2 space-form input-wrier" id="inputWriter" name="writer" pattern="[가-힣A-Za-z0-9]+" title="한글, 영문, 숫자 입력가능합니다." value="<?php echo $memberSession['name']; ?>" required>
+                    <input type="text" class="myForm-control2 space-form input-writer" id="inputWriter" name="writer" pattern="[가-힣A-Za-z0-9]+" title="한글, 영문, 숫자 입력가능합니다." value="<?php echo $memberSession['name']; ?>" required>
                 </div>
             </div>
             <div class="form-group">
