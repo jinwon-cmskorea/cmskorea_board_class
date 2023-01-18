@@ -64,14 +64,14 @@
                 </div>
             </div>
             <div class="form-group">
-                <label for="inputFile1" class="col-sm-1 control-label-center input-file" style="font-size: 12px;">파일업로드</label>
+                <label for="inputFile1" class="col-sm-1 control-label-center input-file">파일업로드</label>
                 <div class="col-sm-3">
                     <input type="hidden" name="MAX_FILE_SIZE" value="3145728">
                     <input type="file" class="myForm-control2 space-form" id="inputFile1" name="inputFile1">
                 </div>
             </div>
             <div class="form-group">
-                <label for="inputFile2" class="col-sm-1 control-label-center input-file" style="font-size: 12px;">파일업로드</label>
+                <label for="inputFile2" class="col-sm-1 control-label-center input-file">파일업로드</label>
                 <div class="col-sm-3">
                     <input type="hidden" name="MAX_FILE_SIZE" value="3145728">
                     <input type="file" class="myForm-control2 space-form" id="inputFile2" name="inputFile2">
