@@ -185,13 +185,11 @@
 
 /* boardList.php - 게시글 상단 요소 */
 .board-upper {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    float: left;
 }
 
 .search-form {
-    margin: 1em 0;
+    /*margin: 1em 0;*/
 }
 
 .selectbox {
@@ -205,8 +203,19 @@
 }
 
 .searchCnt {
-    margin-right: 50%;
-} 
+    float: left;
+    margin: 0.4em 0 0 1em;
+}
+
+.write-btn-div {
+    float: right;
+}
+
+.write-btn-div::after {
+    content: '';
+    display: block;
+    clear: both;
+}
 
 .s-input {
     border: 1px solid rgb(191, 191, 191);

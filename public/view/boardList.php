@@ -192,13 +192,13 @@
         </div>
         <div class="col-sm-12 list-descript">
             등록 된 게시글을 조회하는 페이지입니다.<br>
-            등록 된 글은 조회, 수정, 삭제할 수 있습니다.
+<!--             등록 된 글은 조회, 수정, 삭제할 수 있습니다. -->
         </div>
     </div>
     <!-- 상단 끝 -->
     <!-- 검색, 작성, 게시글 리스트, 페이징 등  -->
     <div class="col-sm-12 list-body">
-        <div class="board-upper">
+        <div class="board-upper" style="float: left;">
             <form class="search-form" action="./boardList.php" method="get">
                 <input type="hidden" name="page" value="1" />
                 <select class="selectbox" id="category" name="category">
@@ -209,10 +209,10 @@
                 <input class="s-input" type="text" name="search" autocomplete="off" value="<?php echo (isset($search) && $search) ? $search : ''; ?>">
                 <input class="btn s-button" type="submit" value="검색">
             </form>
-            <div class="searchCnt"><?php echo $recordCnt . "/" . $totalCnt . " 건";?></div>
-            <div>
-                <input class="btn bg-primary write-btn" type="button" onclick="location.href='./writeBoard.php';" value="작    성">
-            </div>
+        </div>
+        <div class="searchCnt"><?php echo $recordCnt . "/" . $totalCnt . " 건";?></div>
+        <div class="write-btn-div">
+            <input class="btn bg-primary write-btn" type="button" onclick="location.href='./writeBoard.php';" value="작    성">
         </div>
         <!-- 검색 부분, 작성버튼 끝-->
         <!-- 게시글 리스트 테이블  -->
