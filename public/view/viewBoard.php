@@ -95,7 +95,7 @@
                      <div class="time-title">마지막 수정시간 :&nbsp; </div> <?php echo $getRes['updateTime']; ?>
                  </div>
             </div>
-            <div class="write-button">
+            <div class="view-page-button">
                 <input type="submit" class="submit-btn" onclick="location.href='./editBoard.php?pk=<?php echo $getRes['pk']; ?>';" value="수 &emsp; 정">
                 <input type="button" class="cancle-btn" onclick="location.href='./boardList.php';" value="닫 &emsp; 기">
             </div>
