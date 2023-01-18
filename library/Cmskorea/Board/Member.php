@@ -90,10 +90,10 @@ class Cmskorea_Board_Member {
         $fName = mysqli_real_escape_string($this->_mysqli, $datas['name']);
         $fTelNumber = mysqli_real_escape_string($this->_mysqli, $datas['telNumber']);
         
-        $sql1 = "SELECT id FROM member WHERE id='{$fId}'";
+        $sql1 = "SELECT COUNT(id) AS count FROM member WHERE id='{$fId}'";
         $res = mysqli_query($this->_mysqli, $sql1);
-        $searchRow = mysqli_num_rows($res);
-        if ($searchRow) {
+        $searchRow = mysqli_fetch_assoc($res);
+        if ($searchRow['count'] > 0) {
             throw new Exception('이미 동일한 아이디가 존재합니다.');
         }
         
