@@ -23,43 +23,63 @@ $addContentArr = array(
     'content'   => $_POST['content']
 );
 
+//업로드한 파일에 문제가 있을 경우, 출력할 에러문 생성
+$fileStatus = array(
+    '1'         => '허용되지 않은 확장자의 파일입니다.',
+    '2'         => '파일의 용량이 너무 큽니다.'
+);
+//파일 정보를 담을 배열
+$fileArrays = array();
+//허용된 확장자들이 포함되어있는 배열 생성
+$allowFiles = array(
+    'jpeg', 'jpg', 'gif', 'png', 'pdf'
+);
 
-//게시글 작성 코드. 성공하면 게시글 번호를 리턴받고, 실패하면 설정된 예외문 호출 뒤 뒤로 감
-try {
-    //게시글 작성 메소드 호출
-    $boardPk = $board->addContent($addContentArr);
-} catch (Exception $e) {
-    echo "<script type=\"text/javascript\">alert('{$e->getMessage()}')</script>";
-    echo "<script type=\"text/javascript\">history.back(-1)</script>";
-}
-
-/*
- * 업로드 파일 상태는 디폴트로 true
- * 만약 업로드가 실패하면 false로 바뀜
+/**
+ * 파일 검사 통과유무를 저장하는 변수
+ * Default 상태는 true, 문제가 있으면 false로 바뀜
  */
-$uploadStatus1 = true;
-$uploadStatus2 = true;
+$uploadStatus = true;
 
-//업로드 파일이 존재하면 파일 업로드 메소드 호출 및 테이블에 삽입
-if (isset($_FILES['inputFile1']['name']) && $_FILES['inputFile1']['name']) {
-    $file1 = $_FILES['inputFile1'];
-    $file1['content'] = file_get_contents($file1['tmp_name']);
-    $uploadStatus1 = $board->addFile($boardPk, $file1);
-}
-
-if (isset($_FILES['inputFile2']['name']) && $_FILES['inputFile2']['name']) {
-    $file2 = $_FILES['inputFile2'];
-    $file2['content'] = file_get_contents($file2['tmp_name']);
-    $uploadStatus2 = $board->addFile($boardPk, $file2);
+for ($i = 1; $i <= count($_FILES); $i++) {
+    $status = 0;
+    if (isset($_FILES['inputFile'.$i]['name']) && $_FILES['inputFile'.$i]['name']) {
+        $file = $_FILES['inputFile'.$i];
+        
+        $fileType = explode('/', $file['type']);
+        if (!in_array($fileType[1], $allowFiles)) { //파일 업로드 시 허용된 mime(jpg 등) 타입이 아니면 false 반환
+            $status = 1;
+        } else if ($file['size'] > 3145728) {//파일 업로드 시 3MB 초과하면 false 반환
+            $status = 2;
+        }
+        //파일 검사시, 에러가 있으면 에러문 리턴
+        if ($status) {
+            $uploadStatus = false;
+            echo "<script type=\"text/javascript\">alert('{$fileStatus[$status]}')</script>";
+            echo "<script type=\"text/javascript\">history.back(-1)</script>";
+            exit;
+        } else { //통과한 경우, content를 담은 배열을 추가
+            $file['content'] = file_get_contents($file['tmp_name']);
+            array_push($fileArrays, $file);
+        }
+    }
 }
 
 /*
- * 작성한 게시글 저장에 성공하고, 업로드 파일이 존재할 때 이상없이 업로드했다면 성공 메세지 출력
+ * 업로드 파일이 이상 없으면 게시글 생성 후 파일 업로드, 성공 메세지 출력
  * 실패시 뒤로가기
  */
-if ($boardPk && $uploadStatus1 && $uploadStatus2) {
-    echo "<script>location.href='../view/boardList.php?message=success'</script>";
-} else {
-    echo "<script type=\"text/javascript\">alert('게시글 작성 중 문제가 발생했습니다.')</script>";
-    echo "<script type=\"text/javascript\">history.back(-1)</script>";
+if ($uploadStatus) {
+    //게시글 작성 코드. 성공하면 게시글 번호를 리턴받고, 실패하면 설정된 예외문 호출 뒤 뒤로 감
+    try {
+        //게시글 작성 메소드 호출
+        $boardPk = $board->addContent($addContentArr);
+        for ($i = 0; $i < count($fileArrays); $i++) {
+            $board->addFile($boardPk, $fileArrays[$i]);
+        }
+        echo "<script>location.href='../view/boardList.php?message=success'</script>";
+    } catch (Exception $e) {
+        echo "<script type=\"text/javascript\">alert('{$e->getMessage()}')</script>";
+        echo "<script type=\"text/javascript\">history.back(-1)</script>";
+    }
 }
