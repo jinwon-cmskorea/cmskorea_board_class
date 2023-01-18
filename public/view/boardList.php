@@ -242,7 +242,15 @@
                     <td>
                     	<div style="text-align: center;">
                             <input class="btn view-btn" type="button" onclick="location.href='./viewBoard.php?pk=<?php echo $posts[$i]['pk']; ?>';" value="조회">
+                            <?php
+                                $pkSql = "SELECT pk FROM member WHERE id='{$memberSession['id']}'";
+                                $pkRes = mysqli_query($connect, $pkSql);
+                                $pkRow = mysqli_fetch_assoc($pkRes);
+                                //현재 로그인 유저의 pk 와 게시글 작성자 고유 pk가 같으면 삭제 버튼 활성화
+                                if ($posts[$i]['memberPk'] == $pkRow['pk']) {
+                            ?>
                             <input class="btn del-btn btn-delete" name="delete-btn" type="button" value="삭제" data-pk="<?php echo $posts[$i]['pk']; ?>">
+                            <?php } ?>
                         </div>
                     </td>
                 </tr>
