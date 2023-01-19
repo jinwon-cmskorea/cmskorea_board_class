@@ -496,10 +496,18 @@ td {
     margin-left: -15px;
 }
 
-.line2 {
-    display: flex;
-    margin: 5px 0;
-    justify-content: space-between;
+.edit-time-float {
+    float: left;
+}
+
+.edit-time-diplay {
+    float: left;
+}
+
+.edit-time-diplay::after {
+    content: '';
+    display: block;
+    clear: both;
 }
 
 .file-name {

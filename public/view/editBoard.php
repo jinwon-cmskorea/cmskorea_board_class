@@ -128,12 +128,11 @@ $fContent = htmlspecialchars($getRes['content']);
                 </div>
             </div>
             <div class="time-info2">
-                 <div class="line2">
-                     <div class="time-title">마지막 수정시간 : <?php echo $getRes['updateTime']; ?></div>
-                     <div class="write-button">
-                         <input type="submit" class="submit-btn" value="수 &emsp; 정">
-                         <input type="button" class="cancle-btn" onclick="location.href='./boardList.php';" value="취 &emsp; 소">
-                     </div>
+                 <div class="time-title edit-time-float">마지막 수정시간 : &nbsp;</div>
+                 <div class="edit-time-diplay"><?php echo $getRes['updateTime']; ?></div>
+                 <div class="write-button">
+                     <input type="submit" class="submit-btn" value="수 &emsp; 정">
+                     <input type="button" class="cancle-btn" onclick="location.href='./boardList.php';" value="취 &emsp; 소">
                  </div>
             </div>
         <form>
