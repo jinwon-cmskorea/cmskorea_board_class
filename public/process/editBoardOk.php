@@ -46,10 +46,19 @@ for ($i = 1; $i <= count($_FILES); $i++) {
     if (isset($_FILES['inputFile'.$i]['name']) && $_FILES['inputFile'.$i]['name']) {
         $file = $_FILES['inputFile'.$i];
         
-        $fileType = explode('/', $file['type']);
-        if (!in_array($fileType[1], $allowFiles)) { //파일 업로드 시 허용된 mime(jpg 등) 타입이 아니면 false 반환
+        if (isset($file['type']) && $file['type']) {
+            $fileType = explode('/', $file['type']);
+            
+            //파일 업로드 시 허용된 mime(jpg 등) 타입이 아니면 '허용되지 않은 확장자' 메세지 출력
+            if (!in_array($fileType[1], $allowFiles)) {
+                $status = 1;
+            }
+        } else {
             $status = 1;
-        } else if ($file['size'] > 3145728) {//파일 업로드 시 3MB 초과하면 false 반환
+        }
+        
+        //파일 업로드 시 3MB 초과하면 '너무 큰 용량' 메세지 출력
+        if ($file['size'] > 3145728) {
             $status = 2;
         }
         //파일 검사시, 에러가 있으면 에러문 리턴
