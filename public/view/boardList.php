@@ -210,7 +210,7 @@
                 <input class="btn s-button" type="submit" value="검색">
             </form>
         </div>
-        <div class="searchCnt"><?php echo $recordCnt . "/" . $totalCnt . " 건";?></div>
+        <div class="searchCnt"><?php echo number_format($recordCnt) . " / " . number_format($totalCnt) . " 건";?></div>
         <div class="write-btn-div">
             <input class="btn bg-primary write-btn" type="button" onclick="location.href='./writeBoard.php';" value="작    성">
         </div>
