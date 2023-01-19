@@ -116,6 +116,12 @@ class Cmskorea_Board_AuthTest extends PHPUnit_Framework_TestCase
             'telNumber' => '01012341234'
         );
         $res = $this->auth->getMember();
+        
+        $sql1 = "SELECT pk FROM member WHERE id='test'";
+        $res1 = mysqli_query($this->member->getMysqli(), $sql1);
+        $row1 = mysqli_fetch_assoc($res1);
+        $ans['pk'] = $row1['pk'];
+        
         $this->assertEquals($ans, $res);
         session_unset();//이전 세션 삭제
         

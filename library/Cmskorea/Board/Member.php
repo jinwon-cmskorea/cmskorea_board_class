@@ -112,14 +112,15 @@ class Cmskorea_Board_Member {
      * @param string 회원아이디
      * @return array
      *         array(
+     *            'pk'        => '회원고유번호',
      *            'id'        => '아이디',
      *            'name'      => '회원명',
-     *            'telNumber' => '연락처',
+     *            'telNumber' => '연락처'
      *        )
      */
     public function getMember($id) {
         $fId = mysqli_real_escape_string($this->_mysqli, $id);
-        $sql = "SELECT id, name, telNumber FROM member where id='{$fId}'";
+        $sql = "SELECT pk, id, name, telNumber FROM member where id='{$fId}'";
         $res = mysqli_query($this->_mysqli, $sql);
         if (!$res) {
             return array();

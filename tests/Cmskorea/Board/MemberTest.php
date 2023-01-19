@@ -232,8 +232,14 @@ class Cmskorea_Baord_MemberTest extends PHPUnit_Framework_TestCase
             $this->assertFalse(true);//예외를 던지면 실패한 것
         }
         
+        $sql = "SELECT pk FROM member WHERE id='{$id}'";
+        $res = mysqli_query($this->member->getMysqli(), $sql);
+        $row = mysqli_fetch_assoc($res);
+        
         $expacted = $this->member->getMember($id);
+        
         unset($test1['pw']);
+        $test1['pk'] = $row['pk'];
         $test1['telNumber'] = str_replace('-', '', $test1['telNumber']);
         $this->assertEquals($expacted, $test1);
     }
@@ -243,7 +249,7 @@ class Cmskorea_Baord_MemberTest extends PHPUnit_Framework_TestCase
      */
     public function testGetMember()
     {
-        $testSql = "SELECT id, name, telNumber FROM member where id='test'";
+        $testSql = "SELECT pk, id, name, telNumber FROM member where id='test'";
         $testRes = mysqli_query($this->member->getMysqli(), $testSql);
         $testArray = mysqli_fetch_assoc($testRes);
         
