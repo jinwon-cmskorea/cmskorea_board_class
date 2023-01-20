@@ -4,6 +4,10 @@
  */
 require_once __DIR__.'/bootstrap.php';
 /**
+ * @see configs/dbConfig.php
+ */
+require_once __DIR__ . '/../../../configs/dbConfig.php';
+/**
  * @see Cmskorea_Board_Board
  */
 require_once '/Cmskorea/Board/Board.php';
@@ -18,8 +22,8 @@ class Cmskorea_Board_BoardTestClass extends Cmskorea_Board_Board {
      *
      * @return void
      */
-    public function __construct() {
-        $this->_mysqli = mysqli_connect(DBHOST, USERNAME, USERPW, 'cmskorea_board_test');
+    public function __construct($dbHost, $userName, $userPw, $dbName) {
+        $this->_mysqli = mysqli_connect($dbHost, $userName, $userPw, $dbName);
         if (!$this->_mysqli) {
             die("DB 접속중 문제가 발생했습니다. : ".mysqli_connect_error());
         }
@@ -51,7 +55,7 @@ class Cmskorea_Board_BoardTest extends PHPUnit_Framework_TestCase
     {
         parent::setUp();
 
-        $this->board = new Cmskorea_Board_BoardTestClass();
+        $this->board = new Cmskorea_Board_BoardTestClass(DBHOST, USERNAME, USERPW, 'cmskorea_board_test');
     }
 
     /**

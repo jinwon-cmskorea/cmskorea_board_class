@@ -6,10 +6,6 @@
  * @package  Board
  */
 /**
- * @see dbCon.php
- */
-require_once __DIR__ . '/../../../configs/dbConfig.php';
-/**
  * 씨엠에스코리아 게시판 클래스
  *
  * @category Cmskorea
@@ -35,8 +31,8 @@ class Cmskorea_Board_Board {
      *
      * @return void
      */
-    public function __construct() {
-        $this->_mysqli = mysqli_connect(DBHOST, USERNAME, USERPW, DBNAME);
+    public function __construct($dbHost, $userName, $userPw, $dbName) {
+        $this->_mysqli = mysqli_connect($dbHost, $userName, $userPw, $dbName);
         if (!$this->_mysqli) {
             die("DB 접속중 문제가 발생했습니다. : ".mysqli_connect_error());
         }
@@ -85,7 +81,10 @@ class Cmskorea_Board_Board {
             $fContent = mysqli_real_escape_string($this->_mysqli, $datas['content']);
             
             $sql = "INSERT INTO board(memberPk, title, writer, content, insertTime, updateTime) VALUES ('{$datas['memberPk']}', '{$fTitle}', '{$fWriter}', '{$fContent}', now(), now())";
-            $res = mysqli_query($this->_mysqli, $sql);
+            mysqli_query($this->_mysqli, $sql);
+            if (mysqli_errno($this->_mysqli)) {
+                throw new Exception('게시글을 등록하지 못했습니다. 관리자에게 문의하십시오.');
+            }
             $insertedNum = mysqli_insert_id($this->_mysqli);
         } catch (Exception $e) {
             throw new Exception($e->getMessage());

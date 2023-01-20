@@ -6,10 +6,6 @@
  * @package  Board
  */
 /**
- * @see dbCon.php
- */
-require_once __DIR__ . '/../../../configs/dbConfig.php';
-/**
  * 씨엠에스코리아 게시판 회원 클래스
  *
  * @category Cmskorea
@@ -29,8 +25,8 @@ class Cmskorea_Board_Member {
      *
      * @return void
      */
-    public function __construct() {
-        $this->_mysqli = mysqli_connect(DBHOST, USERNAME, USERPW, DBNAME);
+    public function __construct($dbHost, $userName, $userPw, $dbName) {
+        $this->_mysqli = mysqli_connect($dbHost, $userName, $userPw, $dbName);
         if (!$this->_mysqli) {
             die("DB 접속중 문제가 발생했습니다. : ".mysqli_connect_error());
         }
@@ -54,33 +50,29 @@ class Cmskorea_Board_Member {
      * @return Cmskorea_Baord_Member
      */
     public function registMember(array $datas) {
-        $idReg = "/^[A-Za-z0-9]+$/";
-        $pwReg = "/(?=.*[~`!@#$%\^&*()-+=])[A-Za-z0-9~`!@#$%\^&*()-+=]+$/";
-        $nameReg = "/[가-힣A-Za-z]+$/";
-        $telReg = "/^(010|011|016|017|018|019)-[0-9]{3,4}-[0-9]{4}$/";
-        
         $manageArrays = array(
-            'id'        => $idReg,
-            'pw'        => $pwReg,
-            'name'      => $nameReg,
-            'telNumber' => $telReg
-        );
-        $manageKors = array(
-            'id'        => "아이디",
-            'pw'        => "비밀번호",
-            'name'      => "이름",
-            'telNumber' => "휴대전화"
+            'id'        => array(
+                                "kor" => "아이디",
+                                "reg" => "/^[A-Za-z0-9]+$/"),
+            'pw'        => array(
+                                "kor" => "비밀번호",
+                                "reg" => "/(?=.*[~`!@#$%\^&*()-+=])[A-Za-z0-9~`!@#$%\^&*()-+=]+$/"),
+            'name'      => array(
+                                "kor" => "이름",
+                                "reg" => "/[가-힣A-Za-z]+$/"),
+            'telNumber' => array(
+                                "kor" => "휴대전화",
+                                "reg" => "/^(010|011|016|017|018|019)-[0-9]{3,4}-[0-9]{4}$/")
         );
         
-        foreach ($manageArrays as $field => $reg) {
+        foreach ($manageArrays as $field => $value) {
             if (!$datas[$field]) {
                 throw new Exception('필수 항목을 모두 입력해주세요.');
             }
-            if ($reg) {
-                if (!preg_match($reg, $datas[$field])) {
-                    foreach ($manageKors as $korKey => $korValue) {
-                        if ($field == $korKey) throw new Exception($korValue.' 입력 형식을 지켜주세요.');
-                    }
+            
+            if ($value['reg']) {
+                if (!preg_match($value['reg'], $datas[$field])) {
+                    throw new Exception($value['kor'].' 입력 형식을 지켜주세요.');
                 }
             }
         }
@@ -97,11 +89,12 @@ class Cmskorea_Board_Member {
             throw new Exception('이미 동일한 아이디가 존재합니다.');
         }
         
-        $md5Pw = md5($fPw);
         $processedTel = str_replace('-', '', $fTelNumber);
-        $insertTime = date("Y-m-d H:i:s");
-        $sql2 = "INSERT INTO member(id, pw, name, telNumber, insertTime) VALUES ('{$fId}', '{$md5Pw}', '{$fName}', '{$processedTel}', '{$insertTime}')";
-        $res2 = mysqli_query($this->_mysqli, $sql2);
+        $sql2 = "INSERT INTO member(id, pw, name, telNumber, insertTime) VALUES ('{$fId}', MD5('{$fPw}'), '{$fName}', '{$processedTel}', now())";
+        mysqli_query($this->_mysqli, $sql2);
+        if (mysqli_errno($this->_mysqli)) {
+            throw new Exception('회원 등록에 실패했습니다. 관리자에게 문의해주십시오.');
+        }
         
         return $this;
     }

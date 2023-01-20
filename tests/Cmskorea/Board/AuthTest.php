@@ -5,6 +5,10 @@ session_start();
  */
 require_once __DIR__.'/bootstrap.php';
 /**
+ * @see configs/dbConfig.php
+ */
+require_once __DIR__ . '/../../../configs/dbConfig.php';
+/**
  * @see Cmskorea_Board_Auth
  */
 require_once '/Cmskorea/Board/Auth.php';
@@ -17,8 +21,8 @@ require_once '/Cmskorea/Board/Member.php';
  * CmsKorea_Board_AuthTestClass
  */
 class CmsKorea_Board_AuthTestClass extends Cmskorea_Board_Auth {
-    public function __construct() {
-        $this->_member = new Cmskorea_Board_MemberTestClass();
+    public function __construct($dbHost, $userName, $userPw, $dbName) {
+        $this->_member = new Cmskorea_Board_MemberTestClass($dbHost, $userName, $userPw, $dbName);
     }
 }
 /**
@@ -29,8 +33,8 @@ class Cmskorea_Board_MemberTestClass extends Cmskorea_Board_Member {
     /**
      * 테스트를 위한 생성자 변경
      */
-    public function __construct() {
-        $this->_mysqli = mysqli_connect(DBHOST, USERNAME, USERPW, 'cmskorea_board_test');
+    public function __construct($dbHost, $userName, $userPw, $dbName) {
+        $this->_mysqli = mysqli_connect($dbHost, $userName, $userPw, $dbName);
         if (!$this->_mysqli) {
             die("DB 접속중 문제가 발생했습니다. : ".mysqli_connect_error());
         }
@@ -66,8 +70,8 @@ class Cmskorea_Board_AuthTest extends PHPUnit_Framework_TestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->auth = new CmsKorea_Board_AuthTestClass();
-        $this->member = new Cmskorea_Board_MemberTestClass();
+        $this->auth = new CmsKorea_Board_AuthTestClass(DBHOST, USERNAME, USERPW, 'cmskorea_board_test');
+        $this->member = new Cmskorea_Board_MemberTestClass(DBHOST, USERNAME, USERPW, 'cmskorea_board_test');
         $sql = "INSERT INTO member(id, pw, name, telNumber, insertTime) VALUES ('test', MD5('1111@'), '테스터', '01012341234', NOW())";
         $res = mysqli_query($this->member->getMysqli(), $sql);
     }
@@ -90,7 +94,7 @@ class Cmskorea_Board_AuthTest extends PHPUnit_Framework_TestCase
      */
     public function test__construct()
     {
-        $this->auth->__construct();
+        $this->auth->__construct(DBHOST, USERNAME, USERPW, 'cmskorea_board_test');
     }
 
     /**

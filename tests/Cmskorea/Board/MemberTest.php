@@ -4,6 +4,10 @@
  */
 require_once __DIR__.'/bootstrap.php';
 /**
+ * @see configs/dbConfig.php
+ */
+require_once __DIR__ . '/../../../configs/dbConfig.php';
+/**
  * @see Cmskorea_Baord_Member
  */
 require_once '/Cmskorea/Board/Member.php';
@@ -15,8 +19,8 @@ class Cmskorea_Board_MemberTestClass extends Cmskorea_Board_Member {
     /**
      * 테스트를 위한 생성자 변경
      */
-    public function __construct() {
-        $this->_mysqli = mysqli_connect(DBHOST, USERNAME, USERPW, 'cmskorea_board_test');
+    public function __construct($dbHost, $userName, $userPw, $dbName) {
+        $this->_mysqli = mysqli_connect($dbHost, $userName, $userPw, $dbName);
         if (!$this->_mysqli) {
             die("DB 접속중 문제가 발생했습니다. : ".mysqli_connect_error());
         }
@@ -48,7 +52,7 @@ class Cmskorea_Baord_MemberTest extends PHPUnit_Framework_TestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->member = new Cmskorea_Board_MemberTestClass();
+        $this->member = new Cmskorea_Board_MemberTestClass(DBHOST, USERNAME, USERPW, 'cmskorea_board_test');
         $sql = "INSERT INTO member(id, pw, name, telNumber, insertTime) VALUES ('test', MD5('1111@'), '테스터', '01012341234', NOW())";
         $res = mysqli_query($this->member->getMysqli(), $sql);
     }

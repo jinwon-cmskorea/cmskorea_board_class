@@ -34,8 +34,8 @@ class Cmskorea_Board_Auth {
      *
      * @return void
      */
-    public function __construct() {
-        $this->_member = new Cmskorea_Board_Member();
+    public function __construct($dbHost, $userName, $userPw, $dbName) {
+        $this->_member = new Cmskorea_Board_Member($dbHost, $userName, $userPw, $dbName);
     }
 
     /**
@@ -87,8 +87,8 @@ class Cmskorea_Board_Auth {
         } catch (Exception $e) {
             return false;
         }
-
-        return !empty($memberInfo) ? true : false;
+        
+        return true;
     }
 
     /**
