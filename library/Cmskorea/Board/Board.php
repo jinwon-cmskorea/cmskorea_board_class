@@ -94,7 +94,9 @@ class Cmskorea_Board_Board {
 
     /**
      * 내용을 수정한다.
-     *
+     * @throws Exception _checkDatas 메소드에 의해 발생
+     *                   필수 항목을 입력하지 않았을 경우
+     *                   이름 작성 조건을 지키지않았을 경우
      * @param array 수정할 내용 (글번호 포함)
      *        array(
      *            'no'      => '글번호',
@@ -114,7 +116,10 @@ class Cmskorea_Board_Board {
             $fContent = mysqli_real_escape_string($this->_mysqli, $datas['content']);
             
             $sql = "UPDATE board SET title='{$fTitle}', writer='{$fWriter}', content='{$fContent}', updateTime=now() WHERE pk='{$datas['no']}'";
-            $res = mysqli_query($this->_mysqli, $sql);
+            mysqli_query($this->_mysqli, $sql);
+            if (mysqli_affected_rows($this->_mysqli) < 1) {
+                return false;
+            }
         } catch (Exception $e) {
             throw new Exception($e->getMessage());
         }
@@ -129,11 +134,15 @@ class Cmskorea_Board_Board {
      */
     public function delContent($no) {
         $sql = "DELETE FROM board WHERE pk={$no}";
-        $res = mysqli_query($this->_mysqli, $sql);
-        if ($res == true) {
-            return true;
-        } else {
+        mysqli_query($this->_mysqli, $sql);
+        
+        $selectSql = "SELECT COUNT(pk) AS count FROM board WHERE pk={$no}";
+        $selectRes = mysqli_query($this->_mysqli, $selectSql);
+        $row = mysqli_fetch_assoc($selectRes);
+        if ($row['count'] != 0) {
             return false;
+        } else {
+            return true;
         }
     }
 
@@ -216,6 +225,9 @@ class Cmskorea_Board_Board {
             $sql .= " LIMIT 0, 10";
         }
         $res = mysqli_query($this->_mysqli, $sql);
+        if (!$res) {
+            return array();
+        }
         $rowArrays = array();
         while ($row = mysqli_fetch_assoc($res)) {
             array_push($rowArrays, $row);
@@ -297,6 +309,9 @@ class Cmskorea_Board_Board {
             $sql2 = "SELECT content FROM file_details WHERE filePk={$row['pk']}";
             $res2 = mysqli_query($this->_mysqli, $sql2);
             $row2 = mysqli_fetch_assoc($res2);
+            if (!$row2) { 
+                return array();
+            }
             
             $row['content'] = base64_decode($row2['content']);
             array_push($boardFiles, $row);
@@ -312,16 +327,25 @@ class Cmskorea_Board_Board {
      */
     public function delFile($filePk) {
         $sql = "DELETE FROM file WHERE pk={$filePk}";
-        $res = mysqli_query($this->_mysqli, $sql);
-        if ($res === false) {
+        mysqli_query($this->_mysqli, $sql);
+        
+        $selectSql1 = "SELECT COUNT(pk) AS count FROM file WHERE pk={$filePk}";
+        $selectRes1 = mysqli_query($this->_mysqli, $selectSql1);
+        $row1 = mysqli_fetch_assoc($selectRes1);
+        if ($row1['count'] != 0) {
             return false;
         }
         
         $sql2 = "DELETE FROM file_details WHERE filePk={$filePk}";
-        $res2 = mysqli_query($this->_mysqli, $sql2);
-        if ($res2 === false) {
+        mysqli_query($this->_mysqli, $sql2);
+        
+        $selectSql2 = "SELECT COUNT(filePk) AS count FROM file_details WHERE filePk={$filePk}";
+        $selectRes2 = mysqli_query($this->_mysqli, $selectSql2);
+        $row2 = mysqli_fetch_assoc($selectRes2);
+        if ($row2['count'] != 0) {
             return false;
         }
+
         return true;
     }
 }
