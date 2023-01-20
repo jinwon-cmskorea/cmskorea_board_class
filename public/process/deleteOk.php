@@ -6,7 +6,7 @@ header("Content-Type: application/json");
 
 require_once __DIR__ . '/../AutoLoad.php';
 
-$board = new Cmskorea_Board_Board();
+$board = new Cmskorea_Board_Board(DBHOST, USERNAME, USERPW, DBNAME);
 
 if (isset($_POST['pk']) && $_POST['pk']) {
     $pk = $_POST['pk'];

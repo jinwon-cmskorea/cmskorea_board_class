@@ -6,7 +6,7 @@ session_start();
 require_once __DIR__ . '/../AutoLoad.php';
 
 //Auth 인스턴스 생성
-$auth = new Cmskorea_Board_Auth();
+$auth = new Cmskorea_Board_Auth(DBHOST, USERNAME, USERPW, DBNAME);
 
 //form 으로 부터 넘어온 id, pw를 확인
 $res = $auth->authenticate($_POST['userId'], $_POST['userPw']);

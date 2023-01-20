@@ -5,7 +5,6 @@
 header("Content-Type: application/json");
 
 require_once __DIR__ . '/../AutoLoad.php';
-require_once __DIR__ . '/../../configs/dbConfig.php';
 
 $connect = mysqli_connect(DBHOST, USERNAME, USERPW, DBNAME);
 if (!$connect) {

@@ -5,7 +5,7 @@
 require_once __DIR__ . '/../AutoLoad.php';
 
 //member 인스턴스 생성
-$member = new Cmskorea_Board_Member();
+$member = new Cmskorea_Board_Member(DBHOST, USERNAME, USERPW, DBNAME);
 
 //form 으로부터 받아온 값을 이용해 배열 생성
 $signupData = array(

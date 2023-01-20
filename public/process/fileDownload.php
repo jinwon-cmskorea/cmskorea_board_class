@@ -7,7 +7,7 @@
  */
 require_once __DIR__ . '/../AutoLoad.php';
 
-$board = new Cmskorea_Board_Board();
+$board = new Cmskorea_Board_Board(DBHOST, USERNAME, USERPW, DBNAME);
 
 if (isset($_GET['pk']) && $_GET['pk']) {
     $getPk = $_GET['pk'];

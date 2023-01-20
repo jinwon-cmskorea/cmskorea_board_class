@@ -6,7 +6,7 @@ header("Content-Type: application/json");
 
 require_once __DIR__ . '/../AutoLoad.php';
 
-$board = new Cmskorea_Board_Board();
+$board = new Cmskorea_Board_Board(DBHOST, USERNAME, USERPW, DBNAME);
 
 //post로 삭제할 파일의 pk를 받아옴
 if (isset($_POST['filePk']) && $_POST['filePk']) {
