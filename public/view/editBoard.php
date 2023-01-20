@@ -3,9 +3,9 @@ session_start();
 require_once __DIR__ . '/../AutoLoad.php';
 
 //세션을 불러오기 위한 인스턴스 생성
-$auth = new Cmskorea_Board_Auth();
+$auth = new Cmskorea_Board_Auth(DBHOST, USERNAME, USERPW, DBNAME);
 //게시글 정보를 불러오기 위한 인스턴스 생성
-$board = new Cmskorea_Board_Board();
+$board = new Cmskorea_Board_Board(DBHOST, USERNAME, USERPW, DBNAME);
 
 //로그인한 유저가 접근한 경우 로그인 페이지로 리다이렉션
 if (!$auth->isLogin()) {

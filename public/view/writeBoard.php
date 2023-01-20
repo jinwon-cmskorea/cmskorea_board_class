@@ -1,7 +1,6 @@
 <?php 
     session_start();
     require_once __DIR__ . '/../AutoLoad.php';
-    require_once __DIR__ . '/../../configs/dbConfig.php';
     
     $connect = mysqli_connect(DBHOST, USERNAME, USERPW, DBNAME);
     if (!$connect) {
@@ -9,7 +8,7 @@
     }
     
     //세션을 불러오기 위한 인스턴스 및 메소드
-    $auth = new Cmskorea_Board_Auth();
+    $auth = new Cmskorea_Board_Auth(DBHOST, USERNAME, USERPW, DBNAME);
     $memberSession = $auth->getMember();
     
     $sql = "SELECT pk FROM member WHERE id='{$memberSession['id']}'";

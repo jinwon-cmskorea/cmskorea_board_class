@@ -3,7 +3,7 @@
     
     session_start();
     
-    $auth = new Cmskorea_Board_Auth();
+    $auth = new Cmskorea_Board_Auth(DBHOST, USERNAME, USERPW, DBNAME);
     if ($auth->isLogin()) {
         echo "<script type=\"text/javascript\">alert('이미 로그인하셨습니다.');</script>";
         echo "<script type=\"text/javascript\">location.href='./boardList.php';</script>";

@@ -4,7 +4,7 @@
     session_start();
     
     //Auth 의 logout 메소드로 세션 제거
-    $auth = new Cmskorea_Board_Auth();
+    $auth = new Cmskorea_Board_Auth(DBHOST, USERNAME, USERPW, DBNAME);
     $auth->logout();
     session_destroy();
 ?>

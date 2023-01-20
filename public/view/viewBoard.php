@@ -6,8 +6,8 @@
     
     require_once __DIR__ . '/../AutoLoad.php';
     
-    $auth = new Cmskorea_Board_Auth();
-    $board = new Cmskorea_Board_Board();
+    $auth = new Cmskorea_Board_Auth(DBHOST, USERNAME, USERPW, DBNAME);
+    $board = new Cmskorea_Board_Board(DBHOST, USERNAME, USERPW, DBNAME);
     
     /* 로그인하지 않았다면 로그인 페이지로 이동 */
     if (!$auth->isLogin()) {
