@@ -57,6 +57,7 @@ class Cmskorea_Board_AuthTest extends PHPUnit_Framework_TestCase
         $this->markTestIncomplete("authenticate test not implemented");
 
         $this->auth->authenticate(/* parameters */);
+        
     }
 
     /**

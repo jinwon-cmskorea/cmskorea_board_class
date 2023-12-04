@@ -1,0 +1,72 @@
+.listcontainer {
+    height: 1000px;
+}
+.header{
+    height: 60px;
+    padding: 10px;
+}
+.pagetitle{
+    color: #595959; 
+    font-weight:bold;
+}
+.pagedescription{
+    font-size: small;
+    font-weight:bold;
+}
+.descriptionbox{
+    height: 65px; 
+    padding: 8px; 
+    margin-bottom: 30px;
+}
+.descriptionlinebox{
+    height: 65px; 
+    padding: 8px; 
+    margin-bottom: 30px; 
+    line-height: 48px;
+}
+
+.contentbox{
+    border-top: 1px dashed lightgray;
+    border-bottom: 1px dashed lightgray;
+    overflow :auto;
+    height:500px;
+}
+
+.logoutbutton{
+    height : 40px;
+    padding: 10px;
+}
+.labelbox{
+    background-color: lightgray; 
+    border: none; 
+    width: 100px; 
+    height: 30px;
+    line-height: 30px;
+}
+.inputwritebox{
+    border: solid 1px lightgray;  
+    height: 30px;
+    line-height: 30px;
+}
+.centerbox{
+    margin:auto;
+    padding: 30px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+.inputsignupbox{
+    width: 23%;
+    height: 50px;
+    margin-right: 40px;
+    text-align: center;
+    align-items: center;
+    line-height: 50px;
+}
+#searchSelectBox{
+    background-color: lightgray; 
+    border: none;
+    width: 120px;
+    height: 30px;
+}
