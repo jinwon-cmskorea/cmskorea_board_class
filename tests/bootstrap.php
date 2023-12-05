@@ -22,3 +22,5 @@ set_include_path(implode(PATH_SEPARATOR, array(
     //    realpath(SCHEDULER_PATH),
     get_include_path(),
 )));
+
+session_start();

@@ -1,6 +1,6 @@
 <?php
-// DB 연결 함수 선언 
-$host = 'localhost';
-$userid = 'root';
-$password = 'cmskorea';
-$database = 'dbboard';
+// DB 연결 상수 선언 
+const HOST = 'localhost';
+const USERID = 'root';
+const PASSWORD = 'cmskorea';
+const DATABASE = 'dbboard';

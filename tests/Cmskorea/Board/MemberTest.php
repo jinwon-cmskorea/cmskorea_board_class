@@ -7,6 +7,7 @@ require_once __DIR__.'/bootstrap.php';
  * @see Cmskorea_Baord_Member
  */
 require_once '/Cmskorea/Board/Member.php';
+require_once __DIR__ .'/../../../configs/dbconfigs.php';
 /**
  * Cmskorea_Baord_Member test case.
  */
@@ -25,7 +26,7 @@ class Cmskorea_Baord_MemberTest extends PHPUnit_Framework_TestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->member = new Cmskorea_Baord_Member();
+        $this->member = new Cmskorea_Baord_Member(HOST, USERID, PASSWORD, DATABASE);
     }
 
     /**
@@ -43,9 +44,9 @@ class Cmskorea_Baord_MemberTest extends PHPUnit_Framework_TestCase
      */
     public function testRegistMember()
     {
-        $this->markTestIncomplete("registMember test not implemented");
-
-        $this->member->registMember(/* parameters */);
+        //$this->markTestIncomplete("registMember test not implemented");
+        $testuser = array('id' => 'authtest', 'pw' => 'authpw', 'name' => 'authname이름', 'telNumber' => 'authtelNumber12345');
+        //$this->member->registMember($testuser);
     }
 
     /**
@@ -53,9 +54,10 @@ class Cmskorea_Baord_MemberTest extends PHPUnit_Framework_TestCase
      */
     public function testGetMember()
     {
-        $this->markTestIncomplete("getMember test not implemented");
-
-        $this->member->getMember(/* parameters */);
+        //$this->markTestIncomplete("getMember test not implemented");
+        $testID = 'authtest';
+        $this->assertArrayHasKey('name', $this->member->getMember($testID));
+        $this->assertNotEmpty('Cmskorea_Board_Member', $this->member->getMember($testID));
     }
 
     /**
@@ -63,9 +65,13 @@ class Cmskorea_Baord_MemberTest extends PHPUnit_Framework_TestCase
      */
     public function testAuthenticate()
     {
-        $this->markTestIncomplete("authenticate test not implemented");
+        //$this->markTestIncomplete("authenticate test not implemented");
 
-        $this->member->authenticate(/* parameters */);
+        //$this->member->authenticate(/* parameters */);
+        $testID = 'authtest';
+        $testPW = 'authpw';
+        //echo $this->member->authenticate($testID, $testPW) . "확인";
+        $this->assertNull($this->member->authenticate($testID, $testPW));
     }
 }
 

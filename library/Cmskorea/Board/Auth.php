@@ -9,6 +9,7 @@
  * @see Cmskorea_Baord_Member
  */
 require_once 'member.php';
+//require_once $_SERVER['DOCUMENT_ROOT'] . '/cmskorea_board_class/configs/dbconfigs.php';
 /**
  * 씨엠에스코리아 사용자 인증 클래스
  *
@@ -22,7 +23,7 @@ class Cmskorea_Board_Auth {
      * @var Cmskorea_Baord_Member
      */
     protected $_member;
-
+    protected $db;
     /**
      * Session 네임스페이스
      * @var string
@@ -34,9 +35,14 @@ class Cmskorea_Board_Auth {
      *
      * @return void
      */
-    public function __construct() {
-        $this->_member = new Cmskorea_Baord_Member();
-       $dbconn = mysqli_connect($host, $userid, $password, $database);
+    public function __construct($host, $userid, $password, $database) {
+        $this->_member = new Cmskorea_Baord_Member($host, $userid, $password, $database);
+        $this->db = mysqli_connect($host, $userid, $password, $database);
+        if ($this->db) {
+            return $this->db;
+        } else {
+            return mysqli_error($this->db);
+        }
     }
 
     /**
@@ -50,10 +56,10 @@ class Cmskorea_Board_Auth {
     public function authenticate($id, $pw) {
         // Cmskorea_Baord_Member 로 위임
         $authResult = $this->_member->authenticate($id, $pw);
-
         // 로그인 성공 시 세션에 회원정보를 저장한다.
         $memberInfo = $this->_member->getMember($id);
-
+        $_SESSION[self::SESSION_NAMESPACE] = $memberInfo;
+        
         return $authResult;
     }
 

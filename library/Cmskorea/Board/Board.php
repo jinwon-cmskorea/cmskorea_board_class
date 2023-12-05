@@ -5,6 +5,7 @@
  * @category Cmskorea
  * @package  Board
  */
+//require_once $_SERVER['DOCUMENT_ROOT'] . '/cmskorea_board_class/configs/dbconfigs.php';
 /**
  * 씨엠에스코리아 게시판 클래스
  *
@@ -12,6 +13,17 @@
  * @package  Board
  */
 class Cmskorea_Board_Board {
+    protected $db;
+    
+    public function __construct($host, $userid, $password, $database) {
+        $this->db = mysqli_connect($host, $userid, $password, $database);
+        if ($this->db) {
+            return $this->db;
+        } else {
+            return mysqli_error($this->db);
+        }
+    }
+    
     /**
      * 글을 작성한다.
      *
@@ -25,7 +37,11 @@ class Cmskorea_Board_Board {
      * @return 글번호
      */
     public function addContent(array $datas) {
-        return 1;
+        $query = "INSERT INTO board (memberPk, title, writer, content, insertTime, updateTime) VALUES" . "( ". $datas['memberPk'] ." ,'". $datas['title'] ."' ,'". $datas['writer'] ."', '" . $datas['content'] . "' , now(), now())";
+        $result = mysqli_query($this->db, $query);
+        if ($result) {
+            return mysqli_insert_id($this->db);
+        }
     }
 
     /**
@@ -42,17 +58,28 @@ class Cmskorea_Board_Board {
      */
     public function editContent(array $datas) {
         // updateTime 수정
-        return true;
+        $query = "UPDATE board SET title='" . $datas['title'] . "', writer='" . $datas['writer'] . "', content='"  . $datas['content'] . "', updateTime=now() WHERE pk=" . $datas['no'] . ";";
+        $result = mysqli_query($this->db, $query);
+        if ($result) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
-     * 을 삭제한다.
+     * 글을 삭제한다.
      *
      * @param number 글번호
      * @return boolean
      */
     public function delContent($no) {
-        return true;
+        $result = mysqli_query($this->db,"DELETE FROM board WHERE pk=" . $no . ";");
+        if ($result) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -62,7 +89,9 @@ class Cmskorea_Board_Board {
      * @return array 글번호에 해당하는 데이터 전체
      */
     public function getContent($no) {
-        return array();
+        $result = mysqli_query($this->db,"SELECT * FROM board WHERE pk=" . $no . ";");
+        $row = mysqli_fetch_assoc($result);
+        return $row;
     }
 
     /**
@@ -72,7 +101,21 @@ class Cmskorea_Board_Board {
      * @return array 글 내용을 제외한 모든 데이터
      */
     public function getContents(array $conditions) {
-        return array();
+        $query = "select * from board";
+        //검색, 정렬 배열 값 꺼내기
+        if (array_key_exists('searchInput', $conditions)) {
+            $query .= " where " . $conditions["searchTag"] . " LIKE '%" . $conditions["searchInput"] . "%'";
+        }
+        if (array_key_exists('orderName', $conditions)) {
+            $query .= " order by " . $conditions["orderName"] . " " . $conditions["sort"];
+        }
+        $query .=" limit " . (($conditions['start_list'] - 1) * $conditions['last_list']) . ", " . $conditions['last_list'] . ";";
+        $result =  mysqli_query($this->db,$query);
+        if ($result) {
+            return $result;
+        } else {
+            return mysqli_error($this->db);
+        }
     }
 
     /**
