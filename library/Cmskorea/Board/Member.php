@@ -12,7 +12,7 @@
  * @category Cmskorea
  * @package  Board
  */
-class Cmskorea_Baord_Member {
+class Cmskorea_Board_Member {
     protected $db;
     
     public function __construct($host, $userid, $password, $database) {
@@ -36,7 +36,7 @@ class Cmskorea_Baord_Member {
      *            'name'      => '회원명',
      *            'telNumber' => '연락처',
      *        )
-     * @return Cmskorea_Baord_Member
+     * @return Cmskorea_Board_Member
      */
     public function registMember(array $datas) {
         try {
@@ -44,17 +44,17 @@ class Cmskorea_Baord_Member {
             $result = mysqli_query($this->db,"SELECT id FROM auth_identity where id='" . $datas['id'] . "';");
             $rows = mysqli_fetch_all($result);
             if ($rows){
-                throw new Exception('Member with the same ID exists.');
+                throw new Exception('중복된 아이디가 존재합니다!');
             } else {
-                $query = "INSERT INTO member (id, name, telNumber, insertTime, updateTime) VALUES ('" . $datas['id'] . "' ,'" . $datas['name'] . "' ,'" . $datas['telNumber'] ."' , now(), now())";
+                $query = "INSERT INTO member (id, name, telNumber, position, insertTime, updateTime) VALUES ('" . $datas['id'] . "' ,'" . $datas['name'] . "' ,'" . $datas['telNumber'] ."' , 5, now(), now())";
                 mysqli_query($this->db,$query);
                 $query = "INSERT INTO auth_identity (id, pw, name, insertTime) VALUES('" . $datas['id'] . "','". md5($datas['pw']) . "','" . $datas['name']. "', now())";
                 mysqli_query($this->db,$query);
             }
+            return $this;
         } catch (Exception $e) {
-            echo $e->getMessage();
+            return $e->getMessage();
         }
-        return $this;
     }
 
     /**
@@ -79,6 +79,8 @@ class Cmskorea_Baord_Member {
             $idarr['name'] = $row['name'];
             $idarr['telNumber'] = $row['telNumber'];
             return $idarr;
+        } else {
+            return false;
         }
     }
 

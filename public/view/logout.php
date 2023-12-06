@@ -1,3 +1,12 @@
+<?php 
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/cmskorea_board_class/configs/dbconfigs.php';
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/cmskorea_board_class/library/Cmskorea/Board/Auth.php';
+    if (!session_id()) {
+        session_start();
+    }
+    $authDBclass = new Cmskorea_Board_Auth(HOST, USERID, PASSWORD, DATABASE);
+    if ($authDBclass->logout()) {
+?>
 <html>
     <head>
         <meta charset="utf-8">
@@ -9,18 +18,12 @@
         <style type="text/css">
             .centerbox{
                 width: 570px;
-                height: 230px;
+                height: 250px;
             }
         </style>
         <title>로그아웃 페이지</title>
     </head>
     <body>
-    <?php 
-        if (!session_id()) {
-            session_start();
-        }
-        session_destroy();
-    ?>
         <div class="container">
             <div  class="text-center centerbox bg-secondary-subtle">
                 <div>
@@ -28,17 +31,29 @@
                     <hr>
                     <p class="fs-4 text-black-50">로그아웃 되었습니다.</p>
                 </div>
-                <div class="d-grid gap-2">
-                    <button class="btn btn-primary btn-lg rounded-0" id="home">홈으로</button>
+                <div class="d-flex justify-content-between align-items-end mt-5">
+                    <span class="text-secondary">3초 후 처음 화면으로 이동합니다...</span>
+                    <button class="btn btn-primary btn-lg rounded-0" id="home">확인</button>
                 </div>
             </div>
         </div>
         <script>
             $(document).ready(function(){
+                //3초 후 자동으로 index.php로 이동
+                setTimeout(function() { 
+                    location.href = './../index.php'; 
+                }, 3000);
                 $(document).on('click', '#home',function() {
-                   location.href = 'login.php'; 
+                    location.href = './../index.php'; 
                 });
             });
         </script>
     </body>
 </html>
+<?php     
+} else {
+    echo "<script>
+            alert('로그아웃에 실패했습니다 리스트 화면으로 돌아갑니다.');
+            location.replace('./board/boardlist.php');
+        </script>";;
+}?>

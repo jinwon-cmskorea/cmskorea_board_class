@@ -41,6 +41,8 @@ class Cmskorea_Board_Board {
         $result = mysqli_query($this->db, $query);
         if ($result) {
             return mysqli_insert_id($this->db);
+        } else {
+            return mysqli_error($this->db);
         }
     }
 
@@ -91,7 +93,11 @@ class Cmskorea_Board_Board {
     public function getContent($no) {
         $result = mysqli_query($this->db,"SELECT * FROM board WHERE pk=" . $no . ";");
         $row = mysqli_fetch_assoc($result);
-        return $row;
+        if ($result) {
+            return $row;
+        } else {
+            return mysqli_error($this->db);
+        }
     }
 
     /**
@@ -109,8 +115,10 @@ class Cmskorea_Board_Board {
         if (array_key_exists('orderName', $conditions)) {
             $query .= " order by " . $conditions["orderName"] . " " . $conditions["sort"];
         }
-        $query .=" limit " . (($conditions['start_list'] - 1) * $conditions['last_list']) . ", " . $conditions['last_list'] . ";";
-        $result =  mysqli_query($this->db,$query);
+        if (array_key_exists('start_list', $conditions)) {
+            $query .=" limit " . (($conditions['start_list'] - 1) * $conditions['last_list']) . ", " . $conditions['last_list'];
+        }
+        $result =  mysqli_query($this->db, $query. ";");
         if ($result) {
             return $result;
         } else {

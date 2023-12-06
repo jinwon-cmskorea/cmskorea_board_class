@@ -22,18 +22,18 @@
                     <span class="text-primary text-opacity-75" style="font-size: small; font-weight:bold">- 회원가입 -</span>
                 </div>
                 <br/>
-                <form class="text-start grid gap-3 " action="../process/member.php" onsubmit="return checkForm();" method="post" id="signupForm"><!-- needs-validation" novalidate -->
+                <form class="text-start grid gap-3 " action="../process/signupcheck.php" onsubmit="return checkForm();" method="post" id="signupForm"><!-- needs-validation" novalidate -->
                     <div class="row p-2 g-col-6 input-group" id="memberIdBox">
                         <span class="col-3 align-self-center bg-success text-white inputsignupbox">아이디</span>
                         <input  type="text" class="col-8 form-control form-control-lg rounded-0" name="memberId" id="memberId" placeholder="영문 숫자 포함">
                     </div>
                     <div class="row p-2 g-col-6 input-group" id="memberPwBox">
                         <span class="col-3 align-self-center bg-success text-white inputsignupbox">비밀번호</span>
-                        <input  type="password" class="col-8 form-control form-control-lg rounded-0"  name="memberPw" id="memberPw" placeholder="영문 숫자 필수">
+                        <input  type="password" class="col-8 form-control form-control-lg rounded-0"  name="memberPw" id="memberPw" placeholder="특수문자 필수">
                     </div>
                     <div class="row p-2 g-col-6 input-group" id="memberNameBox">
                         <span class="col-3 align-self-center bg-success text-white inputsignupbox">이름</span>
-                        <input  type="text" class="col-8 form-control form-control-lg rounded-0" style="ime-mode:auto;" name="memberName" id="memberName" placeholder="한글만 가능" >
+                        <input  type="text" class="col-8 form-control form-control-lg rounded-0" style="ime-mode:auto;" name="memberName" id="memberName" placeholder="한글, 영문 가능" >
                     </div>
                     <div class="row p-2 g-col-6 input-group" id="memberTelBox">
                         <span class="col-3 align-self-center bg-success text-white inputsignupbox">휴대전화</span>
@@ -68,7 +68,8 @@
                 var check = false;
                 var num = /[0-9]/g;
                 var eng = /[a-z]/ig;
-                var regexpName = /[a-z0-9]|[ \[\]{}()<>?|`~!@#$%^&*-_+=,.;:\"'\\]/g;
+                var symbols = /[~!@#$%^&*()_+|<>?:{}]/;
+                var regexpName = /[ \[\]{}()<>?|`~!@#$%^&*-_+=,.;:\"'\\]/g;
                 var regexpTel = /^(?:(010-\d{4})|(01[1|6|7|8|9]-\d{3,4}))-(\d{4})$/;
                 
                 inputIdVal = $("#memberId").val();
@@ -86,14 +87,14 @@
                     appendAlert('&#9888;영문 또는 숫자가 포함되어야합니다!', 'danger', 'memberIdBox');
                     return check;
                 } 
-                else if (inputPwVal.search(num) < 0 || inputPwVal.search(eng) < 0) {
+                else if ((inputPwVal.search(num) < 0 || inputPwVal.search(eng) < 0) && inputPwVal.search(symbols) < 0) {
                     $(".alertdivbox").remove();
-                    appendAlert('&#9888;영문 및 숫자가 필수입니다!', 'danger', 'memberPwBox');
+                    appendAlert('&#9888;특수문자 1개 이상 필수입니다!', 'danger', 'memberPwBox');
                     return check;
                 } 
                 else if (regexpName.test(inputNameVal)) {
                     $(".alertdivbox").remove();
-                    appendAlert('&#9888;한글만 입력 가능합니다!', 'danger', 'memberNameBox');
+                    appendAlert('&#9888;한글 또는 영문만 입력 가능합니다!', 'danger', 'memberNameBox');
                     return check;
                 } 
                 else if (!(regexpTel.test(inputTelVal))) {

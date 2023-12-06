@@ -29,7 +29,7 @@ class Cmskorea_Board_AuthTest extends PHPUnit_Framework_TestCase
     {
         parent::setUp();
         
-        $this->auth = new Cmskorea_Board_Auth(HOST, USERID, PASSWORD, DATABASE);
+        $this->auth = new Cmskorea_Board_Auth(HOST, USERID, PASSWORD, TESTDATABASE);
     }
 
     /**
@@ -57,16 +57,15 @@ class Cmskorea_Board_AuthTest extends PHPUnit_Framework_TestCase
     {
         //$this->markTestIncomplete("authenticate test not implemented");
 
-        //$this->auth->authenticate(/* parameters */);
-        $inId = $this->auth->authenticate("authtest", "authpw");
-        $outId = $this->auth->authenticate("testidnot", "testpwnot");
+        $okId = $this->auth->authenticate("authtest", "authpw");
+        $noId = $this->auth->authenticate("testidnot", "testpwnot");
         //var_dump($this->auth->authenticate("testidnot", "testpwnot"));
-        //$this->assertNotEmpty($this->auth->authenticate("testidnot", "testpwnot"));
-        //$this->assertNull($inId);
-        $this->assertNotNull($inId);
+        $this->assertNotEmpty($okId);
+        $this->assertNull($okId);
+        $this->assertNotNull($okId);
         
-        //$this->assertNull($outId);
-        //$this->assertNotNull($outId);
+        $this->assertNull($noId);
+        $this->assertNotNull($noId);
     }
 
     /**
@@ -79,6 +78,7 @@ class Cmskorea_Board_AuthTest extends PHPUnit_Framework_TestCase
         //var_dump($this->auth->getMember("testidnot", "testpwnot"));
         $this->auth->authenticate("authtest", "authpw");
         $this->assertEquals("authtest", $this->auth->getMember()['id']);
+        $this->assertEquals("authNotest", $this->auth->getMember()['id']);
     }
 
     /**
@@ -88,10 +88,9 @@ class Cmskorea_Board_AuthTest extends PHPUnit_Framework_TestCase
     {
         //$this->markTestIncomplete("isLogin test not implemented");
 
-        //$this->assertTrue($this->auth->isLogin());
         $result = $this->auth->isLogin();
         $this->assertFalse($result);
-        //$this->assertTrue($result);
+        $this->assertTrue($result);
     }
 
     /**
@@ -100,9 +99,10 @@ class Cmskorea_Board_AuthTest extends PHPUnit_Framework_TestCase
     public function testLogout()
     {
         //$this->markTestIncomplete("logout test not implemented");
+        
         $result = $this->auth->logout();
         $this->assertTrue($result);
-        //$this->assertFalse($this->auth->logout());
+        $this->assertFalse($result);
     }
 }
 

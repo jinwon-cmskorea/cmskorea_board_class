@@ -76,7 +76,7 @@
                     }
                 return check;
                 }
-            $(document).ready(function(){
+            $(document).ready(function() {
                 $('#name').focus();
                 
                 //input focus 경고문 삭제

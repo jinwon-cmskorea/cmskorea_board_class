@@ -40,7 +40,7 @@
                             <div class="labelbox  text-center col-1 mx-5 my-2">
                                 <span class="text-white">작성자</span>
                             </div>
-                            <input type="text" class="col-2 inputwritebox align-self-center" id="writer" readonly value="<?php echo $_SESSION['userName'] ?>">
+                            <input type="text" class="col-2 text-secondary inputwritebox align-self-center" id="writer" value="<?php echo $_SESSION[Cmskorea_Board_Auth::SESSION_NAMESPACE]['name'] ?>">
                         </div>
                     </div>
                     <div class="mx-5 row">
@@ -67,7 +67,7 @@
                     alertPlaceholder.append(wrapper);
                   }
             //작성 버튼
-            $("#boardWrite").on('click', function() {
+            $(document).on('click', '#boardWrite',function() {
                 var writeTitle = $("#writeTitle").val();
                 var writeContent = $("#writeContent").val().replaceAll(/(\n|\r\n)/g, "<br>");
                 var writer = $("#writer").val();
@@ -83,20 +83,19 @@
                     appendAlert('&#9888;작성자를 입력해 주세요!', 'danger', 'alertBox');
                 } else {
                     $.ajax({
-                        url : '../../process/board.php',
+                        url : '../../process/boardcheck.php',
                         type : 'POST',
                         dataType : 'text',
                         data : {call_name:'write_post', writeTitle:writeTitle, writeContent:writeContent, writer:writer},
                         error : function(){
                         console.log("실패");
                         }, success : function(result) {
-                            if(!result){
-                            alert('새 글이 등록되었습니다');
-                            location.href = 'boardlist.php'; 
-                        } else {
+                            if (result > 0) {
+                                location.href = 'boardview.php?"+result'; 
+                                alert('새 글이 등록되었습니다');
+                            } else {
                                 $(".alertmainbox").remove();
-                                appendAlert('&#9888;게시글 등록에 실패했습니다!', 'danger','alertBox');
-                                console.log(result);
+                                appendAlert('&#9888;게시글 등록에 실패했습니다!', 'danger', 'alertBox');
                             }
                         }
                     });

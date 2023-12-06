@@ -1,32 +1,32 @@
 <?php
-require_once "../../configs/dbconn.php";
+require_once $_SERVER['DOCUMENT_ROOT'] . '/cmskorea_board_class/configs/dbconfigs.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/cmskorea_board_class/library/Cmskorea/Board/Auth.php';
 
 if (!session_id()) {
     session_start();
 }
-$loginId = $_POST['name'];
-$loginPw = $_POST['password'];
-$md5Pw = md5($loginPw);
 
 //로그인 체크 데이터 검색
-function login_data_search($id, $pw) {
-    $logincheckDBclass = new DBconn();
-    $query = "SELECT id FROM auth_identity where id='" . $id . "' and pw='" . $pw . "';";
-    $search = mysqli_fetch_all(mysqli_query($logincheckDBclass->getDBconnect(), $query));
+if (isset($_POST['name']) && isset($_POST['password'])) {
+    $loginId = $_POST['name'];
+    $loginPw = $_POST['password'];
     
-    if (!(empty($search))) {
-        return  true;
+    $authDBclass = new Cmskorea_Board_Auth(HOST, USERID, PASSWORD, DATABASE);
+    $result = $authDBclass->authenticate($loginId, $loginPw);
+    
+    if (empty($result)) {
+        header("location:../view/board/boardlist.php");
     } else {
-        return  false;
-    }
-}
-if(login_data_search($loginId, $md5Pw)) {
-    $_SESSION['userName'] = $loginId;
-    header("location:../view/board/boardlist.php");
-} else {
-    echo "<script>
-            alert('아이디 또는 비밀번호가 일치하지 않습니다!');
+        echo "<script>
+            alert('{$result}');
             location.replace('../view/login.php');
         </script>";
+    }
+} else {
+    echo "전달 받은 값이 없습니다!";
 }
+/* if (empty($authDBclass->authenticate('test', 'test1'))) {
+    echo "빈값 확인(로그인 OK)";
+} else {echo "값 있음 확인(로그인 NOT)";} */
+//echo $authDBclass->authenticate('test', 'tes');
 ?>

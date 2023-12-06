@@ -1,15 +1,9 @@
-<?php 
+<?php
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/cmskorea_board_class/configs/dbconfigs.php';
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/cmskorea_board_class/library/Cmskorea/Board/Board.php';
     if (!session_id()) {
         session_start();
     }
-    
-    /* if(!isset($_SESSION['userName'])){
-        echo( "<script>alert('로그인 실패 후 접속했습니다!');</script>");
-        echo("<script>location.replace('../login.php');</script>");
-    } */
-    
-    //require_once "../../dbcontroller.php";
-    //$DBclass = new DBconn();
     //페이지 번호
     if (isset($_GET['page'])) {
         $page = $_GET['page'];
@@ -53,15 +47,21 @@
         $selectarr["orderName"] = $orderName;
         $selectarr["sort"] = $sort;
     }
+    $selectarr["start_list"] = $page;
+    $selectarr["last_list"] = $list_num;
+    $boardDBclass = new Cmskorea_Board_Board(HOST, USERID, PASSWORD, DATABASE);
     //쿼리 사용 데이터 가져오기
-    $table = "board";
-    $dblist = $DBclass->page_data_list($table, '*', $selectarr, (($page-1)*$list_num), $list_num);
-    if (isset($searchTag)&&isset($searchInput)) {
+    $dblist = $boardDBclass->getContents($selectarr);
+    if (isset($searchTag) && isset($searchInput)) {
         //검색 결과 전체 페이지 수
-        $total_page = ceil($DBclass->getDbRows($table,$searchTag, $searchInput) / $list_num);
+        $selectarr = array();
+        $selectarr["searchTag"] = $searchTag;
+        $selectarr["searchInput"] = $searchInput;
+        $total_page = ceil(mysqli_num_rows($boardDBclass->getContents($selectarr)) / $list_num);
     } else {
         //전체 페이지 수
-        $total_page = ceil($DBclass->getDbAllRows($table) / $list_num);
+        $selectarr = array();
+        $total_page = ceil(mysqli_num_rows($boardDBclass->getContents($selectarr)) / $list_num);
     }
     unset($selectarr);
     //전체 블럭 수
@@ -244,7 +244,7 @@
                 $(document).on('click', 'body div.container .DeleteCompleteClose', function() {
                     deletePk = $("#deletewrapperpk").attr("value");
                     $.ajax({
-                    url : '../../process/board.php',
+                    url : '../../process/boardcheck.php',
                     type : 'POST',
                     dataType : 'text',
                     data : {call_name:'delete_post', deletePk:deletePk},

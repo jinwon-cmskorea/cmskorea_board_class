@@ -46,7 +46,7 @@
             //게시글 조회
             function setViewData(){
                 $.ajax ({
-                    url : '../../process/board.php',
+                    url : '../../process/boardcheck.php',
                     type : 'POST',
                     dataType : 'json',
                     data : {call_name:'view_post', viewPk:viewPk},

@@ -27,7 +27,7 @@ class Cmskorea_Board_BoardTest extends PHPUnit_Framework_TestCase
     {
         parent::setUp();
 
-        $this->board = new Cmskorea_Board_Board(HOST, USERID, PASSWORD, DATABASE);
+        $this->board = new Cmskorea_Board_Board(HOST, USERID, PASSWORD, TESTDATABASE);
     }
 
     /**
@@ -46,9 +46,27 @@ class Cmskorea_Board_BoardTest extends PHPUnit_Framework_TestCase
     public function testAddContent()
     {
         //$this->markTestIncomplete("addContent test not implemented");
-        $testpost = array('memberPk' => '101', 'title' => 'testtitle제목', 'writer' => 'testwriter작성자', 'content' => '테스트 내용입니다. test content');
-        //$result = $this->board->addContent($testpost);
-        //$this->assertNotEmpty($result);
+        
+        $oktestpost = array(
+                'memberPk'  => '101',
+                'title'     => 'testtitle제목',
+                'writer'    => 'testwriter작성자',
+                'content'   => '테스트 내용입니다. test content'
+        );
+        $okresult = $this->board->addContent($oktestpost);
+        $this->assertNotEmpty($okresult);
+        $this->assertInternalType('string', $okresult);
+        $this->assertNotInternalType('string', $okresult);
+        
+        $notestpost = array(
+                'memberPk'  => '101',
+                'title'     => '작성자 없음',
+                'content'   => '테스트 내용입니다. test content'
+        );
+        $noresult = $this->board->addContent($notestpost);
+        $this->assertNotEmpty($noresult);
+        $this->assertInternalType('string', $noresult);
+        $this->assertNotInternalType('string', $noresult);
     }
 
     /**
@@ -57,10 +75,24 @@ class Cmskorea_Board_BoardTest extends PHPUnit_Framework_TestCase
     public function testEditContent()
     {
         //$this->markTestIncomplete("editContent test not implemented");
-        $testpost = array('no' => '150', 'title' => 'testtitle수정제목', 'writer' => 'testwriter수정작성자', 'content' => '수정한테스트 내용입니다. test content');
-        $result = $this->board->editContent($testpost);
-        $this->assertTrue($result);
-        //$this->assertFalse($this->board->editContent($testpost));
+        
+        $oktestpost = array(
+                'no'     => '1',
+                'title'  => 'testtitle성공수정제목',
+                'writer' => 'testwriter성공수정작성자', 'content' => '성공수정한테스트 내용입니다. test content');
+        $okresult = $this->board->editContent($oktestpost);
+        $this->assertTrue($okresult);
+        $this->assertFalse($okresult);
+        
+        $notestpost = array(
+                'no'     => '999',
+                'title'  => 'testtitle실패수정제목',
+                'writer' => 'testwriter실패수정작성자',
+                'content'=> '실패수정한테스트 내용입니다. test content'
+        );
+        $noresult = $this->board->editContent($notestpost);
+        $this->assertTrue($noresult);
+        $this->assertFalse($noresult);
     }
 
     /**
@@ -70,7 +102,9 @@ class Cmskorea_Board_BoardTest extends PHPUnit_Framework_TestCase
     {
         //$this->markTestIncomplete("delContent test not implemented");
 
-        //$this->board->delContent("147");
+        $result = $this->board->delContent("2");
+        $this->assertTrue($result);
+        $this->assertFalse($result);
     }
 
     /**
@@ -81,7 +115,10 @@ class Cmskorea_Board_BoardTest extends PHPUnit_Framework_TestCase
         //$this->markTestIncomplete("getContent test not implemented");
 
         //echo var_dump($this->board->getContent("147"));
-        $this->assertArrayHasKey('title', $this->board->getContent("147"));
+        $okresult = $this->board->getContent("1");
+        $noresult = $this->board->getContent("999");
+        $this->assertArrayHasKey('title', $okresult);
+        $this->assertArrayHasKey('title', $noresult);
     }
 
     /**
@@ -91,9 +128,33 @@ class Cmskorea_Board_BoardTest extends PHPUnit_Framework_TestCase
     {
         $p_num = 1;
         $l_num = 10;
+        
         //$this->markTestIncomplete("getContents test not implemented");
-        $testpost = array('searchTag' => 'title', 'searchInput' => '확인', 'orderName' => 'pk', 'sort' => 'desc', 'start_list' => $p_num, 'last_list' => $l_num);
-        //echo var_dump(mysqli_fetch_all($this->board->getContents($testpost)));
+        
+        $searchtestpost = array(
+                'searchTag'  => 'title',
+                'searchInput'=> 'test',
+                'start_list' => $p_num,
+                'last_list'  => $l_num
+        );
+        $sortpost = array(
+                'orderName'  => 'pk',
+                'sort'       => 'desc',
+                'start_list' => $p_num,
+                'last_list'  => $l_num
+        );
+        $testpost = array(
+                'searchTag'  => 'title',
+                'searchInput'=> 'test',
+                'orderName'  => 'pk',
+                'sort'       => 'desc',
+                'start_list' => $p_num,
+                'last_list'  => $l_num
+        );
+        //echo var_dump(mysqli_fetch_all($this->board->getContents($searchtestpost)));
+        $searchresult = mysqli_fetch_all($this->board->getContents($searchtestpost));
+        $result = mysqli_fetch_all($this->board->getContents($testpost));
+        $this->assertEquals($searchresult, $result);
     }
 }
 

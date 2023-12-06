@@ -6,7 +6,7 @@
  * @package  Board
  */
 /**
- * @see Cmskorea_Baord_Member
+ * @see Cmskorea_Board_Member
  */
 require_once 'member.php';
 //require_once $_SERVER['DOCUMENT_ROOT'] . '/cmskorea_board_class/configs/dbconfigs.php';
@@ -20,7 +20,7 @@ class Cmskorea_Board_Auth {
     /**
      * 씨엠에스코리아 사용자 클래스
      *
-     * @var Cmskorea_Baord_Member
+     * @var Cmskorea_Board_Member
      */
     protected $_member;
     protected $db;
@@ -36,7 +36,7 @@ class Cmskorea_Board_Auth {
      * @return void
      */
     public function __construct($host, $userid, $password, $database) {
-        $this->_member = new Cmskorea_Baord_Member($host, $userid, $password, $database);
+        $this->_member = new Cmskorea_Board_Member($host, $userid, $password, $database);
         $this->db = mysqli_connect($host, $userid, $password, $database);
         if ($this->db) {
             return $this->db;
@@ -54,7 +54,7 @@ class Cmskorea_Board_Auth {
      * @return string 로그인 성공 시 빈값|로그인 불능 시 불능메시지
      */
     public function authenticate($id, $pw) {
-        // Cmskorea_Baord_Member 로 위임
+        // Cmskorea_Board_Member 로 위임
         $authResult = $this->_member->authenticate($id, $pw);
         // 로그인 성공 시 세션에 회원정보를 저장한다.
         $memberInfo = $this->_member->getMember($id);
@@ -71,7 +71,7 @@ class Cmskorea_Board_Auth {
      */
     public function getMember() {
         if (!isset($_SESSION[self::SESSION_NAMESPACE]) || empty($_SESSION[self::SESSION_NAMESPACE])) {
-            throw new Exception('Member information is not set.');
+            throw new Exception('회원 정보가 설정되지 않았습니다.');
         }
 
         return $_SESSION[self::SESSION_NAMESPACE];
@@ -99,9 +99,13 @@ class Cmskorea_Board_Auth {
      * @return boolean
      */
     public function logout() {
-        unset($_SESSION[self::SESSION_NAMESPACE]);
-
-        return true;
+        if (!isset($_SESSION[self::SESSION_NAMESPACE]) || empty($_SESSION[self::SESSION_NAMESPACE])) {
+            //throw new Exception('회원 정보가 설정되지 않았습니다.');
+            return false;
+        } else{
+            unset($_SESSION[self::SESSION_NAMESPACE]);
+            return true;
+        }
     }
 }
 

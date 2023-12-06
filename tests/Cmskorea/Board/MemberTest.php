@@ -4,19 +4,19 @@
  */
 require_once __DIR__.'/bootstrap.php';
 /**
- * @see Cmskorea_Baord_Member
+ * @see Cmskorea_Board_Member
  */
 require_once '/Cmskorea/Board/Member.php';
 require_once __DIR__ .'/../../../configs/dbconfigs.php';
 /**
- * Cmskorea_Baord_Member test case.
+ * Cmskorea_Board_Member test case.
  */
-class Cmskorea_Baord_MemberTest extends PHPUnit_Framework_TestCase
+class Cmskorea_Board_MemberTest extends PHPUnit_Framework_TestCase
 {
 
     /**
      *
-     * @var Cmskorea_Baord_Member
+     * @var Cmskorea_Board_Member
      */
     private $member;
 
@@ -26,7 +26,7 @@ class Cmskorea_Baord_MemberTest extends PHPUnit_Framework_TestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->member = new Cmskorea_Baord_Member(HOST, USERID, PASSWORD, DATABASE);
+        $this->member = new Cmskorea_Board_Member(HOST, USERID, PASSWORD, TESTDATABASE);
     }
 
     /**
@@ -40,38 +40,65 @@ class Cmskorea_Baord_MemberTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Tests Cmskorea_Baord_Member->registMember()
+     * Tests Cmskorea_Board_Member->registMember()
      */
     public function testRegistMember()
     {
         //$this->markTestIncomplete("registMember test not implemented");
-        $testuser = array('id' => 'authtest', 'pw' => 'authpw', 'name' => 'authname이름', 'telNumber' => 'authtelNumber12345');
-        //$this->member->registMember($testuser);
+        
+        $testuser = array(
+                'id'        => 'authtest',
+                'pw'        => 'authpw',
+                'name'      => 'authname이름',
+                'telNumber' => 'authtelNumber12345'
+        );
+        $okresult = $this->member->registMember($testuser);
+        $this->assertInstanceOf('Cmskorea_Board_Member', $okresult);
+        
+        $testNouser = array('id' => 'authNotest', 'pw' => 'authNopw');
+        $noresult = $this->member->registMember($testNouser);
+        $this->assertInstanceOf('Cmskorea_Board_Member', $noresult);
+        
+        $this->assertEquals($okresult, $noresult);
     }
 
     /**
-     * Tests Cmskorea_Baord_Member->getMember()
+     * Tests Cmskorea_Board_Member->getMember()
      */
     public function testGetMember()
     {
         //$this->markTestIncomplete("getMember test not implemented");
-        $testID = 'authtest';
-        $this->assertArrayHasKey('name', $this->member->getMember($testID));
-        $this->assertNotEmpty('Cmskorea_Board_Member', $this->member->getMember($testID));
+        $okID = 'authtest';
+        $noID = 'authNoIdtest';
+        $okresult = $this->member->getMember($okID);
+        $noresult = $this->member->getMember($noID);
+        
+        $this->assertArrayHasKey('name', $okresult);
+        $this->assertEquals($okID, $okresult['id']);
+        $this->assertNotEmpty('Cmskorea_Board_Member', $okresult);
+        
+        $this->assertEquals($noID, $noresult['id']);
+        $this->assertNotEmpty('Cmskorea_Board_Member', $noresult);
     }
 
     /**
-     * Tests Cmskorea_Baord_Member->authenticate()
+     * Tests Cmskorea_Board_Member->authenticate()
      */
     public function testAuthenticate()
     {
         //$this->markTestIncomplete("authenticate test not implemented");
 
-        //$this->member->authenticate(/* parameters */);
-        $testID = 'authtest';
-        $testPW = 'authpw';
-        //echo $this->member->authenticate($testID, $testPW) . "확인";
-        $this->assertNull($this->member->authenticate($testID, $testPW));
+        $okID = 'authtest';
+        $okPW = 'authpw';
+        
+        $noID = 'authNoIdtest';
+        $noPW = 'authNoIdpw';
+        
+        $okresult = $this->member->authenticate($okID, $okPW);
+        $noresult = $this->member->authenticate($noID, $noPW);
+        
+        $this->assertNull($okresult);
+        $this->assertNull($noresult);
     }
 }
 
