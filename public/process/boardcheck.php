@@ -1,7 +1,5 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/cmskorea_board_class/configs/dbconfigs.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/cmskorea_board_class/library/Cmskorea/Board/Auth.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/cmskorea_board_class/library/Cmskorea/Board/Board.php';
+require_once './autoload.php';
 
 if (!session_id()) {
     session_start();
@@ -26,8 +24,8 @@ function write_post() {
 
     $insertArr = array();
     $insertArr['memberPk'] = $memberPk;
-    $insertArr['title'] = $_POST['writeTitle'];
-    $insertArr['writer'] = $_POST['writer'];
+    $insertArr['title'] = mysqli_real_escape_string($boardDBconnect, $_POST['writeTitle']);
+    $insertArr['writer'] = mysqli_real_escape_string($boardDBconnect, $_POST['writer']);
     $insertArr['content'] = $strip;
 
     if ($findMemberPk) {
@@ -53,8 +51,8 @@ function update_post() {
     
     $updateArr = array();
     $updateArr['no'] = $_POST['viewPk'];
-    $updateArr['title'] = $_POST['updateTitle'];
-    $updateArr['writer'] = $_POST['updateWriter'];
+    $updateArr['title'] = mysqli_real_escape_string($boardDBconnect, $_POST['updateTitle']);
+    $updateArr['writer'] = mysqli_real_escape_string($boardDBconnect, $_POST['updateWriter']);
     $updateArr['content'] = $strip;
     
     echo $boardDBclass->editContent($updateArr);
@@ -66,7 +64,7 @@ function delete_post() {
     $row = $boardDBclass->delContent($_POST['deletePk']);
     echo json_encode($row);
 }
-if (isset($_POST['call_name'])) {
+if (isset($_POST['call_name']) && $_POST['call_name']) {
     $call_name = $_POST['call_name'];
     call_user_func($call_name);
 } else {

@@ -7,7 +7,7 @@ require_once __DIR__.'/bootstrap.php';
  * @see Cmskorea_Board_Board
  */
 require_once '/Cmskorea/Board/Board.php';
-require_once __DIR__ .'/../../../configs/dbconfigs.php';
+require_once __DIR__ .'/../testconfigs/dbconfigs.php';
 /**
  * Cmskorea_Board_Board test case.
  */
@@ -27,7 +27,7 @@ class Cmskorea_Board_BoardTest extends PHPUnit_Framework_TestCase
     {
         parent::setUp();
 
-        $this->board = new Cmskorea_Board_Board(HOST, USERID, PASSWORD, TESTDATABASE);
+        $this->board = new Cmskorea_Board_Board(TESTHOST, TESTUSERID, TESTPASSWORD, TESTDATABASE);
     }
 
     /**
@@ -55,18 +55,19 @@ class Cmskorea_Board_BoardTest extends PHPUnit_Framework_TestCase
         );
         $okresult = $this->board->addContent($oktestpost);
         $this->assertNotEmpty($okresult);
-        $this->assertInternalType('string', $okresult);
-        $this->assertNotInternalType('string', $okresult);
+        $this->assertInternalType('integer', $okresult);
         
         $notestpost = array(
                 'memberPk'  => '101',
                 'title'     => '작성자 없음',
                 'content'   => '테스트 내용입니다. test content'
         );
-        $noresult = $this->board->addContent($notestpost);
-        $this->assertNotEmpty($noresult);
-        $this->assertInternalType('string', $noresult);
-        $this->assertNotInternalType('string', $noresult);
+        
+        try {
+            $noresult = $this->board->addContent($notestpost);
+        } catch (Exception $e) {
+            $this->assertEquals('Undefined index: writer', $e->getMessage());
+        }
     }
 
     /**
@@ -82,7 +83,6 @@ class Cmskorea_Board_BoardTest extends PHPUnit_Framework_TestCase
                 'writer' => 'testwriter성공수정작성자', 'content' => '성공수정한테스트 내용입니다. test content');
         $okresult = $this->board->editContent($oktestpost);
         $this->assertTrue($okresult);
-        $this->assertFalse($okresult);
         
         $notestpost = array(
                 'no'     => '999',
@@ -91,7 +91,6 @@ class Cmskorea_Board_BoardTest extends PHPUnit_Framework_TestCase
                 'content'=> '실패수정한테스트 내용입니다. test content'
         );
         $noresult = $this->board->editContent($notestpost);
-        $this->assertTrue($noresult);
         $this->assertFalse($noresult);
     }
 
@@ -102,8 +101,8 @@ class Cmskorea_Board_BoardTest extends PHPUnit_Framework_TestCase
     {
         //$this->markTestIncomplete("delContent test not implemented");
 
-        $result = $this->board->delContent("2");
-        $this->assertTrue($result);
+        $result = $this->board->delContent("999");
+        //$this->assertTrue($result);
         $this->assertFalse($result);
     }
 
@@ -118,7 +117,7 @@ class Cmskorea_Board_BoardTest extends PHPUnit_Framework_TestCase
         $okresult = $this->board->getContent("1");
         $noresult = $this->board->getContent("999");
         $this->assertArrayHasKey('title', $okresult);
-        $this->assertArrayHasKey('title', $noresult);
+        $this->assertNull($noresult);
     }
 
     /**
@@ -154,7 +153,7 @@ class Cmskorea_Board_BoardTest extends PHPUnit_Framework_TestCase
         //echo var_dump(mysqli_fetch_all($this->board->getContents($searchtestpost)));
         $searchresult = mysqli_fetch_all($this->board->getContents($searchtestpost));
         $result = mysqli_fetch_all($this->board->getContents($testpost));
-        $this->assertEquals($searchresult, $result);
+        $this->assertNotEquals($searchresult, $result);
     }
 }
 

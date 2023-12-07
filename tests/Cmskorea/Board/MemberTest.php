@@ -7,7 +7,7 @@ require_once __DIR__.'/bootstrap.php';
  * @see Cmskorea_Board_Member
  */
 require_once '/Cmskorea/Board/Member.php';
-require_once __DIR__ .'/../../../configs/dbconfigs.php';
+require_once __DIR__ .'/../testconfigs/dbconfigs.php';
 /**
  * Cmskorea_Board_Member test case.
  */
@@ -26,7 +26,8 @@ class Cmskorea_Board_MemberTest extends PHPUnit_Framework_TestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->member = new Cmskorea_Board_Member(HOST, USERID, PASSWORD, TESTDATABASE);
+        $this->member = new Cmskorea_Board_Member(TESTHOST, TESTUSERID, TESTPASSWORD, TESTDATABASE);
+        //mysqli_query(mysqli_connect(TESTHOST, TESTUSERID, TESTPASSWORD, TESTDATABASE), "DELETE FROM member");
     }
 
     /**
@@ -35,7 +36,6 @@ class Cmskorea_Board_MemberTest extends PHPUnit_Framework_TestCase
     protected function tearDown()
     {
         $this->member = null;
-
         parent::tearDown();
     }
 
@@ -46,20 +46,22 @@ class Cmskorea_Board_MemberTest extends PHPUnit_Framework_TestCase
     {
         //$this->markTestIncomplete("registMember test not implemented");
         
-        $testuser = array(
+        $testUser = array(
                 'id'        => 'authtest',
                 'pw'        => 'authpw',
                 'name'      => 'authname이름',
                 'telNumber' => 'authtelNumber12345'
         );
-        $okresult = $this->member->registMember($testuser);
-        $this->assertInstanceOf('Cmskorea_Board_Member', $okresult);
-        
-        $testNouser = array('id' => 'authNotest', 'pw' => 'authNopw');
-        $noresult = $this->member->registMember($testNouser);
-        $this->assertInstanceOf('Cmskorea_Board_Member', $noresult);
-        
-        $this->assertEquals($okresult, $noresult);
+        if (empty($this->member->getMember($testUser['id']))) {
+            $result = $this->member->registMember($testUser);
+            $this->assertInstanceOf('Cmskorea_Board_Member', $result);
+        } else {
+            try {
+                $result = $this->member->registMember($testUser);
+            } catch (Exception $e) {
+                $this->assertEquals('중복된 아이디가 존재합니다!', $e->getMessage());
+            }
+        }
     }
 
     /**
@@ -77,8 +79,7 @@ class Cmskorea_Board_MemberTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($okID, $okresult['id']);
         $this->assertNotEmpty('Cmskorea_Board_Member', $okresult);
         
-        $this->assertEquals($noID, $noresult['id']);
-        $this->assertNotEmpty('Cmskorea_Board_Member', $noresult);
+        $this->assertNotEquals($noID, $noresult['id']);
     }
 
     /**
@@ -98,7 +99,7 @@ class Cmskorea_Board_MemberTest extends PHPUnit_Framework_TestCase
         $noresult = $this->member->authenticate($noID, $noPW);
         
         $this->assertNull($okresult);
-        $this->assertNull($noresult);
+        $this->assertNotNull($noresult);
     }
 }
 

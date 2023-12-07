@@ -9,7 +9,6 @@
  * @see Cmskorea_Board_Member
  */
 require_once 'member.php';
-//require_once $_SERVER['DOCUMENT_ROOT'] . '/cmskorea_board_class/configs/dbconfigs.php';
 /**
  * 씨엠에스코리아 사용자 인증 클래스
  *
@@ -23,7 +22,7 @@ class Cmskorea_Board_Auth {
      * @var Cmskorea_Board_Member
      */
     protected $_member;
-    protected $db;
+    protected $_db;
     /**
      * Session 네임스페이스
      * @var string
@@ -37,11 +36,11 @@ class Cmskorea_Board_Auth {
      */
     public function __construct($host, $userid, $password, $database) {
         $this->_member = new Cmskorea_Board_Member($host, $userid, $password, $database);
-        $this->db = mysqli_connect($host, $userid, $password, $database);
-        if ($this->db) {
-            return $this->db;
+        $this->_db = mysqli_connect($host, $userid, $password, $database);
+        if ($this->_db) {
+            return $this->_db;
         } else {
-            return mysqli_error($this->db);
+            return mysqli_error($this->_db);
         }
     }
 
@@ -99,13 +98,9 @@ class Cmskorea_Board_Auth {
      * @return boolean
      */
     public function logout() {
-        if (!isset($_SESSION[self::SESSION_NAMESPACE]) || empty($_SESSION[self::SESSION_NAMESPACE])) {
-            //throw new Exception('회원 정보가 설정되지 않았습니다.');
-            return false;
-        } else{
-            unset($_SESSION[self::SESSION_NAMESPACE]);
-            return true;
-        }
+        unset($_SESSION[self::SESSION_NAMESPACE]);
+        
+        return true;
     }
 }
 

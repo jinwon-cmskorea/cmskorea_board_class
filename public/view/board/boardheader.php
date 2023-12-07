@@ -1,6 +1,6 @@
 <?php
-    require_once $_SERVER['DOCUMENT_ROOT'] . '/cmskorea_board_class/configs/dbconfigs.php';
-    require_once $_SERVER['DOCUMENT_ROOT'] . '/cmskorea_board_class/library/Cmskorea/Board/Auth.php';
+    require_once './../../process/autoload.php';
+
     if (!session_id()) {
         session_start();
     }

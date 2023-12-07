@@ -7,7 +7,7 @@ require_once __DIR__.'/bootstrap.php';
  * @see Cmskorea_Board_Auth
  */
 require_once '/Cmskorea/Board/Auth.php';
-require_once __DIR__ .'/../../../configs/dbconfigs.php';
+require_once __DIR__ .'/../testconfigs/dbconfigs.php';
 /* class Cmskorea_Board_Authtest extends Cmskorea_Board_Auth {
     
 } */
@@ -29,7 +29,7 @@ class Cmskorea_Board_AuthTest extends PHPUnit_Framework_TestCase
     {
         parent::setUp();
         
-        $this->auth = new Cmskorea_Board_Auth(HOST, USERID, PASSWORD, TESTDATABASE);
+        $this->auth = new Cmskorea_Board_Auth(TESTHOST, TESTUSERID, TESTPASSWORD, TESTDATABASE);
     }
 
     /**
@@ -60,12 +60,12 @@ class Cmskorea_Board_AuthTest extends PHPUnit_Framework_TestCase
         $okId = $this->auth->authenticate("authtest", "authpw");
         $noId = $this->auth->authenticate("testidnot", "testpwnot");
         //var_dump($this->auth->authenticate("testidnot", "testpwnot"));
-        $this->assertNotEmpty($okId);
+        $this->assertEmpty($okId);
         $this->assertNull($okId);
-        $this->assertNotNull($okId);
         
-        $this->assertNull($noId);
+        $this->assertNotEmpty($noId);
         $this->assertNotNull($noId);
+        $this->assertEquals("아이디 또는 비밀번호가 일치하지 않습니다.", $noId);
     }
 
     /**
@@ -78,7 +78,7 @@ class Cmskorea_Board_AuthTest extends PHPUnit_Framework_TestCase
         //var_dump($this->auth->getMember("testidnot", "testpwnot"));
         $this->auth->authenticate("authtest", "authpw");
         $this->assertEquals("authtest", $this->auth->getMember()['id']);
-        $this->assertEquals("authNotest", $this->auth->getMember()['id']);
+        $this->assertNotEquals("authNotest", $this->auth->getMember()['id']);
     }
 
     /**
@@ -87,10 +87,13 @@ class Cmskorea_Board_AuthTest extends PHPUnit_Framework_TestCase
     public function testIsLogin()
     {
         //$this->markTestIncomplete("isLogin test not implemented");
-
-        $result = $this->auth->isLogin();
-        $this->assertFalse($result);
-        $this->assertTrue($result);
+        $this->auth->authenticate("authtest", "authpw");
+        $okresult = $this->auth->isLogin();
+        $this->assertTrue($okresult);
+        
+        $this->auth->authenticate("testidnot", "testpwnot");
+        $noresult = $this->auth->isLogin();
+        $this->assertFalse($noresult);
     }
 
     /**
@@ -102,7 +105,6 @@ class Cmskorea_Board_AuthTest extends PHPUnit_Framework_TestCase
         
         $result = $this->auth->logout();
         $this->assertTrue($result);
-        $this->assertFalse($result);
     }
 }
 

@@ -91,8 +91,8 @@
                         console.log("실패");
                         }, success : function(result) {
                             if (result > 0) {
-                                location.href = 'boardview.php?"+result'; 
                                 alert('새 글이 등록되었습니다');
+                                location.href = "boardview.php?" + result; 
                             } else {
                                 $(".alertmainbox").remove();
                                 appendAlert('&#9888;게시글 등록에 실패했습니다!', 'danger', 'alertBox');

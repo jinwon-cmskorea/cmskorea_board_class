@@ -5,7 +5,6 @@
  * @category Cmskorea
  * @package  Board
  */
-//require_once $_SERVER['DOCUMENT_ROOT'] . '/cmskorea_board_class/configs/dbconfigs.php';
 /**
  * 씨엠에스코리아 게시판 클래스
  *
@@ -13,14 +12,14 @@
  * @package  Board
  */
 class Cmskorea_Board_Board {
-    protected $db;
+    protected $_db;
     
     public function __construct($host, $userid, $password, $database) {
-        $this->db = mysqli_connect($host, $userid, $password, $database);
-        if ($this->db) {
-            return $this->db;
+        $this->_db = mysqli_connect($host, $userid, $password, $database);
+        if ($this->_db) {
+            return $this->_db;
         } else {
-            return mysqli_error($this->db);
+            return mysqli_error($this->_db);
         }
     }
     
@@ -38,11 +37,11 @@ class Cmskorea_Board_Board {
      */
     public function addContent(array $datas) {
         $query = "INSERT INTO board (memberPk, title, writer, content, insertTime, updateTime) VALUES" . "( ". $datas['memberPk'] ." ,'". $datas['title'] ."' ,'". $datas['writer'] ."', '" . $datas['content'] . "' , now(), now())";
-        $result = mysqli_query($this->db, $query);
+        $result = mysqli_query($this->_db, $query);
         if ($result) {
-            return mysqli_insert_id($this->db);
+            return mysqli_insert_id($this->_db);
         } else {
-            return mysqli_error($this->db);
+            throw Exception(mysqli_error($this->_db));
         }
     }
 
@@ -61,9 +60,13 @@ class Cmskorea_Board_Board {
     public function editContent(array $datas) {
         // updateTime 수정
         $query = "UPDATE board SET title='" . $datas['title'] . "', writer='" . $datas['writer'] . "', content='"  . $datas['content'] . "', updateTime=now() WHERE pk=" . $datas['no'] . ";";
-        $result = mysqli_query($this->db, $query);
+        $result = mysqli_query($this->_db, $query);
         if ($result) {
-            return true;
+            if (mysqli_affected_rows($this->_db) > 0) {
+                return true;
+            } else {
+                return false;
+            }
         } else {
             return false;
         }
@@ -76,9 +79,13 @@ class Cmskorea_Board_Board {
      * @return boolean
      */
     public function delContent($no) {
-        $result = mysqli_query($this->db,"DELETE FROM board WHERE pk=" . $no . ";");
+        $result = mysqli_query($this->_db,"DELETE FROM board WHERE pk=" . $no . ";");
         if ($result) {
-            return true;
+            if (mysqli_affected_rows($this->_db) > 0) {
+                return true;
+            } else {
+                return false;
+            }
         } else {
             return false;
         }
@@ -91,13 +98,14 @@ class Cmskorea_Board_Board {
      * @return array 글번호에 해당하는 데이터 전체
      */
     public function getContent($no) {
-        $result = mysqli_query($this->db,"SELECT * FROM board WHERE pk=" . $no . ";");
+        $result = mysqli_query($this->_db,"SELECT * FROM board WHERE pk=" . $no . ";");
         $row = mysqli_fetch_assoc($result);
         if ($result) {
             return $row;
         } else {
-            return mysqli_error($this->db);
+            return mysqli_error($this->_db);
         }
+        return null;
     }
 
     /**
@@ -118,11 +126,11 @@ class Cmskorea_Board_Board {
         if (array_key_exists('start_list', $conditions)) {
             $query .=" limit " . (($conditions['start_list'] - 1) * $conditions['last_list']) . ", " . $conditions['last_list'];
         }
-        $result =  mysqli_query($this->db, $query. ";");
+        $result =  mysqli_query($this->_db, $query. ";");
         if ($result) {
             return $result;
         } else {
-            return mysqli_error($this->db);
+            return mysqli_error($this->_db);
         }
     }
 
