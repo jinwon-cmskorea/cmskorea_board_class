@@ -1,54 +1,54 @@
 .listcontainer {
     height: 1000px;
 }
-.header{
+.header {
     height: 60px;
     padding: 10px;
 }
-.pagetitle{
+.pagetitle {
     color: #595959; 
     font-weight:bold;
 }
-.pagedescription{
+.pagedescription {
     font-size: small;
     font-weight:bold;
 }
-.descriptionbox{
+.descriptionbox {
     height: 65px; 
     padding: 8px; 
     margin-bottom: 30px;
 }
-.descriptionlinebox{
+.descriptionlinebox {
     height: 65px; 
     padding: 8px; 
     margin-bottom: 30px; 
     line-height: 48px;
 }
 
-.contentbox{
+.contentbox {
     border-top: 1px dashed lightgray;
     border-bottom: 1px dashed lightgray;
     overflow :auto;
-    height:500px;
+    height:350px;
 }
 
-.logoutbutton{
+.logoutbutton {
     height : 40px;
     padding: 10px;
 }
-.labelbox{
+.labelbox {
     background-color: lightgray; 
     border: none; 
     width: 100px; 
     height: 30px;
     line-height: 30px;
 }
-.inputwritebox{
+.inputwritebox {
     border: solid 1px lightgray;
     height: 30px;
     line-height: 30px;
 }
-.centerbox{
+.centerbox {
     margin:auto;
     padding: 30px;
     position: absolute;
@@ -56,7 +56,7 @@
     left: 50%;
     transform: translate(-50%, -50%);
 }
-.inputsignupbox{
+.inputsignupbox {
     width: 23%;
     height: 50px;
     margin-right: 40px;
@@ -64,7 +64,7 @@
     align-items: center;
     line-height: 50px;
 }
-#searchSelectBox{
+#searchSelectBox {
     background-color: lightgray; 
     border: none;
     width: 120px;

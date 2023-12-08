@@ -24,14 +24,23 @@
                 </div>
                 <div class="my-5">
                     <div>
-                        <div class="row">
-                            <div class="col-8 fs-3" id="boardViewTitle"></div>
-                            <span  class="col-1  align-self-center" id="boardViewWriter"></span>
-                            <span  class="col-2  align-self-center" id="boardViewTime"></span>
+                        <div class="d-flex justify-content-between">
+                            <div class="fs-3" id="boardViewTitle"></div>
+                            <span  class="align-self-center" id="boardViewWriter"></span>
                         </div>
                         <div class="contentbox p-3">
                         	<p id="boardViewContent"></p>
                         </div>
+                    </div>
+                    <div class="mt-3" style="border-bottom: 1px dashed lightgray">
+                        <ul>
+                            <li>등록된 파일1</li>
+                            <li>등록된 파일2</li>
+                        </ul>
+                    </div>
+                    <div class="m-3">
+                        <div><span id="boardViewInsertTime"></span></div>
+                        <div><span id="boardViewUpdateTime"></span></div>
                     </div>
                     <div class="mx-5 mt-4 row">
                         <button class="btn btn-primary bg-warning border-warning col rounded-0 mx-1" id="postEdit">수 정</button>
@@ -48,15 +57,22 @@
                 $.ajax ({
                     url : '../../process/boardcheck.php',
                     type : 'POST',
-                    dataType : 'json',
+                    dataType : 'JSON',
                     data : {call_name:'view_post', viewPk:viewPk},
-                    error : function(){
-                        console.log("실패");
+                    error : function(jqXHR, textStatus, errorThrown){
+                            console.log("실패");
+                            alert("게시글 조회에 실패했습니다. ajax 실패 원인 : " + textStatus);
                     }, success : function(result){
-                        $("#boardViewTitle").html(result['title']);
-                        $("#boardViewWriter").html(result['writer']);
-                        $("#boardViewTime").html(result['updateTime']);
-                        $("#boardViewContent").html(result['content']);
+                        if (!(result.hasOwnProperty('errorMessage'))) {
+                            $("#boardViewTitle").html(result['title']);
+                            $("#boardViewWriter").html("작성자 : " + result['writer']);
+                            $("#boardViewInsertTime").html("등록시간 : " + result['insertTime']);
+                            $("#boardViewUpdateTime").html("마지막 수정시간 : " + result['updateTime']);
+                            $("#boardViewContent").html(result['content']);
+                        } else {
+                            alert("게시글 조회에 실패했습니다! 리스트 화면으로 돌아갑니다." + result['errorMessage']);
+                            location.href = "boardlist.php"; 
+                        }
                     }
                 });
             }
@@ -71,7 +87,7 @@
             
             //취소하기
             $(document).on('click', '#backList',function() {
-               location.href = 'boardlist.php'; 
+               location.href = "boardlist.php"; 
             });
         });
     </script>

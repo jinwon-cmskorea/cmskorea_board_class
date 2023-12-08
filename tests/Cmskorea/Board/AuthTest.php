@@ -7,7 +7,7 @@ require_once __DIR__.'/bootstrap.php';
  * @see Cmskorea_Board_Auth
  */
 require_once '/Cmskorea/Board/Auth.php';
-require_once __DIR__ .'/../testconfigs/dbconfigs.php';
+require_once __DIR__ .'/../testconfigs/testdbconfigs.php';
 /* class Cmskorea_Board_Authtest extends Cmskorea_Board_Auth {
     
 } */
@@ -45,7 +45,7 @@ class Cmskorea_Board_AuthTest extends PHPUnit_Framework_TestCase
     /**
      * Tests Cmskorea_Board_Auth->__construct()
      */
-    public function test__construct()
+    public function testConstruct()
     {
         $this->assertInstanceOf('Cmskorea_Board_Auth', $this->auth);
     }

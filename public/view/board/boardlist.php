@@ -4,6 +4,7 @@
     if (!session_id()) {
         session_start();
     }
+    $boardDBclass = new Cmskorea_Board_Board(HOST, USERID, PASSWORD, DATABASE);
     //페이지 번호
     if (isset($_GET['page'])) {
         $page = $_GET['page'];
@@ -35,8 +36,11 @@
     //데이터개수
     $list_num = 10;
     //페이지수
-    $page_num = 10;
+    $page_num = 5;
     
+    $total_page = 1;
+    $search_all_count = 1;
+    $search_count = 1;
     //검색, 정렬 데이터 배열에 저장
     $selectarr = array();
     if (isset($searchInput)) {
@@ -49,21 +53,26 @@
     }
     $selectarr["start_list"] = $page;
     $selectarr["last_list"] = $list_num;
-    $boardDBclass = new Cmskorea_Board_Board(HOST, USERID, PASSWORD, DATABASE);
     //쿼리 사용 데이터 가져오기
-    $dblist = $boardDBclass->getContents($selectarr);
-    if (isset($searchTag) && isset($searchInput)) {
-        //검색 결과 전체 페이지 수
-        $selectarr = array();
-        $selectarr["searchTag"] = $searchTag;
-        $selectarr["searchInput"] = $searchInput;
-        $total_page = ceil(mysqli_num_rows($boardDBclass->getContents($selectarr)) / $list_num);
-    } else {
-        //전체 페이지 수
-        $selectarr = array();
-        $total_page = ceil(mysqli_num_rows($boardDBclass->getContents($selectarr)) / $list_num);
+    try {
+        if (isset($searchTag) && isset($searchInput)) {
+            //검색 결과 전체 페이지 수
+            $pageCountArr = array();
+            $search_all_count = mysqli_num_rows($boardDBclass->getContents($pageCountArr));
+            $pageCountArr["searchTag"] = $searchTag;
+            $pageCountArr["searchInput"] = $searchInput;
+            $search_count = mysqli_num_rows($boardDBclass->getContents($pageCountArr));
+            $total_page = ceil($search_count / $list_num);
+        } else {
+            //전체 페이지 수
+            $pageCountArr = array();
+            $total_page = ceil(mysqli_num_rows($boardDBclass->getContents($pageCountArr)) / $list_num);
+        }
+    } catch (Exception $e) {
+        echo "<script>
+                console.log(\"" . $e->getMessage() . "\");
+            </script>";
     }
-    unset($selectarr);
     //전체 블럭 수
     $total_block = ceil($total_page / $page_num);
     //현재 페이지 번호
@@ -119,6 +128,13 @@
                                 <input type="hidden" name="orderName" value="<?php echo $orderName?>">
                                 <input type="hidden" name="sort" value="<?php echo $sort?>">
                                 <button class="btn btn-primary" id="searchButton">검색</button>
+                                <?php if(isset($searchTag) && isset($searchInput)) {
+                                        ?> <span><?php printf("%04d", $search_count);?></span> 
+                                          <span> / </span> 
+                                          <span><?php printf("%04d", $search_all_count);?> 건</span> 
+                                        <?php 
+                                }
+                                ?>
                             </form>
                             <div id="alertBox" class="col-3"></div>
                             <button class="btn btn-primary col-1" style="height:38px" id="boardWrite">작성</button>
@@ -126,7 +142,7 @@
                         <div>
                             <table class="table" style="border-top: 1px solid lightgray;" id="boardTable">
                                 <thead>
-                                    <tr>
+                                    <tr class="text-center">
                                         <th class="col-1" id="boardPk" value="pk"  onClick="sortcheck('pk')">번호</th>
                                         <th class="col-6 text-center" id="boardTitle" value="title" onClick="sortcheck('title')">제목</th>
                                         <th class="col-1" id="boardWriter" value="writer" onClick="sortcheck('writer')">작성자</th>
@@ -138,6 +154,7 @@
                                 <?php 
                                 //테이블 출력
                                 try{
+                                    $dblist = $boardDBclass->getContents($selectarr);
                                     //query 결과 검사
                                     if (is_string($dblist)) {
                                         throw new Exception($dblist);
@@ -150,13 +167,13 @@
                                         <?php 
                                     } else {
                                         foreach ($dblist as $value) { ?>  
-                                            <tr class='align-middle' >
-                                            <th scope='row'><?php echo $value["pk"];?></th>
-                                            <td><?php echo $value["title"];?></td>
-                                            <td><?php echo $value["writer"];?></td>
-                                            <td><?php echo substr($value["insertTime"],0,10);?></td>
-                                            <td><button type='button' class='btn btn-warning text-white viewButton'>조회</button>
-                                            <button type='button' class='btn btn-danger deleteButton ms-1'>삭제</button></td>
+                                            <tr class='align-middle text-center' >
+                                                <th scope='row'><?php printf("%04d", $value["pk"]);?></th>
+                                                <td class="text-start"><?php echo $value["title"];?></td>
+                                                <td><?php echo $value["writer"];?></td>
+                                                <td><?php echo substr($value["insertTime"],0,10);?></td>
+                                                <td><button type='button' class='btn btn-warning text-white viewButton'>조회</button>
+                                                <button type='button' class='btn btn-danger deleteButton ms-1'>삭제</button></td>
                                             </tr>
                                     <?php }?>
                                 </tbody>
@@ -167,18 +184,33 @@
                                           <li class='page-item'><a class='page-link' href='boardlist.php?page=1&searchTag=<?php echo $searchTag; ?>&searchInput=<?php echo $searchInput ?>&orderName=<?php echo $orderName; ?>&sort=<?php echo $sort ?>'>First</a></li>
                                         <?php
                                             /* pager : 페이지 번호 출력 */
+                                             if($page <= 1){ ?>
+                                                <li class='page-item'><a class='page-link' href='boardlist.php?page=1&searchTag=<?php echo $searchTag; ?>&searchInput=<?php echo $searchInput ?>&orderName=<?php echo $orderName; ?>&sort=<?php echo $sort ?>'>&lt</a></li>
+                                            <?php } else{ ?>
+                                                <li class='page-item'><a class='page-link' href='boardlist.php?page=<?php echo ($page-1); ?>&searchTag=<?php echo $searchTag; ?>&searchInput=<?php echo $searchInput ?>&orderName=<?php echo $orderName; ?>&sort=<?php echo $sort ?>'>&lt</a></li>
+                                            <?php };
+                                            
                                             for ($print_page = $s_pageNum; $print_page <= $e_pageNum; $print_page++) {
-                                            ?>
-                                            <li class='page-item'><a class='page-link' href="boardlist.php?page=<?php echo $print_page; ?>&searchTag=<?php echo $searchTag;?>&searchInput=<?php echo $searchInput ?>&orderName=<?php echo $orderName; ?>&sort=<?php echo $sort ?>"><?php echo $print_page; ?></a></li>
+                                                if ($page == $print_page) {?>
+                                                    <li class='page-item'><a class='page-link  bg-info-subtle' href='boardlist.php?page=<?php echo $print_page; ?>&searchTag=<?php echo $searchTag;?>&searchInput=<?php echo $searchInput ?>&orderName=<?php echo $orderName; ?>&sort=<?php echo $sort ?>'><?php echo $print_page; ?></a></li>
+                                                <?php } else {?>
+                                                    <li class='page-item'><a class='page-link' href='boardlist.php?page=<?php echo $print_page; ?>&searchTag=<?php echo $searchTag;?>&searchInput=<?php echo $searchInput ?>&orderName=<?php echo $orderName; ?>&sort=<?php echo $sort ?>'><?php echo $print_page; ?></a></li>
+                                            <?php }
+                                            };
+                                            
+                                            if ($page >= $total_page) {?>
+                                                <li class='page-item'><a class='page-link' href='boardlist.php?page=<?php echo $total_page; ?>&searchTag=<?php echo $searchTag; ?>&searchInput=<?php echo $searchInput ?>&orderName=<?php echo $orderName; ?>&sort=<?php echo $sort ?>'>&gt</a></li>
+                                            <?php } else{ ?>
+                                                <li class='page-item'><a class='page-link' href='boardlist.php?page=<?php echo ($page+1); ?>&searchTag=<?php echo $searchTag; ?>&searchInput=<?php echo $searchInput ?>&orderName=<?php echo $orderName; ?>&sort=<?php echo $sort ?>'>&gt</a></li>
                                             <?php };?>
-                                             <li class='page-item'><a class='page-link' href='boardlist.php?page=<?php echo $e_pageNum; ?>&searchTag=<?php echo $searchTag;?>&searchInput=<?php echo $searchInput ?>&orderName=<?php echo $orderName; ?>&sort=<?php echo $sort ?>'>Last</a></li>
+                                             <li class='page-item'><a class='page-link' href='boardlist.php?page=<?php echo $total_page; ?>&searchTag=<?php echo $searchTag;?>&searchInput=<?php echo $searchInput ?>&orderName=<?php echo $orderName; ?>&sort=<?php echo $sort ?>'>Last</a></li>
                                       </ul>
                                     </nav>
                                     <?php }
                                 } catch (Exception $e) {
                                     $m = $e->getMessage()?>
                                     <tr><td class='align-middle text-center fs-3 fw-bold py-4' colspan='5'>게시글 리스트를 불러오기 실패했습니다!</td></tr>
-                                    <tr><td class='align-middle text-center py-2' colspan='5'>오류내용 : " + <?php echo $m  ?> + "</td></tr>
+                                    <tr><td class='align-middle text-center py-2' colspan='5'><?php echo $m  ?></td></tr>
                                 <?php }?>
                         </div>
                     </div>
@@ -205,26 +237,26 @@
             <?php 
             if (isset($orderName) && isset($sort)) {
                 if ($sort === 'asc') {
-                    ?>$("th[value=" + '<?php echo $orderName; ?>' + "]").append('▲');<?php
-                } else {
                     ?>$("th[value=" + '<?php echo $orderName; ?>' + "]").append('▼');<?php
+                } else {
+                    ?>$("th[value=" + '<?php echo $orderName; ?>' + "]").append('▲');<?php
                 }
             }
             ?>
             $(document).ready(function () {
-            //삭제 경고창
-            const appendDelete = (message, id) => {
-                const DeletePlaceholder = document.getElementById(id);
-                const Deletewrapper = document.createElement('div')
-                Deletewrapper.innerHTML = [
-                    `<div class="border border-danger border-2 rounded bg-danger-subtle text-dark p-2 alertDelete" style="position: absolute" id="alertDelete">`,
-                    `   <div id="deletewrapperpk">${message}</div>`,
-                    '   <button type="button" id="DeleteCompleteClose" class="btn btn-danger DeleteCompleteClose">삭제</button>',
-                    '   <button type="button" id="DeleteClose" class="btn btn-secondary DeleteClose">취소</button>',
-                    '</div>'
-                    ].join('')
-                DeletePlaceholder.append(Deletewrapper)
-            }
+                //삭제 경고창
+                const appendDelete = (message, id) => {
+                    const DeletePlaceholder = document.getElementById(id);
+                    const Deletewrapper = document.createElement('div')
+                    Deletewrapper.innerHTML = [
+                        `<div class="border border-danger border-2 rounded bg-danger-subtle text-dark p-2 alertDelete" style="position: absolute" id="alertDelete">`,
+                        `   <div id="deletewrapperpk">${message}</div>`,
+                        '   <button type="button" id="DeleteCompleteClose" class="btn btn-danger DeleteCompleteClose">삭제</button>',
+                        '   <button type="button" id="DeleteClose" class="btn btn-secondary DeleteClose">취소</button>',
+                        '</div>'
+                        ].join('')
+                    DeletePlaceholder.append(Deletewrapper)
+                }
                 //게시글 조회
                 $(document).on('click', 'body div.container .viewButton', function() {
                     var thisRow = $(this).closest('tr'); 
@@ -244,18 +276,22 @@
                 $(document).on('click', 'body div.container .DeleteCompleteClose', function() {
                     deletePk = $("#deletewrapperpk").attr("value");
                     $.ajax({
-                    url : '../../process/boardcheck.php',
-                    type : 'POST',
-                    dataType : 'text',
-                    data : {call_name:'delete_post', deletePk:deletePk},
-                    error : function(e){
-                    console.log(e);
-                    }, success : function(result){
-                        console.log(result);
+                        url : '../../process/boardcheck.php',
+                        type : 'POST',
+                        dataType : 'text',
+                        data : {call_name:'delete_post', deletePk:deletePk},
+                        error : function(jqXHR, textStatus, errorThrown){
+                           console.log("실패");
+                           alert("게시글 삭제 실패했습니다. ajax 실패 원인 : " + textStatus);
+                        }, success : function(result){
+                            if (result) {
+                                $("#alertBox").empty();
+                                location.reload();
+                            } else {
+                                alert("게시글 삭제 실패했습니다.");
+                            }
                         }
                     });
-                    $("#alertBox").empty();
-                    location.reload();
                 });
                 $(document).on('click', 'body div.container .DeleteClose', function() {
                     $("#alertBox").empty();

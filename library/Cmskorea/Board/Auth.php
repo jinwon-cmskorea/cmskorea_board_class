@@ -37,11 +37,6 @@ class Cmskorea_Board_Auth {
     public function __construct($host, $userid, $password, $database) {
         $this->_member = new Cmskorea_Board_Member($host, $userid, $password, $database);
         $this->_db = mysqli_connect($host, $userid, $password, $database);
-        if ($this->_db) {
-            return $this->_db;
-        } else {
-            return mysqli_error($this->_db);
-        }
     }
 
     /**

@@ -77,7 +77,7 @@
                 inputNameVal = $("#memberName").val();
                 inputTelVal = $("#memberTel").val();
                 
-                /* if (inputIdVal.trim() == '' || inputPwVal.trim() == '' || inputNameVal.trim() == '' || inputTelVal.trim() == '') {
+                if (inputIdVal.trim() == '' || inputPwVal.trim() == '' || inputNameVal.trim() == '' || inputTelVal.trim() == '') {
                     $(".alertdivbox").remove();
                     appendAlert('&#9888;빈칸을 채워주세요!', 'danger','alertBox');
                     return check;
@@ -101,7 +101,7 @@
                     $(".alertdivbox").remove();
                     appendAlert('&#9888;휴대전화번호 형식으로 입력해야 합니다!', 'danger', 'memberTelBox');
                     return check;
-                }  */
+                }
                 check = true;
                 return check;
             }

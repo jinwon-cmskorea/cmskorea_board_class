@@ -42,6 +42,18 @@
                             </div>
                             <input type="text" class="col-2 text-secondary inputwritebox align-self-center" id="writer">
                         </div>
+                        <div class="row">
+                            <div class="labelbox text-center col-1 mx-5 my-2">
+                                <span class="text-white" style="font-size:15px">파일업로드</span>
+                            </div>
+                            <input type="file" class="col-6 align-self-center" id="file1">
+                        </div>
+                        <div class="row">
+                            <div class="labelbox text-center col-1 mx-5 my-2" >
+                                <span class="text-white" style="font-size:15px">파일업로드</span>
+                            </div>
+                            <input type="file" class="col-6 align-self-center" id="file2">
+                        </div>
                     </div>
                     <div class="mx-5 row">
                         <button class="btn btn-primary bg-warning border-warning col rounded-0 mx-1" id="postEdit">수정</button>
@@ -54,18 +66,18 @@
     <script>
         $(document).ready(function () {
             //경고문(입력 체크)  
-              	const appendAlert = (message, type, id) => {
-                 const alertPlaceholder = document.getElementById(id);
-                 const wrapper = document.createElement('div');
-                    wrapper.innerHTML = [
-                      `<div class="alert alert-${type} alert-dismissible alertmainbox" id="alertmain" >`,
-                      `   <div>${message}</div>`,
-                      '   <button type="button" id="alertclose" class="btn-close close" data-bs-dismiss="alert"></button>',
-                      '</div>'
-                    ].join('')
+            const appendAlert = (message, type, id) => {
+                const alertPlaceholder = document.getElementById(id);
+                const wrapper = document.createElement('div');
+                wrapper.innerHTML = [
+                    `<div class="alert alert-${type} alert-dismissible alertmainbox" id="alertmain" >`,
+                    `   <div>${message}</div>`,
+                    '   <button type="button" id="alertclose" class="btn-close close" data-bs-dismiss="alert"></button>',
+                    '</div>'
+                ].join('')
                     
-                    alertPlaceholder.append(wrapper);
-                  }
+                alertPlaceholder.append(wrapper);
+            }
             const viewPk = location.href.split('?')[1];
             //게시글 조회
             function setViewData(){
@@ -74,12 +86,18 @@
                     type : 'POST',
                     dataType : 'json',
                     data : {call_name:'view_post', viewPk:viewPk},
-                    error : function(){
-                        console.log("실패");
+                    error : function(jqXHR, textStatus, errorThrown){
+                            console.log("실패");
+                            alert("게시글 수정 조회에 실패했습니다. ajax 실패 원인 : " + textStatus);
                     }, success : function(result){
-                        $('#editTitle').val(result['title']);
-                        $('#editContent').val(result['content'].replaceAll("<br>","\n"));
-                        $('#writer').val(result['writer']);
+                        if (!(result.hasOwnProperty('errorMessage'))) {
+                            $('#editTitle').val(result['title']);
+                            $('#editContent').val(result['content'].replaceAll("<br>","\n"));
+                            $('#writer').val(result['writer']);
+                        } else {
+                            alert("게시글 수정 조회에 실패했습니다! 게시글 화면으로 돌아갑니다. " + result['errorMessage']);
+                            location.href = "boardview.php?" + viewPk;
+                        }
                     }
                 });
             }
@@ -106,11 +124,12 @@
                         url : '../../process/boardcheck.php',
                         type : 'POST',
                         dataType : 'text',
-                        data : {call_name:'update_post', viewPk:viewPk, updateTitle:updateTitle, updateContent:updateContent, updateWriter:updateWriter},
-                        error : function(){
+                        data : {call_name:'update_post', viewPk:viewPk, 
+                            updateTitle:updateTitle, updateContent:updateContent, updateWriter:updateWriter},
+                        error : function(jqXHR, textStatus, errorThrown){
                             console.log("실패");
+                            alert("게시글 수정에 실패했습니다. ajax 실패 원인 : " + textStatus);
                         }, success : function(result){
-                            console.log(result);
                             if (result) {
                                 alert('글이 수정되었습니다');
                                 location.href = "boardview.php?" + viewPk;

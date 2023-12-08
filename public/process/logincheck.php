@@ -26,8 +26,4 @@ if ((isset($_POST['name']) && $_POST['name']) && (isset($_POST['password']) && $
 } else {
     echo "전달 받은 값이 없습니다!";
 }
-/* if (empty($authDBclass->authenticate('test', 'test1'))) {
-    echo "빈값 확인(로그인 OK)";
-} else {echo "값 있음 확인(로그인 NOT)";} */
-//echo $authDBclass->authenticate('test', 'tes');
 ?>

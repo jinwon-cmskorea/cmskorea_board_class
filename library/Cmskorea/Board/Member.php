@@ -16,11 +16,6 @@ class Cmskorea_Board_Member {
     
     public function __construct($host, $userid, $password, $database) {
         $this->_db = mysqli_connect($host, $userid, $password, $database);
-        if ($this->_db) {
-            return $this->_db;
-        } else {
-            return mysqli_error($this->_db);
-        }
     }
     
     /**
@@ -43,7 +38,19 @@ class Cmskorea_Board_Member {
         if ($this->getMember($datas['id'])) {
             throw new Exception('중복된 아이디가 존재합니다!');
         } else {
-            $query = "INSERT INTO member (id, name, telNumber, position, insertTime, updateTime) VALUES ('" . $datas['id'] . "' ,'" . $datas['name'] . "' ,'" . $datas['telNumber'] ."' , 5, now(), now())";
+            //데이터 유효성 검사
+            if (!((preg_match("/[0-9]/", $datas['id'])) || (preg_match("/[a-z]/i", $datas['id'])))) {
+                throw new Exception("데이터 전달에 실패했습니다. 아이디를 영문 또는 숫자가 포함되도록 다시 작성해주세요.");
+            } else if (!(preg_match("/[~!@#$%^&*()_+|<>?:{}]/", $datas['pw']))) {
+                throw new Exception("데이터 전달에 실패했습니다. 비밀번호는 특수문자 1개 필수입니다. 다시 작성해주세요.");
+            } else if (preg_match("/[~!@#$%^&*()_+|<>?:{}]/", $datas['name'])) {
+                throw new Exception("데이터 전달에 실패했습니다. 이름을 한글 또는 영문만 있도록 다시 작성해주세요.");
+            } else if (!(preg_match("/^(?:(010-\d{4})|(01[1|6|7|8|9]-\d{3,4}))-(\d{4})$/", $datas['telNumber']))) {
+                throw new Exception("데이터 전달에 실패했습니다. 휴대전화번호 형식을 일치하도록 다시 작성해주세요.");
+            }
+            $query = "INSERT INTO member (id, name, telNumber, position, insertTime, updateTime) 
+                        VALUES ('" . $datas['id'] . "' ,'" . $datas['name'] . "' ,'" . str_replace('-', '', $datas['telNumber']) ."' , 5, now(), now())";
+            
             $rs = mysqli_query($this->_db,$query);
             //
             if ($rs) {
@@ -76,7 +83,7 @@ class Cmskorea_Board_Member {
      *        )
      */
     public function getMember($id) {
-        $query = "SELECT id, name, telNumber FROM member WHERE id='" . $id . "';";
+        $query = "SELECT pk, id, name, telNumber FROM member WHERE id='" . $id . "';";
         $result = mysqli_query($this->_db, $query);
         
         if ($result) {

@@ -1,3 +1,11 @@
+<?php 
+require_once './../../process/autoload.php';
+if (!session_id()) {
+    session_start();
+}
+$authDBclass = new Cmskorea_Board_Auth(HOST, USERID, PASSWORD, DATABASE);
+$memberData = $authDBclass->getMember();
+?>
 <html>
     <head>
         <meta charset="utf-8">
@@ -34,13 +42,25 @@
                             <div class="labelbox text-center col-1 mx-5 mb-5 my-2">
                                 <span class="text-white">내 용</span>
                             </div>
-                            <textarea  class="col-9 inputwritebox my-2" style="height: 400px; resize: none;" id="writeContent"  placeholder="내용을 입력해주세요."></textarea>
+                            <textarea  class="col-9 inputwritebox my-2" style="height: 320px; resize: none;" id="writeContent"  placeholder="내용을 입력해주세요."></textarea>
                         </div>
                         <div class="row">
-                            <div class="labelbox  text-center col-1 mx-5 my-2">
+                            <div class="labelbox text-center col-1 mx-5 my-2">
                                 <span class="text-white">작성자</span>
                             </div>
-                            <input type="text" class="col-2 text-secondary inputwritebox align-self-center" id="writer" value="<?php echo $_SESSION[Cmskorea_Board_Auth::SESSION_NAMESPACE]['name'] ?>">
+                            <input type="text" class="col-2 text-secondary inputwritebox align-self-center" id="writer" value="<?php echo $memberData['name'] ?>">
+                        </div>
+                        <div class="row">
+                            <div class="labelbox text-center col-1 mx-5 my-2">
+                                <span class="text-white" style="font-size:15px">파일업로드</span>
+                            </div>
+                            <input type="file" class="col-6 align-self-center" id="file1">
+                        </div>
+                        <div class="row">
+                            <div class="labelbox text-center col-1 mx-5 my-2" >
+                                <span class="text-white" style="font-size:15px">파일업로드</span>
+                            </div>
+                            <input type="file" class="col-6 align-self-center" id="file2">
                         </div>
                     </div>
                     <div class="mx-5 row">
@@ -54,18 +74,18 @@
     <script>
         $(document).ready(function () {
             //경고문(입력 체크)  
-                const appendAlert = (message, type, id) => {
-                 const alertPlaceholder = document.getElementById(id);
-                 const wrapper = document.createElement('div');
-                    wrapper.innerHTML = [
-                      `<div class="alert alert-${type} alert-dismissible alertmainbox" id="alertmain" >`,
-                      `   <div>${message}</div>`,
-                      '   <button type="button" id="alertclose" class="btn-close close" data-bs-dismiss="alert"></button>',
-                      '</div>'
-                    ].join('')
-                        
-                    alertPlaceholder.append(wrapper);
-                  }
+            const appendAlert = (message, type, id) => {
+            const alertPlaceholder = document.getElementById(id);
+            const wrapper = document.createElement('div');
+            wrapper.innerHTML = [
+                `<div class="alert alert-${type} alert-dismissible alertmainbox" id="alertmain" >`,
+                `   <div>${message}</div>`,
+                '   <button type="button" id="alertclose" class="btn-close close" data-bs-dismiss="alert"></button>',
+                '</div>'
+                ].join('')
+                
+            alertPlaceholder.append(wrapper);
+            }
             //작성 버튼
             $(document).on('click', '#boardWrite',function() {
                 var writeTitle = $("#writeTitle").val();
@@ -87,15 +107,16 @@
                         type : 'POST',
                         dataType : 'text',
                         data : {call_name:'write_post', writeTitle:writeTitle, writeContent:writeContent, writer:writer},
-                        error : function(){
-                        console.log("실패");
+                        error : function(jqXHR, textStatus, errorThrown){
+                            console.log("실패");
+                            alert("게시글 등록에 실패했습니다. ajax 실패 원인 : " + textStatus);
                         }, success : function(result) {
                             if (result > 0) {
                                 alert('새 글이 등록되었습니다');
                                 location.href = "boardview.php?" + result; 
                             } else {
                                 $(".alertmainbox").remove();
-                                appendAlert('&#9888;게시글 등록에 실패했습니다!', 'danger', 'alertBox');
+                                appendAlert('&#9888;' + result, 'danger', 'alertBox');
                             }
                         }
                     });

@@ -7,7 +7,7 @@ require_once __DIR__.'/bootstrap.php';
  * @see Cmskorea_Board_Board
  */
 require_once '/Cmskorea/Board/Board.php';
-require_once __DIR__ .'/../testconfigs/dbconfigs.php';
+require_once __DIR__ .'/../testconfigs/testdbconfigs.php';
 /**
  * Cmskorea_Board_Board test case.
  */
@@ -39,6 +39,25 @@ class Cmskorea_Board_BoardTest extends PHPUnit_Framework_TestCase
 
         parent::tearDown();
     }
+
+    
+    /**
+     * 생성자테스트
+     */
+    public function testConstruct()
+    {
+        $board = new Cmskorea_Board_Board(TESTHOST, TESTUSERID, TESTPASSWORD, TESTDATABASE);
+        $this->assertInstanceOf('Cmskorea_Board_Board', $board);
+    }
+
+//     /**
+//      * 생성자 예외 (존재하지않는 데이터베이스)
+//      * @expectedException Cmskorea_Board_Exception
+//      */
+//     public function testConstructException()
+//     {
+//         $board = new Cmskorea_Board_Board(TESTHOST, TESTUSERID, TESTPASSWORD, 'no_database');
+//     }
 
     /**
      * Tests Cmskorea_Board_Board->addContent()
