@@ -1,3 +1,25 @@
+<?php 
+require_once './../../process/autoload.php';
+$boardDBclass = new Cmskorea_Board_Board(HOST, USERID, PASSWORD, DATABASE);
+$authDBclass = new Cmskorea_Board_Auth(HOST, USERID, PASSWORD, DATABASE);
+if (!session_id()) {
+    session_start();
+}
+if (isset($_GET['post'])) {
+    $post = $_GET['post'];
+} else {
+    $post = 0;
+}
+//수정 유저 확인
+$postlist = $boardDBclass->getContent($post);
+$userdata = $authDBclass->getMember();
+if ($postlist['memberPk'] !== $userdata['pk'] && $userdata['id'] !== "root") {
+    echo "<script>
+                alert('잘못된 수정 페이지 접근입니다! 게시글 목록으로 돌아갑니다.');
+                location.replace('./boardlist.php');
+            </script>";
+}
+?>
 <html>
     <head>
         <meta charset="utf-8">
@@ -34,7 +56,7 @@
                             <div class="labelbox text-center col-1 mx-5 mb-5 my-2">
                                 <span class="text-white">내 용</span>
                             </div>
-                            <textarea  class="col-9 inputwritebox my-2" style="height: 400px; resize: none;" id="editContent"  placeholder="내용을 입력해주세요."></textarea>
+                            <textarea  class="col-9 inputwritebox my-2" style="height: 320px; resize: none;" id="editContent"  placeholder="내용을 입력해주세요."></textarea>
                         </div>
                         <div class="row">
                             <div class="labelbox text-center col-1 mx-5 my-2">
@@ -78,14 +100,13 @@
                     
                 alertPlaceholder.append(wrapper);
             }
-            const viewPk = location.href.split('?')[1];
             //게시글 조회
             function setViewData(){
                 $.ajax({
                     url : '../../process/boardcheck.php',
                     type : 'POST',
                     dataType : 'json',
-                    data : {call_name:'view_post', viewPk:viewPk},
+                    data : {call_name:'view_post', viewPk:<?php echo $post;?>},
                     error : function(jqXHR, textStatus, errorThrown){
                             console.log("실패");
                             alert("게시글 수정 조회에 실패했습니다. ajax 실패 원인 : " + textStatus);
@@ -96,7 +117,7 @@
                             $('#writer').val(result['writer']);
                         } else {
                             alert("게시글 수정 조회에 실패했습니다! 게시글 화면으로 돌아갑니다. " + result['errorMessage']);
-                            location.href = "boardview.php?" + viewPk;
+                            location.href = "boardview.php?post=" + <?php echo $post;?>;
                         }
                     }
                 });
@@ -124,7 +145,7 @@
                         url : '../../process/boardcheck.php',
                         type : 'POST',
                         dataType : 'text',
-                        data : {call_name:'update_post', viewPk:viewPk, 
+                        data : {call_name:'update_post', viewPk:<?php echo $post;?>, 
                             updateTitle:updateTitle, updateContent:updateContent, updateWriter:updateWriter},
                         error : function(jqXHR, textStatus, errorThrown){
                             console.log("실패");
@@ -132,7 +153,7 @@
                         }, success : function(result){
                             if (result) {
                                 alert('글이 수정되었습니다');
-                                location.href = "boardview.php?" + viewPk;
+                                location.href = "boardview.php?post=" + <?php echo $post;?>;
                             } else {
                                 $(".alertmainbox").remove();
                                 appendAlert('&#9888;게시글 수정에 실패했습니다!', 'danger', 'alertBox');
@@ -144,7 +165,7 @@
             
             //취소하기
             $(document).on('click', '#backPost',function(){
-               location.href = "boardview.php?" + viewPk;
+               location.href = "boardview.php?post=" + <?php echo $post;?>;
             });
         });
     </script>

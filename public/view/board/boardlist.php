@@ -39,8 +39,9 @@
     $page_num = 5;
     
     $total_page = 1;
-    $search_all_count = 1;
-    $search_count = 1;
+    //검색 결과 표시
+    $search_all_count = 0;
+    $search_count = 0;
     //검색, 정렬 데이터 배열에 저장
     $selectarr = array();
     if (isset($searchInput)) {
@@ -52,7 +53,6 @@
         $selectarr["sort"] = $sort;
     }
     $selectarr["start_list"] = $page;
-    $selectarr["last_list"] = $list_num;
     //쿼리 사용 데이터 가져오기
     try {
         if (isset($searchTag) && isset($searchInput)) {
@@ -66,7 +66,8 @@
         } else {
             //전체 페이지 수
             $pageCountArr = array();
-            $total_page = ceil(mysqli_num_rows($boardDBclass->getContents($pageCountArr)) / $list_num);
+            $search_all_count = mysqli_num_rows($boardDBclass->getContents($pageCountArr));
+            $total_page = ceil($search_all_count / $list_num);
         }
     } catch (Exception $e) {
         echo "<script>
@@ -127,14 +128,12 @@
                                 <input  type="text" style="border: 1px solid lightgray;" id="searchBar" name="searchInput" placeholder="검색어를 입력해주세요.">
                                 <input type="hidden" name="orderName" value="<?php echo $orderName?>">
                                 <input type="hidden" name="sort" value="<?php echo $sort?>">
-                                <button class="btn btn-primary" id="searchButton">검색</button>
-                                <?php if(isset($searchTag) && isset($searchInput)) {
-                                        ?> <span><?php printf("%04d", $search_count);?></span> 
-                                          <span> / </span> 
-                                          <span><?php printf("%04d", $search_all_count);?> 건</span> 
-                                        <?php 
-                                }
-                                ?>
+                                <button class="btn btn-primary me-4" id="searchButton">검색</button>
+                                <?php if(isset($searchTag) && isset($searchInput)) {?> 
+                                    <span><?php printf("%04d", $search_count);?></span> 
+                                    <span> / </span> 
+                                    <span><?php printf("%04d", $search_all_count);?> 건</span> 
+                                <?php } ?>
                             </form>
                             <div id="alertBox" class="col-3"></div>
                             <button class="btn btn-primary col-1" style="height:38px" id="boardWrite">작성</button>
@@ -144,8 +143,8 @@
                                 <thead>
                                     <tr class="text-center">
                                         <th class="col-1" id="boardPk" value="pk"  onClick="sortcheck('pk')">번호</th>
-                                        <th class="col-6 text-center" id="boardTitle" value="title" onClick="sortcheck('title')">제목</th>
-                                        <th class="col-1" id="boardWriter" value="writer" onClick="sortcheck('writer')">작성자</th>
+                                        <th class="col-5 text-center" id="boardTitle" value="title" onClick="sortcheck('title')">제목</th>
+                                        <th class="col-2" id="boardWriter" value="writer" onClick="sortcheck('writer')">작성자</th>
                                         <th class="col-1" id="boardInsertTime" value="insertTime" onClick="sortcheck('insertTime')">작성일자</th>
                                         <th class="col-2" id="nosort" value="nosort">작업</th>
                                     </tr>
@@ -262,7 +261,7 @@
                     var thisRow = $(this).closest('tr'); 
                     var viewPk = parseInt(thisRow.find('th').text());
                     
-                    location.href = "boardview.php?"+viewPk; 
+                    location.href = "boardview.php?post="+viewPk; 
                 });
                 //게시글 삭제
                 $(document).on('click', 'body div.container .deleteButton', function() {

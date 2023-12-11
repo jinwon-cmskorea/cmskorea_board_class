@@ -22,25 +22,25 @@
                     <span class="text-primary text-opacity-75" style="font-size: small; font-weight:bold">- 회원가입 -</span>
                 </div>
                 <br/>
-                <form class="text-start grid gap-3 " action="../process/signupcheck.php" onsubmit="return checkForm();" method="post" id="signupForm"><!-- needs-validation" novalidate -->
+                <form class="text-start grid gap-3 " action="../process/signupcheck.php" onsubmit="return checkForm();" method="post" id="signupForm">
                     <div class="row p-2 g-col-6 input-group" id="memberIdBox">
-                        <span class="col-3 align-self-center bg-success text-white inputsignupbox">아이디</span>
-                        <input  type="text" class="col-8 form-control form-control-lg rounded-0" name="memberId" id="memberId" placeholder="영문 숫자 포함">
+                        <span class="col-3 align-self-center inputsignupbox">*아이디</span>
+                        <input  type="text" class="col-8 form-control form-control-lg rounded-0 inputsignup" name="memberId" id="memberId" placeholder="영문 숫자 포함">
                     </div>
                     <div class="row p-2 g-col-6 input-group" id="memberPwBox">
-                        <span class="col-3 align-self-center bg-success text-white inputsignupbox">비밀번호</span>
-                        <input  type="password" class="col-8 form-control form-control-lg rounded-0"  name="memberPw" id="memberPw" placeholder="특수문자 필수">
+                        <span class="col-3 align-self-center inputsignupbox">*비밀번호</span>
+                        <input  type="password" class="col-8 form-control form-control-lg rounded-0 inputsignup"  name="memberPw" id="memberPw" placeholder="특수문자 필수">
                     </div>
                     <div class="row p-2 g-col-6 input-group" id="memberNameBox">
-                        <span class="col-3 align-self-center bg-success text-white inputsignupbox">이름</span>
-                        <input  type="text" class="col-8 form-control form-control-lg rounded-0" style="ime-mode:auto;" name="memberName" id="memberName" placeholder="한글, 영문 가능" >
+                        <span class="col-3 align-self-center inputsignupbox">*이름</span>
+                        <input  type="text" class="col-8 form-control form-control-lg rounded-0 inputsignup" style="ime-mode:auto;" name="memberName" id="memberName" placeholder="한글, 영문 가능" >
                     </div>
                     <div class="row p-2 g-col-6 input-group" id="memberTelBox">
-                        <span class="col-3 align-self-center bg-success text-white inputsignupbox">휴대전화</span>
-                        <input  type="text" class="col-8 form-control form-control-lg rounded-0" name="memberTel" id="memberTel" oninput="autoHyphen(this)" maxlength="13" placeholder="(010)0000-0000 숫자만" >
+                        <span class="col-3 align-self-center inputsignupbox">*휴대전화</span>
+                        <input  type="text" class="col-8 form-control form-control-lg rounded-0 inputsignup" name="memberTel" id="memberTel" oninput="autoHyphen(this)" maxlength="13" placeholder="(010)0000-0000 숫자만" >
                     </div>
                      <div class="row justify-content-end mt-5">
-                        <div class="col-5 "></div>
+                        <div class="col-5 text-danger">*필수 항목입니다.</div>
                         <button type="submit" class="btn btn-warning text-light col-2 rounded-0 me-3" id="signupButton">가입</button>
                         <button type="button" class="btn btn-secondary col-2 rounded-0 border border-2 border-dark me-5" id="backHTML">취소</button>
                     </div>
@@ -50,8 +50,7 @@
         </div>
         <script>
             //경고문(정보 체크)  
-            function checkForm() {
-              	const appendAlert = (message, type, id) => {
+            const appendAlert = (message, type, id) => {
                  const alertPlaceholder = document.getElementById(id);
                  const wrapper = document.createElement('div');
                  wrapper.className = 'alertdivbox';
@@ -64,6 +63,7 @@
                         
                     alertPlaceholder.append(wrapper);
                   }
+            function checkForm() {
                 //화면 유효성 검사
                 var check = false;
                 var num = /[0-9]/g;
@@ -112,12 +112,50 @@
                 .replace(/^(\d{0,3})(\d{0,4})(\d{0,4})$/g, "$1-$2-$3").replace(/(\-{1,2})$/g, "");
             }
             $(document).ready(function(){
+                $("#signupButton").addClass("disabled");
+            
+                //아이디 중복검사
+                $(document).on('keyup', 'body div.container #memberId',function() {
+                    var id = $(this).val();
+                    $.ajax({
+                        url : '../process/signupIdcheck.php',
+                        type : 'POST',
+                        dataType : 'text',
+                        data : {id:id},
+                        error : function(jqXHR, textStatus, errorThrown){
+                           console.log("실패");
+                           alert("아이디 중복 체크 실패했습니다. ajax 실패 원인 : " + textStatus);
+                        }, success : function(result){
+                            if (result) {
+                                $("#memberId").removeClass("is-invalid");
+                                $(".alertdivbox").remove();
+                            } else {
+                                $('#memberId').addClass("is-invalid");
+                                $("#signupButton").addClass("disabled");
+                                $(".alertdivbox").remove();
+                                $('#memberId').focus();
+                                appendAlert('&#9888;중복되는 아이디가 있습니다!', 'danger', 'alertBox');
+                            }
+                        }
+                    });
+                })
+                //input 비어있지 않으면 가입 버튼 활성화
+                $(document).on('keypress', 'body div.container .inputsignup',function() {
+                    inputIdVal = $("#memberId").val();
+                    inputPwVal = $("#memberPw").val();
+                    inputNameVal = $("#memberName").val();
+                    inputTelVal = $("#memberTel").val();
+                    if (inputIdVal.trim() !== '' && inputPwVal.trim() !== '' && inputNameVal.trim() !== '' && inputTelVal.trim() !== '') {
+                        $("#signupButton").removeClass("disabled");
+                    }
+                })
                 //전화번호 자동 값 입력(010-)
                 $("#memberTel").focus(function() {
                     if(!$(this).val()){
                         $(this).val("010");
                     }
                 });
+                
                 $(document).on('click', 'body div.container #alertclose', function() {
                     $(".alertdivbox").remove();
                 });

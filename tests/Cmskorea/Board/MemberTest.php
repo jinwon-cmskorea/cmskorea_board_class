@@ -52,31 +52,6 @@ class Cmskorea_Board_MemberTest extends PHPUnit_Framework_TestCase
                 'name'      => 'authname이름',
                 'telNumber' => '010-2345-6789'
         );
-        //유효성 검사
-        $noIdUser = array(
-                'id'        => '!!***!!',
-                'pw'        => 'authpw!',
-                'name'      => 'authname이름',
-                'telNumber' => '010-2345-6789'
-        );
-        $noPwUser = array(
-                'id'        => 'authtestpw',
-                'pw'        => 'authpw',
-                'name'      => 'authname이름',
-                'telNumber' => '010-2345-6789'
-        );
-        $noNameUser = array(
-                'id'        => 'authtestname',
-                'pw'        => 'authpw!',
-                'name'      => '!!**!!',
-                'telNumber' => '010-2345-6789'
-        );
-        $noTelUser = array(
-                'id'        => 'authtesttel',
-                'pw'        => 'authpw!',
-                'name'      => 'authname이름',
-                'telNumber' => 'authtelNumber12345'
-        );
         
         if (empty($this->member->getMember($testUser['id']))) {
             $result = $this->member->registMember($testUser);
@@ -87,29 +62,81 @@ class Cmskorea_Board_MemberTest extends PHPUnit_Framework_TestCase
             } catch (Exception $e) {
                 $this->assertEquals('중복된 아이디가 존재합니다!', $e->getMessage());
             }
-            try {
-                $result = $this->member->registMember($noIdUser);
-            } catch (Exception $e) {
-                $this->assertEquals('데이터 전달에 실패했습니다. 아이디를 영문 또는 숫자가 포함되도록 다시 작성해주세요.', $e->getMessage());
-            }
-            try {
-                $result = $this->member->registMember($noPwUser);
-            } catch (Exception $e) {
-                $this->assertEquals('데이터 전달에 실패했습니다. 비밀번호는 특수문자 1개 필수입니다. 다시 작성해주세요.', $e->getMessage());
-            }
-            try {
-                $result = $this->member->registMember($noNameUser);
-            } catch (Exception $e) {
-                $this->assertEquals('데이터 전달에 실패했습니다. 이름을 한글 또는 영문만 있도록 다시 작성해주세요.', $e->getMessage());
-            }
-            try {
-                $result = $this->member->registMember($noTelUser);
-            } catch (Exception $e) {
-                $this->assertEquals('데이터 전달에 실패했습니다. 휴대전화번호 형식을 일치하도록 다시 작성해주세요.', $e->getMessage());
-            }
         }
     }
-
+    // 회원가입 데이터 유효성 검사
+    /**
+     * Tests Cmskorea_Board_Member->registMember() (error - Id)
+     */
+    public function testRegistMemberErrorId()
+    {
+        $noIdUser = array(
+                'id'        => '!!***!!',
+                'pw'        => 'authpw!',
+                'name'      => 'authname이름',
+                'telNumber' => '010-2345-6789'
+        );
+        try {
+            $result = $this->member->registMember($noIdUser);
+            $this->assertInstanceOf('Cmskorea_Board_Member', $result);
+        } catch (Exception $e) {
+            $this->assertEquals('데이터 전달에 실패했습니다. 아이디를 영문 또는 숫자가 포함되도록 다시 작성해주세요.', $e->getMessage());
+        }
+    }
+    /**
+     * Tests Cmskorea_Board_Member->registMember() (error - Pw)
+     */
+    public function testRegistMemberErrorPw()
+    {
+        $noPwUser = array(
+                'id'        => 'authtestpw',
+                'pw'        => 'authpw',
+                'name'      => 'authname이름',
+                'telNumber' => '010-2345-6789'
+        );
+        try {
+            $result = $this->member->registMember($noPwUser);
+            $this->assertInstanceOf('Cmskorea_Board_Member', $result);
+        } catch (Exception $e) {
+            $this->assertEquals('데이터 전달에 실패했습니다. 비밀번호는 특수문자 1개 필수입니다. 다시 작성해주세요.', $e->getMessage());
+        }
+    }
+    /**
+     * Tests Cmskorea_Board_Member->registMember() (error - Name)
+     */
+    public function testRegistMemberErrorName()
+    {
+        $noNameUser = array(
+                'id'        => 'authtestname',
+                'pw'        => 'authpw!',
+                'name'      => '!!**!!',
+                'telNumber' => '010-2345-6789'
+        );
+        try {
+            $result = $this->member->registMember($noNameUser);
+            $this->assertInstanceOf('Cmskorea_Board_Member', $result);
+        } catch (Exception $e) {
+            $this->assertEquals('데이터 전달에 실패했습니다. 이름을 한글 또는 영문만 있도록 다시 작성해주세요.', $e->getMessage());
+        }
+    }
+    /**
+     * Tests Cmskorea_Board_Member->registMember() (error - Tel)
+     */
+    public function testRegistMemberErrorTel()
+    {
+        $noTelUser = array(
+                'id'        => 'authtesttel',
+                'pw'        => 'authpw!',
+                'name'      => 'authname이름',
+                'telNumber' => 'authtelNumber12345'
+        );
+        try {
+            $result = $this->member->registMember($noTelUser);
+            $this->assertInstanceOf('Cmskorea_Board_Member', $result);
+        } catch (Exception $e) {
+            $this->assertEquals('데이터 전달에 실패했습니다. 휴대전화번호 형식을 일치하도록 다시 작성해주세요.', $e->getMessage());
+        }
+    }
     /**
      * Tests Cmskorea_Board_Member->getMember()
      */

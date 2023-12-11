@@ -1,3 +1,19 @@
+<?php 
+require_once './../../process/autoload.php';
+$boardDBclass = new Cmskorea_Board_Board(HOST, USERID, PASSWORD, DATABASE);
+$authDBclass = new Cmskorea_Board_Auth(HOST, USERID, PASSWORD, DATABASE);
+if (!session_id()) {
+    session_start();
+}
+if (isset($_GET['post'])) {
+    $post = $_GET['post'];
+} else {
+    $post = 0;
+}
+//수정 유저 확인
+$postlist = $boardDBclass->getContent($post);
+$userdata = $authDBclass->getMember();
+?>
 <html>
     <head>
         <meta charset="utf-8">
@@ -38,27 +54,39 @@
                             <li>등록된 파일2</li>
                         </ul>
                     </div>
-                    <div class="m-3">
-                        <div><span id="boardViewInsertTime"></span></div>
-                        <div><span id="boardViewUpdateTime"></span></div>
+                    <div class="m-3 d-flex">
+                        <div class="fw-bold">
+                            <div>등록시간</div>
+                            <div>마지막 수정시간</div>
+                        </div>
+                        <div class="ms-1">
+                            <div><span id="boardViewInsertTime"></span></div>
+                            <div><span id="boardViewUpdateTime"></span></div>
+                        </div>
                     </div>
-                    <div class="mx-5 mt-4 row">
-                        <button class="btn btn-primary bg-warning border-warning col rounded-0 mx-1" id="postEdit">수 정</button>
-                        <button class="col mx-1" style="border: solid 1px lightgray;" id="backList">리스트</button>
-                    </div>
+                    <?php if ($postlist['memberPk'] == $userdata['pk'] || $userdata['id'] === "root") {?>
+                        <div class="mx-5 mt-4 row">
+                            <button class="btn btn-primary bg-warning border-warning col rounded-0 mx-1" id="postEdit">수 정</button>
+                            <button class="col mx-1" style="border: solid 1px lightgray;" id="backList">리스트</button>
+                        </div>
+                    <?php } else { ?> 
+                        <div class="mx-5 mt-4 row">
+                            <button class="col mx-1 btn" style="border: solid 1px lightgray;" id="backList">리스트</button>
+                        </div>
+                    <?php }?>
+                    
                 </div>
             </div>
         </div>
     <script>
         $(document).ready(function () {
-            const viewPk = location.href.split('?')[1];
             //게시글 조회
             function setViewData(){
                 $.ajax ({
                     url : '../../process/boardcheck.php',
                     type : 'POST',
                     dataType : 'JSON',
-                    data : {call_name:'view_post', viewPk:viewPk},
+                    data : {call_name:'view_post', viewPk:<?php echo $post;?>},
                     error : function(jqXHR, textStatus, errorThrown){
                             console.log("실패");
                             alert("게시글 조회에 실패했습니다. ajax 실패 원인 : " + textStatus);
@@ -66,11 +94,11 @@
                         if (!(result.hasOwnProperty('errorMessage'))) {
                             $("#boardViewTitle").html(result['title']);
                             $("#boardViewWriter").html("작성자 : " + result['writer']);
-                            $("#boardViewInsertTime").html("등록시간 : " + result['insertTime']);
-                            $("#boardViewUpdateTime").html("마지막 수정시간 : " + result['updateTime']);
+                            $("#boardViewInsertTime").html(": " + result['insertTime']);
+                            $("#boardViewUpdateTime").html(": " + result['updateTime']);
                             $("#boardViewContent").html(result['content']);
                         } else {
-                            alert("게시글 조회에 실패했습니다! 리스트 화면으로 돌아갑니다." + result['errorMessage']);
+                            alert("게시글 조회에 실패했습니다! 게시글 목록 화면으로 돌아갑니다." + result['errorMessage']);
                             location.href = "boardlist.php"; 
                         }
                     }
@@ -82,7 +110,7 @@
             
             //수정하기
             $(document).on('click', '#postEdit',function() {
-               location.href = "boardedit.php?" + viewPk;
+               location.href = "boardedit.php?post=" + <?php echo $post;?>;
             });
             
             //취소하기

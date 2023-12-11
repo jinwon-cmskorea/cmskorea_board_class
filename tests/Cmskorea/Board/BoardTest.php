@@ -66,29 +66,34 @@ class Cmskorea_Board_BoardTest extends PHPUnit_Framework_TestCase
     {
         //$this->markTestIncomplete("addContent test not implemented");
         
-        $oktestpost = array(
+        $testpost = array(
                 'memberPk'  => '101',
                 'title'     => 'testtitle제목',
                 'writer'    => 'testwriter작성자',
                 'content'   => '테스트 내용입니다. test content'
         );
-        $okresult = $this->board->addContent($oktestpost);
-        $this->assertNotEmpty($okresult);
-        $this->assertInternalType('integer', $okresult);
-        
-        $notestpost = array(
+        $result = $this->board->addContent($testpost);
+        $this->assertNotEmpty($result);
+        $this->assertInternalType('integer', $result);
+    }
+    /**
+     * Tests Cmskorea_Board_Board->addContent() (error)
+     */
+    public function testAddContentError()
+    {
+        $testpost = array(
                 'memberPk'  => '101',
                 'title'     => '작성자 없음',
                 'content'   => '테스트 내용입니다. test content'
         );
         
         try {
-            $noresult = $this->board->addContent($notestpost);
+            $result = $this->board->addContent($testpost);
+            $this->assertInternalType('integer', $result);
         } catch (Exception $e) {
-            $this->assertEquals('Undefined index: writer', $e->getMessage());
+            $this->assertEquals('오류 확인 : 전달받은 값 에러! 부족한 값을 입력해주세요.', $e->getMessage());
         }
     }
-
     /**
      * Tests Cmskorea_Board_Board->editContent()
      */
@@ -96,23 +101,29 @@ class Cmskorea_Board_BoardTest extends PHPUnit_Framework_TestCase
     {
         //$this->markTestIncomplete("editContent test not implemented");
         
-        $oktestpost = array(
+        $testpost = array(
                 'no'     => '1',
                 'title'  => 'testtitle성공수정제목',
                 'writer' => 'testwriter성공수정작성자', 'content' => '성공수정한테스트 내용입니다. test content');
-        $okresult = $this->board->editContent($oktestpost);
-        $this->assertTrue($okresult);
+        $result = $this->board->editContent($testpost);
+        $this->assertTrue($result);
         
-        $notestpost = array(
+
+    }
+    /**
+     * Tests Cmskorea_Board_Board->editContent() (False)
+     */
+    public function testEditContentFalse()
+    {
+        $testpost = array(
                 'no'     => '999',
                 'title'  => 'testtitle실패수정제목',
                 'writer' => 'testwriter실패수정작성자',
                 'content'=> '실패수정한테스트 내용입니다. test content'
         );
-        $noresult = $this->board->editContent($notestpost);
-        $this->assertFalse($noresult);
+        $result = $this->board->editContent($testpost);
+        $this->assertFalse($result);
     }
-
     /**
      * Tests Cmskorea_Board_Board->delContent()
      */
@@ -145,7 +156,6 @@ class Cmskorea_Board_BoardTest extends PHPUnit_Framework_TestCase
     public function testGetContents()
     {
         $p_num = 1;
-        $l_num = 10;
         
         //$this->markTestIncomplete("getContents test not implemented");
         
@@ -153,13 +163,11 @@ class Cmskorea_Board_BoardTest extends PHPUnit_Framework_TestCase
                 'searchTag'  => 'title',
                 'searchInput'=> 'test',
                 'start_list' => $p_num,
-                'last_list'  => $l_num
         );
         $sortpost = array(
                 'orderName'  => 'pk',
                 'sort'       => 'desc',
                 'start_list' => $p_num,
-                'last_list'  => $l_num
         );
         $testpost = array(
                 'searchTag'  => 'title',
@@ -167,7 +175,6 @@ class Cmskorea_Board_BoardTest extends PHPUnit_Framework_TestCase
                 'orderName'  => 'pk',
                 'sort'       => 'desc',
                 'start_list' => $p_num,
-                'last_list'  => $l_num
         );
         //echo var_dump(mysqli_fetch_all($this->board->getContents($searchtestpost)));
         $searchresult = mysqli_fetch_all($this->board->getContents($searchtestpost));

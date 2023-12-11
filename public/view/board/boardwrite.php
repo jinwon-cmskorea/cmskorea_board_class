@@ -113,7 +113,7 @@ $memberData = $authDBclass->getMember();
                         }, success : function(result) {
                             if (result > 0) {
                                 alert('새 글이 등록되었습니다');
-                                location.href = "boardview.php?" + result; 
+                                location.href = "boardview.php?post=" + result; 
                             } else {
                                 $(".alertmainbox").remove();
                                 appendAlert('&#9888;' + result, 'danger', 'alertBox');

@@ -59,6 +59,9 @@
 .inputsignupbox {
     width: 23%;
     height: 50px;
+    background-color: lightgray; 
+    color: #dc3545;
+    font-weight: bold;
     margin-right: 40px;
     text-align: center;
     align-items: center;

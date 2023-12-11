@@ -12,6 +12,11 @@
  * @package  Board
  */
 class Cmskorea_Board_Board {
+    /**
+     *
+     * @var mysqli 연결 정보
+     *      false 연결 실패
+     */
     protected $_db;
     
     public function __construct($host, $userid, $password, $database) {
@@ -31,6 +36,12 @@ class Cmskorea_Board_Board {
      * @return 글번호
      */
     public function addContent(array $datas) {
+        //전달받은 값 확인
+        if (is_array($datas) && empty($datas['memberPk']) || empty($datas['title'])
+                || empty($datas['writer']) || empty($datas['content'])) {
+            throw new Exception("오류 확인 : 전달받은 값 에러! 부족한 값을 입력해주세요.");
+        }
+        
         $title = mysqli_real_escape_string($this->_db, $datas['title']);
         $writer = mysqli_real_escape_string($this->_db, $datas['writer']);
         $strip = mysqli_real_escape_string($this->_db, strip_tags($datas['content'], '<br>'));
@@ -57,6 +68,11 @@ class Cmskorea_Board_Board {
      * @return boolean
      */
     public function editContent(array $datas) {
+        //전달받은 값 확인
+        if (is_array($datas) && empty($datas['no']) || empty($datas['title'])
+                || empty($datas['writer']) || empty($datas['content'])) {
+                    return false;
+        }
         // updateTime 수정
         $title = mysqli_real_escape_string($this->_db, $datas['title']);
         $writer = mysqli_real_escape_string($this->_db, $datas['writer']);
@@ -119,14 +135,14 @@ class Cmskorea_Board_Board {
     public function getContents(array $conditions) {
         $query = "SELECT pk, memberPk, title, writer, views, insertTime, updateTime FROM board";
         //검색, 정렬 배열 값 꺼내기
-        if (array_key_exists('searchInput', $conditions)) {
+        if (array_key_exists('searchTag', $conditions) && array_key_exists('searchInput', $conditions)) {
             $query .= " WHERE " . $conditions["searchTag"] . " LIKE '%" . $conditions["searchInput"] . "%'";
         }
-        if (array_key_exists('orderName', $conditions)) {
+        if (array_key_exists('orderName', $conditions) && array_key_exists('sort', $conditions)) {
             $query .= " ORDER BY " . $conditions["orderName"] . " " . $conditions["sort"];
         }
         if (array_key_exists('start_list', $conditions)) {
-            $query .=" LIMIT " . (($conditions['start_list'] - 1) * $conditions['last_list']) . ", " . $conditions['last_list'];
+            $query .=" LIMIT " . (($conditions['start_list'] - 1) * 10) . ", 10";
         }
         $result =  mysqli_query($this->_db, $query. ";");
         if ($result) {
