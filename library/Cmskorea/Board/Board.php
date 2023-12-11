@@ -37,8 +37,8 @@ class Cmskorea_Board_Board {
      */
     public function addContent(array $datas) {
         //전달받은 값 확인
-        if (is_array($datas) && empty($datas['memberPk']) || empty($datas['title'])
-                || empty($datas['writer']) || empty($datas['content'])) {
+        if (!isset($datas['memberPk']) || !isset($datas['title'])
+                || !isset($datas['writer'])) {
             throw new Exception("오류 확인 : 전달받은 값 에러! 부족한 값을 입력해주세요.");
         }
         
@@ -69,9 +69,9 @@ class Cmskorea_Board_Board {
      */
     public function editContent(array $datas) {
         //전달받은 값 확인
-        if (is_array($datas) && empty($datas['no']) || empty($datas['title'])
-                || empty($datas['writer']) || empty($datas['content'])) {
-                    return false;
+        if (!isset($datas['no']) || !isset($datas['title'])
+                || !isset($datas['writer'])) {
+                    throw new Exception("오류 확인 : 전달받은 값 에러! 부족한 값을 입력해주세요.");
         }
         // updateTime 수정
         $title = mysqli_real_escape_string($this->_db, $datas['title']);

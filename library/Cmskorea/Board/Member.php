@@ -114,7 +114,7 @@ class Cmskorea_Board_Member {
     public function authenticate($id, $pw) {
         $query = "SELECT id FROM auth_identity WHERE id='" . $id . "' AND pw='" . md5($pw) . "';";
         $result = mysqli_query($this->_db, $query);
-        return $result->num_rows > 0 ? null : "아이디 또는 비밀번호가 일치하지 않습니다.";
+        return $result->num_rows > 0 ? '' : "아이디 또는 비밀번호가 일치하지 않습니다.";
     }
 }
 

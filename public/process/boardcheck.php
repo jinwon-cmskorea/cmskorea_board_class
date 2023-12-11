@@ -56,14 +56,17 @@ function view_post() {
 
 function update_post() {
     global $boardDBclass;
-
-    $updateArr = array();
-    $updateArr['no'] = $_POST['viewPk'];
-    $updateArr['title'] = $_POST['updateTitle'];
-    $updateArr['writer'] = $_POST['updateWriter'];
-    $updateArr['content'] = $_POST['updateContent'];
-    
-    echo $boardDBclass->editContent($updateArr);
+    try{
+        $updateArr = array();
+        $updateArr['no'] = $_POST['viewPk'];
+        $updateArr['title'] = $_POST['updateTitle'];
+        $updateArr['writer'] = $_POST['updateWriter'];
+        $updateArr['content'] = $_POST['updateContent'];
+        
+        echo $boardDBclass->editContent($updateArr);
+    } catch (Exception $e) {
+        echo "게시글 수정에 실패했습니다. " . $e->getMessage();
+    }
 }
 
 function delete_post() {

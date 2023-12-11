@@ -56,12 +56,12 @@ class Cmskorea_Board_Auth {
         // Cmskorea_Board_Member 로 위임
         $authResult = $this->_member->authenticate($id, $pw);
         // 로그인 성공 시 세션에 회원정보를 저장한다.
-        if (!(empty($authResult))) {
-            return $authResult;
-        } else {
+        if (!$authResult) {
             $memberInfo = $this->_member->getMember($id);
             $_SESSION[self::SESSION_NAMESPACE] = $memberInfo;
             
+            return $authResult;
+        } else {
             return $authResult;
         }
     }
