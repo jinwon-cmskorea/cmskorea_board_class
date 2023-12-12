@@ -163,7 +163,7 @@ class Cmskorea_Board_MemberTest extends PHPUnit_Framework_TestCase
         //$this->markTestIncomplete("authenticate test not implemented");
 
         $okID = 'authtest';
-        $okPW = 'authpw';
+        $okPW = 'authpw!!';
         
         $noID = 'authNoIdtest';
         $noPW = 'authNoIdpw';
@@ -171,8 +171,8 @@ class Cmskorea_Board_MemberTest extends PHPUnit_Framework_TestCase
         $okresult = $this->member->authenticate($okID, $okPW);
         $noresult = $this->member->authenticate($noID, $noPW);
         
-        $this->assertNull($okresult);
-        $this->assertNotNull($noresult);
+        $this->assertEmpty($okresult);
+        $this->assertNotEmpty($noresult);
     }
 }
 

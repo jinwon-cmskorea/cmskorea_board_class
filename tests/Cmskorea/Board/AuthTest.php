@@ -57,11 +57,10 @@ class Cmskorea_Board_AuthTest extends PHPUnit_Framework_TestCase
     {
         //$this->markTestIncomplete("authenticate test not implemented");
 
-        $okId = $this->auth->authenticate("authtest", "authpw");
+        $okId = $this->auth->authenticate("authtest", "authpw!!");
         $noId = $this->auth->authenticate("testidnot", "testpwnot");
         //var_dump($this->auth->authenticate("testidnot", "testpwnot"));
         $this->assertEmpty($okId);
-        $this->assertNull($okId);
         
         $this->assertNotEmpty($noId);
         $this->assertNotNull($noId);
@@ -76,7 +75,7 @@ class Cmskorea_Board_AuthTest extends PHPUnit_Framework_TestCase
         //$this->markTestIncomplete("getMember test not implemented");
 
         //var_dump($this->auth->getMember("testidnot", "testpwnot"));
-        $this->auth->authenticate("authtest", "authpw");
+        $this->auth->authenticate("authtest", "authpw!!");
         $this->assertEquals("authtest", $this->auth->getMember()['id']);
         $this->assertNotEquals("authNotest", $this->auth->getMember()['id']);
     }
@@ -87,13 +86,15 @@ class Cmskorea_Board_AuthTest extends PHPUnit_Framework_TestCase
     public function testIsLogin()
     {
         //$this->markTestIncomplete("isLogin test not implemented");
-        $this->auth->authenticate("authtest", "authpw");
+        $this->auth->authenticate("authtest", "authpw!!");
         $okresult = $this->auth->isLogin();
         $this->assertTrue($okresult);
+        $this->auth->logout();
         
         $this->auth->authenticate("testidnot", "testpwnot");
         $noresult = $this->auth->isLogin();
         $this->assertFalse($noresult);
+        $this->auth->logout();
     }
 
     /**

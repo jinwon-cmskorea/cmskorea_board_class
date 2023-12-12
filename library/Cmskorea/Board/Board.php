@@ -37,8 +37,7 @@ class Cmskorea_Board_Board {
      */
     public function addContent(array $datas) {
         //전달받은 값 확인
-        if (!isset($datas['memberPk']) || !isset($datas['title'])
-                || !isset($datas['writer'])) {
+        if (!isset($datas['memberPk']) || !isset($datas['title']) || !isset($datas['writer'])) {
             throw new Exception("오류 확인 : 전달받은 값 에러! 부족한 값을 입력해주세요.");
         }
         
@@ -69,8 +68,7 @@ class Cmskorea_Board_Board {
      */
     public function editContent(array $datas) {
         //전달받은 값 확인
-        if (!isset($datas['no']) || !isset($datas['title'])
-                || !isset($datas['writer'])) {
+        if (!isset($datas['no']) || !isset($datas['title']) || !isset($datas['writer'])) {
                     throw new Exception("오류 확인 : 전달받은 값 에러! 부족한 값을 입력해주세요.");
         }
         // updateTime 수정
@@ -122,7 +120,7 @@ class Cmskorea_Board_Board {
             $row = mysqli_fetch_assoc($result);
             return $row;
         } else {
-            throw new Exception("오류 확인 : " . mysqli_error($this->_db));
+            throw new Exception("오류 내용 : " . mysqli_error($this->_db));
         }
     }
 
@@ -160,6 +158,27 @@ class Cmskorea_Board_Board {
      * @return boolean
      */
     public function addFile($boardPk, array $fileInfos) {
+        if (!isset($boardPk) || empty($fileInfos)) {
+            throw new Exception("오류 확인 : 전달받은 값 에러! 부족한 값이 존재합니다.");
+        }
+        //throw new Exception();
+        $query = "INSERT INTO file (boardPk, filename, fileType, fileSize, insertTime) VALUES" . "( ". $boardPk ." ,'". $fileInfos['name'] ."' ,'". explode('/', $fileInfos['type'])[1] ."', '" . $fileInfos['size'] . "' , now())";
+        $rs = mysqli_query($this->_db,$query);
+        if ($rs) {
+            $filepath = "./../../datas/";
+            $filename = $filepath.iconv("UTF-8", "EUC-KR",$fileInfos['name']);
+            move_uploaded_file($fileInfos['tmp_name'], $filename);
+            
+            $content = mysqli_real_escape_string($this->_db, file_get_contents($filename));
+            $query = "INSERT INTO file_details (filePk, content) VALUES" . "( ". mysqli_insert_id($this->_db) ." ,'". $content ."')";
+            $rs = mysqli_query($this->_db,$query);
+            if (!$rs) {
+                throw new Exception('파일 DB 업로드에 실패했습니다!' . mysqli_errno($this->_db) . ":" . mysqli_error($this->_db));
+            }
+            unlink($filename);
+        } else {
+            throw new Exception('파일 DB 업로드에 실패했습니다!' . mysqli_errno($this->_db) . ":" . mysqli_error($this->_db));
+        }
         return true;
     }
 
@@ -170,7 +189,16 @@ class Cmskorea_Board_Board {
      * @return array 글번호에 해당하는 파일데이터
      */
     public function getFiles($boardPk) {
-        return array();
+        if (!isset($boardPk)) {
+            throw new Exception("오류 확인 : 전달받은 값 에러! 부족한 값이 존재합니다.");
+        }
+        $query = "SELECT * FROM file WHERE boardPk=" . $boardPk . ";";
+        $rs = mysqli_query($this->_db,$query);
+        if ($rs) {
+            return mysqli_fetch_array($rs);
+        } else {
+            throw new Exception("오류 내용 : " . mysqli_error($this->_db));
+        }
     }
 
     /**

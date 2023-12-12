@@ -31,40 +31,41 @@ $memberData = $authDBclass->getMember();
                     <p>게시판 글을 작성합니다.</p>
                 </div>
                 <div class="p-4">
-                    <div class="mb-4">
+                    <form class="mb-4" method="post" enctype="multipart/form-data" action="../../process/boardcheck.php" id="writeForm" onsubmit="return checkForm();">
+                        <input type="hidden" name="call_name" value="write_post">
                         <div class="row">
                             <div class="labelbox text-center col-1 mx-5 my-2">
                                 <span class="text-white">제 목</span>
                             </div>
-                            <input type="text" class="col-9 inputwritebox align-self-center" id="writeTitle" placeholder="제목을 입력해주세요.">
+                            <input type="text" class="col-9 inputwritebox align-self-center" name="writeTitle" id="writeTitle" placeholder="제목을 입력해주세요.">
                         </div>
                         <div class="row">
                             <div class="labelbox text-center col-1 mx-5 mb-5 my-2">
                                 <span class="text-white">내 용</span>
                             </div>
-                            <textarea  class="col-9 inputwritebox my-2" style="height: 320px; resize: none;" id="writeContent"  placeholder="내용을 입력해주세요."></textarea>
+                            <textarea  class="col-9 inputwritebox my-2" style="height: 320px; resize: none;" name="writeContent" id="writeContent"  placeholder="내용을 입력해주세요."></textarea>
                         </div>
                         <div class="row">
                             <div class="labelbox text-center col-1 mx-5 my-2">
                                 <span class="text-white">작성자</span>
                             </div>
-                            <input type="text" class="col-2 text-secondary inputwritebox align-self-center" id="writer" value="<?php echo $memberData['name'] ?>">
+                            <input type="text" class="col-2 text-secondary inputwritebox align-self-center" name="writer" id="writer" value="<?php echo $memberData['name'] ?>">
                         </div>
                         <div class="row">
                             <div class="labelbox text-center col-1 mx-5 my-2">
                                 <span class="text-white" style="font-size:15px">파일업로드</span>
                             </div>
-                            <input type="file" class="col-6 align-self-center" id="file1">
+                            <input type="file" class="col-6 align-self-center checkFile" name="uploadFile1" id="uploadFile1">
                         </div>
                         <div class="row">
                             <div class="labelbox text-center col-1 mx-5 my-2" >
                                 <span class="text-white" style="font-size:15px">파일업로드</span>
                             </div>
-                            <input type="file" class="col-6 align-self-center" id="file2">
+                            <input type="file" class="col-6 align-self-center checkFile" name="uploadFile2" id="uploadFile2">
                         </div>
-                    </div>
+                    </form>
                     <div class="mx-5 row">
-                        <button class="btn btn-primary col rounded-0 mx-1" id="boardWrite">등 록</button>
+                        <button type="submit" form="writeForm" class="btn btn-primary col rounded-0 mx-1" id="boardWrite">작성</button>
                         <button class="col mx-1" style="border: solid 1px lightgray;" id="writeCancel">취소</button>
                     </div>
                 </div>
@@ -72,8 +73,8 @@ $memberData = $authDBclass->getMember();
             </div>
         </div>
     <script>
-        $(document).ready(function () {
-            //경고문(입력 체크)  
+        //경고문(입력 체크)  
+        function checkForm() {
             const appendAlert = (message, type, id) => {
             const alertPlaceholder = document.getElementById(id);
             const wrapper = document.createElement('div');
@@ -83,47 +84,50 @@ $memberData = $authDBclass->getMember();
                 '   <button type="button" id="alertclose" class="btn-close close" data-bs-dismiss="alert"></button>',
                 '</div>'
                 ].join('')
-                
+            
             alertPlaceholder.append(wrapper);
             }
-            //작성 버튼
-            $(document).on('click', '#boardWrite',function() {
-                var writeTitle = $("#writeTitle").val();
-                var writeContent = $("#writeContent").val().replaceAll(/(\n|\r\n)/g, "<br>");
-                var writer = $("#writer").val();
-                //input 검사
-                if (!writeTitle) {
-                    $("#alertBox").empty();
-                    appendAlert('&#9888;제목을 입력해 주세요!', 'danger', 'alertBox');
-                } else if (!writeContent) {
-                    $("#alertBox").empty();
-                    appendAlert('&#9888;내용을 입력해 주세요!', 'danger', 'alertBox');
-                } else if (!writer) {
-                    $("#alertBox").empty();
-                    appendAlert('&#9888;작성자를 입력해 주세요!', 'danger', 'alertBox');
-                } else {
-                    $.ajax({
-                        url : '../../process/boardcheck.php',
-                        type : 'POST',
-                        dataType : 'text',
-                        data : {call_name:'write_post', writeTitle:writeTitle, writeContent:writeContent, writer:writer},
-                        error : function(jqXHR, textStatus, errorThrown){
-                            console.log("실패");
-                            alert("게시글 등록에 실패했습니다. ajax 실패 원인 : " + textStatus);
-                        }, success : function(result) {
-                            if (result > 0) {
-                                alert('새 글이 등록되었습니다');
-                                location.href = "boardview.php?post=" + result; 
-                            } else {
-                                $(".alertmainbox").remove();
-                                appendAlert('&#9888;' + result, 'danger', 'alertBox');
-                            }
-                        }
-                    });
+            var check = false;
+            var writeTitle = $("#writeTitle").val();
+            var writeContent = $("#writeContent").val();
+            var writer = $("#writer").val();
+            //input 검사
+            if (!writeTitle) {
+                $("#alertBox").empty();
+                appendAlert('&#9888;제목을 입력해 주세요!', 'danger', 'alertBox');
+                return check;
+            } else if (!writeContent) {
+                $("#alertBox").empty();
+                appendAlert('&#9888;내용을 입력해 주세요!', 'danger', 'alertBox');
+                return check;
+            } else if (!writer) {
+                $("#alertBox").empty();
+                appendAlert('&#9888;작성자를 입력해 주세요!', 'danger', 'alertBox');
+                return check;
+            } else {
+                check = true;
+            }
+            
+            return check;
+        }
+        $(document).ready(function () {
+            //파일 업로드 용량, 확장자 체크
+            $(".checkFile").change(function(){
+                var uploadFile = $(this).val();
+                var fileSize = $(this)[0].files[0].size;
+                var maxSize = 3 * 1024 * 1024;
+                var ext = uploadFile.split('.').pop().toLowerCase();
+                if (fileSize > maxSize) {
+                    alert("첨부파일 사이즈는 3MB 이내로 등록 가능합니다.");
+                    $(this).val("");
+                }
+                if ($.inArray(ext, ['jpg','png','gif','pdf']) == -1) {
+                    alert("'jpg,gif,jpeg,png' 파일만 업로드 할수 있습니다.");
+                    $(this).val("");
                 }
             });
             //취소하기
-            $(document).on('click', '#writeCancel',function() {
+            $('#writeCancel').click(function() {
                location.href = 'boardlist.php'; 
             });
         });

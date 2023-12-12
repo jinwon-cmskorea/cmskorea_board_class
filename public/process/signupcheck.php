@@ -5,7 +5,7 @@ $memberDBclass = new Cmskorea_Board_Member(HOST, USERID, PASSWORD, DATABASE);
 
 function alert_replace ($message, $location) {
     echo "<script>
-                alert('{$message}');
+                alert(\"'{$message}'\");
                 location.replace('{$location}');
             </script>";
 }

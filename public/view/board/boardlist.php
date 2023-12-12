@@ -1,95 +1,95 @@
 <?php
-    require_once './../../process/autoload.php';
-    
-    if (!session_id()) {
-        session_start();
-    }
-    $boardDBclass = new Cmskorea_Board_Board(HOST, USERID, PASSWORD, DATABASE);
-    //페이지 번호
-    if (isset($_GET['page'])) {
-        $page = $_GET['page'];
+require_once './../../process/autoload.php';
+
+if (!session_id()) {
+    session_start();
+}
+$boardDBclass = new Cmskorea_Board_Board(HOST, USERID, PASSWORD, DATABASE);
+//페이지 번호
+if (isset($_GET['page'])) {
+    $page = $_GET['page'];
+} else {
+    $page = 1;
+}
+//검색 키워드 받기
+if (isset($_GET['searchTag']) && !empty($_GET['searchTag'])) {
+    $searchTag = $_GET['searchTag'];
+} else {
+    $searchTag = null;
+}
+if (isset($_GET['searchInput']) && !empty($_GET['searchInput'])) {
+    $searchInput = $_GET['searchInput'];
+} else {
+    $searchInput = null;
+}
+//정렬 받기
+if (isset($_GET['orderName']) && !empty($_GET['orderName'])) {
+    $orderName = $_GET['orderName'];
+} else {
+    $orderName = null;
+}
+if (isset($_GET['sort']) && !empty($_GET['sort'])) {
+    $sort = $_GET['sort'];
+} else {
+    $sort = null;
+}
+//데이터개수
+$list_num = 10;
+//페이지수
+$page_num = 5;
+
+$total_page = 1;
+//검색 결과 표시
+$search_all_count = 0;
+$search_count = 0;
+//검색, 정렬 데이터 배열에 저장
+$selectarr = array();
+if (isset($searchInput)) {
+    $selectarr["searchTag"] = $searchTag;
+    $selectarr["searchInput"] = $searchInput;
+}
+if (isset($orderName)) {
+    $selectarr["orderName"] = $orderName;
+    $selectarr["sort"] = $sort;
+}
+$selectarr["start_list"] = $page;
+//쿼리 사용 데이터 가져오기
+try {
+    if (isset($searchTag) && isset($searchInput)) {
+        //검색 결과 전체 페이지 수
+        $pageCountArr = array();
+        $search_all_count = mysqli_num_rows($boardDBclass->getContents($pageCountArr));
+        $pageCountArr["searchTag"] = $searchTag;
+        $pageCountArr["searchInput"] = $searchInput;
+        $search_count = mysqli_num_rows($boardDBclass->getContents($pageCountArr));
+        $total_page = ceil($search_count / $list_num);
     } else {
-        $page = 1;
+        //전체 페이지 수
+        $pageCountArr = array();
+        $search_all_count = mysqli_num_rows($boardDBclass->getContents($pageCountArr));
+        $total_page = ceil($search_all_count / $list_num);
     }
-    //검색 키워드 받기
-    if (isset($_GET['searchTag']) && !empty($_GET['searchTag'])) {
-        $searchTag = $_GET['searchTag'];
-    } else {
-        $searchTag = null;
-    }
-    if (isset($_GET['searchInput']) && !empty($_GET['searchInput'])) {
-        $searchInput = $_GET['searchInput'];
-    } else {
-        $searchInput = null;
-    }
-    //정렬 받기
-    if (isset($_GET['orderName']) && !empty($_GET['orderName'])) {
-        $orderName = $_GET['orderName'];
-    } else {
-        $orderName = null;
-    }
-    if (isset($_GET['sort']) && !empty($_GET['sort'])) {
-        $sort = $_GET['sort'];
-    } else {
-        $sort = null;
-    }
-    //데이터개수
-    $list_num = 10;
-    //페이지수
-    $page_num = 5;
-    
-    $total_page = 1;
-    //검색 결과 표시
-    $search_all_count = 0;
-    $search_count = 0;
-    //검색, 정렬 데이터 배열에 저장
-    $selectarr = array();
-    if (isset($searchInput)) {
-        $selectarr["searchTag"] = $searchTag;
-        $selectarr["searchInput"] = $searchInput;
-    }
-    if (isset($orderName)) {
-        $selectarr["orderName"] = $orderName;
-        $selectarr["sort"] = $sort;
-    }
-    $selectarr["start_list"] = $page;
-    //쿼리 사용 데이터 가져오기
-    try {
-        if (isset($searchTag) && isset($searchInput)) {
-            //검색 결과 전체 페이지 수
-            $pageCountArr = array();
-            $search_all_count = mysqli_num_rows($boardDBclass->getContents($pageCountArr));
-            $pageCountArr["searchTag"] = $searchTag;
-            $pageCountArr["searchInput"] = $searchInput;
-            $search_count = mysqli_num_rows($boardDBclass->getContents($pageCountArr));
-            $total_page = ceil($search_count / $list_num);
-        } else {
-            //전체 페이지 수
-            $pageCountArr = array();
-            $search_all_count = mysqli_num_rows($boardDBclass->getContents($pageCountArr));
-            $total_page = ceil($search_all_count / $list_num);
-        }
-    } catch (Exception $e) {
-        echo "<script>
-                console.log(\"" . $e->getMessage() . "\");
-            </script>";
-    }
-    //전체 블럭 수
-    $total_block = ceil($total_page / $page_num);
-    //현재 페이지 번호
-    $now_block = ceil($page / $page_num);
-    //블럭 당 시작 페이지 번호
-    $s_pageNum = ($now_block - 1) * $page_num + 1;
-    // 데이터가 0개인 경우
-    if ($s_pageNum <= 0) {
-        $s_pageNum = 1;
-    };
-    //블럭 당 마지막 페이지 번호
-    $e_pageNum = $now_block *  $page_num ;
-    // 마지막 번호가 전체 페이지 수를 넘지 않도록
-    if ($e_pageNum > $total_page) {
-        $e_pageNum = $total_page;
-    };
+} catch (Exception $e) {
+    echo "<script>
+             console.log(\"" . $e->getMessage() . "\");
+        </script>";
+}
+//전체 블럭 수
+$total_block = ceil($total_page / $page_num);
+//현재 페이지 번호
+$now_block = ceil($page / $page_num);
+//블럭 당 시작 페이지 번호
+$s_pageNum = ($now_block - 1) * $page_num + 1;
+// 데이터가 0개인 경우
+if ($s_pageNum <= 0) {
+    $s_pageNum = 1;
+};
+//블럭 당 마지막 페이지 번호
+$e_pageNum = $now_block *  $page_num ;
+// 마지막 번호가 전체 페이지 수를 넘지 않도록
+if ($e_pageNum > $total_page) {
+    $e_pageNum = $total_page;
+};
 ?>
 <html>
     <head>
@@ -129,11 +129,15 @@
                                 <input type="hidden" name="orderName" value="<?php echo $orderName?>">
                                 <input type="hidden" name="sort" value="<?php echo $sort?>">
                                 <button class="btn btn-primary me-4" id="searchButton">검색</button>
-                                <?php if(isset($searchTag) && isset($searchInput)) {?> 
+                                <?php
+                                if(isset($searchTag) && isset($searchInput)) {
+                                ?> 
                                     <span><?php printf("%04d", $search_count);?></span> 
                                     <span> / </span> 
                                     <span><?php printf("%04d", $search_all_count);?> 건</span> 
-                                <?php } ?>
+                                <?php
+                                }
+                                ?>
                             </form>
                             <div id="alertBox" class="col-3"></div>
                             <button class="btn btn-primary col-1" style="height:38px" id="boardWrite">작성</button>
@@ -142,7 +146,7 @@
                             <table class="table" style="border-top: 1px solid lightgray;" id="boardTable">
                                 <thead>
                                     <tr class="text-center">
-                                        <th class="col-1" id="boardPk" value="pk"  onClick="sortcheck('pk')">번호</th>
+                                        <th class="col-1" id="boardPk" value="pk" onClick="sortcheck('pk')">번호</th>
                                         <th class="col-5 text-center" id="boardTitle" value="title" onClick="sortcheck('title')">제목</th>
                                         <th class="col-2" id="boardWriter" value="writer" onClick="sortcheck('writer')">작성자</th>
                                         <th class="col-1" id="boardInsertTime" value="insertTime" onClick="sortcheck('insertTime')">작성일자</th>
@@ -159,22 +163,26 @@
                                         throw new Exception($dblist);
                                     }
                                     if (isset($searchTag) && isset($searchInput) && $total_page == 0) {
-                                        ?><tr class='align-middle' >
+                                    ?>
+                                        <tr class='align-middle' >
                                             <td class='align-middle text-center fs-3 fw-bold py-4' colspan='4'>검색결과가 존재하지 않습니다!</td>
                                             <td class='align-middle text-center fs-5 fw-bold py-4'><a class='link-info' href='boardlist.php'>돌아가기</a></td>
                                         </tr>
-                                        <?php 
+                                    <?php 
                                     } else {
-                                        foreach ($dblist as $value) { ?>  
-                                            <tr class='align-middle text-center' >
-                                                <th scope='row'><?php printf("%04d", $value["pk"]);?></th>
-                                                <td class="text-start"><?php echo $value["title"];?></td>
-                                                <td><?php echo $value["writer"];?></td>
-                                                <td><?php echo substr($value["insertTime"],0,10);?></td>
-                                                <td><button type='button' class='btn btn-warning text-white viewButton'>조회</button>
-                                                <button type='button' class='btn btn-danger deleteButton ms-1'>삭제</button></td>
-                                            </tr>
-                                    <?php }?>
+                                        foreach ($dblist as $value) { 
+                                    ?>  
+                                        <tr class='align-middle text-center' >
+                                            <th scope='row'><?php printf("%04d", $value["pk"]);?></th>
+                                            <td class="text-start"><?php echo $value["title"];?></td>
+                                            <td><?php echo $value["writer"];?></td>
+                                            <td><?php echo substr($value["insertTime"],0,10);?></td>
+                                            <td><button type='button' class='btn btn-warning text-white viewButton'>조회</button>
+                                            <button type='button' class='btn btn-danger deleteButton ms-1'>삭제</button></td>
+                                        </tr>
+                                  <?php
+                                        }
+                                  ?>
                                 </tbody>
                                     </table>
                                     </div>
@@ -183,40 +191,54 @@
                                           <li class='page-item'><a class='page-link' href='boardlist.php?page=1&searchTag=<?php echo $searchTag; ?>&searchInput=<?php echo $searchInput ?>&orderName=<?php echo $orderName; ?>&sort=<?php echo $sort ?>'>First</a></li>
                                         <?php
                                             /* pager : 페이지 번호 출력 */
-                                             if($page <= 1){ ?>
-                                                <li class='page-item'><a class='page-link' href='boardlist.php?page=1&searchTag=<?php echo $searchTag; ?>&searchInput=<?php echo $searchInput ?>&orderName=<?php echo $orderName; ?>&sort=<?php echo $sort ?>'>&lt</a></li>
-                                            <?php } else{ ?>
-                                                <li class='page-item'><a class='page-link' href='boardlist.php?page=<?php echo ($page-1); ?>&searchTag=<?php echo $searchTag; ?>&searchInput=<?php echo $searchInput ?>&orderName=<?php echo $orderName; ?>&sort=<?php echo $sort ?>'>&lt</a></li>
-                                            <?php };
-                                            
+                                             if ($page <= 1) {
+                                             ?><li class='page-item'><a class='page-link' href='boardlist.php?page=1&searchTag=<?php echo $searchTag; ?>&searchInput=<?php echo $searchInput ?>&orderName=<?php echo $orderName; ?>&sort=<?php echo $sort ?>'>&lt</a></li>
+                                             <?php
+                                             } else {
+                                             ?>
+                                               <li class='page-item'><a class='page-link' href='boardlist.php?page=<?php echo ($page-1); ?>&searchTag=<?php echo $searchTag; ?>&searchInput=<?php echo $searchInput ?>&orderName=<?php echo $orderName; ?>&sort=<?php echo $sort ?>'>&lt</a></li>
+                                            <?php
+                                            };
                                             for ($print_page = $s_pageNum; $print_page <= $e_pageNum; $print_page++) {
-                                                if ($page == $print_page) {?>
+                                                if ($page == $print_page) {
+                                                ?>
                                                     <li class='page-item'><a class='page-link  bg-info-subtle' href='boardlist.php?page=<?php echo $print_page; ?>&searchTag=<?php echo $searchTag;?>&searchInput=<?php echo $searchInput ?>&orderName=<?php echo $orderName; ?>&sort=<?php echo $sort ?>'><?php echo $print_page; ?></a></li>
-                                                <?php } else {?>
+                                                <?php
+                                                } else {
+                                                ?>
                                                     <li class='page-item'><a class='page-link' href='boardlist.php?page=<?php echo $print_page; ?>&searchTag=<?php echo $searchTag;?>&searchInput=<?php echo $searchInput ?>&orderName=<?php echo $orderName; ?>&sort=<?php echo $sort ?>'><?php echo $print_page; ?></a></li>
-                                            <?php }
+                                            <?php
+                                                }
                                             };
                                             
-                                            if ($page >= $total_page) {?>
+                                            if ($page >= $total_page) {
+                                            ?>
                                                 <li class='page-item'><a class='page-link' href='boardlist.php?page=<?php echo $total_page; ?>&searchTag=<?php echo $searchTag; ?>&searchInput=<?php echo $searchInput ?>&orderName=<?php echo $orderName; ?>&sort=<?php echo $sort ?>'>&gt</a></li>
-                                            <?php } else{ ?>
+                                            <?php
+                                            } else{ 
+                                            ?>
                                                 <li class='page-item'><a class='page-link' href='boardlist.php?page=<?php echo ($page+1); ?>&searchTag=<?php echo $searchTag; ?>&searchInput=<?php echo $searchInput ?>&orderName=<?php echo $orderName; ?>&sort=<?php echo $sort ?>'>&gt</a></li>
-                                            <?php };?>
+                                            <?php
+                                            };
+                                            ?>
                                              <li class='page-item'><a class='page-link' href='boardlist.php?page=<?php echo $total_page; ?>&searchTag=<?php echo $searchTag;?>&searchInput=<?php echo $searchInput ?>&orderName=<?php echo $orderName; ?>&sort=<?php echo $sort ?>'>Last</a></li>
                                       </ul>
                                     </nav>
-                                    <?php }
+                                    <?php
+                                    }
                                 } catch (Exception $e) {
-                                    $m = $e->getMessage()?>
+                                    ?>
                                     <tr><td class='align-middle text-center fs-3 fw-bold py-4' colspan='5'>게시글 리스트를 불러오기 실패했습니다!</td></tr>
-                                    <tr><td class='align-middle text-center py-2' colspan='5'><?php echo $m  ?></td></tr>
-                                <?php }?>
+                                    <tr><td class='align-middle text-center py-2' colspan='5'><?php echo $e->getMessage(); ?></td></tr>
+                                <?php
+                                }
+                                ?>
                         </div>
                     </div>
                 </div>
             </div>
         <script type="text/javascript">
-            //정렬
+            //목록 정렬
             function sortcheck(ordername){
                 $('table > thead').find('th').each(function(inx, th) {
                     th.innerHTML = th.innerHTML.replace(/[▼▲]/g, '');
@@ -228,17 +250,24 @@
                     $sort = 'asc';
                 }
                 if (isset($searchTag) && isset($searchInput)) {
-                    ?>location.href = 'boardlist.php?page=<?php echo $page; ?>&searchTag=<?php echo $searchTag;?>&searchInput=<?php echo $searchInput ?>&orderName=' + ordername + '&sort=<?php echo $sort ?>';<?php
+                ?>
+                location.href = 'boardlist.php?page=<?php echo $page; ?>&searchTag=<?php echo $searchTag;?>&searchInput=<?php echo $searchInput ?>&orderName=' + ordername + '&sort=<?php echo $sort ?>';
+                <?php
                 } else {
-                    ?>location.href = 'boardlist.php?page=<?php echo $page; ?>&orderName=' + ordername + '&sort=<?php echo $sort ?>';<?php
-                }?>
+                ?>
+                location.href = 'boardlist.php?page=<?php echo $page; ?>&orderName=' + ordername + '&sort=<?php echo $sort ?>';
+                <?php
+                }
+                ?>
             }
             <?php 
             if (isset($orderName) && isset($sort)) {
                 if ($sort === 'asc') {
-                    ?>$("th[value=" + '<?php echo $orderName; ?>' + "]").append('▼');<?php
+                ?>$("th[value=" + '<?php echo $orderName; ?>' + "]").append('▼');
+                <?php
                 } else {
-                    ?>$("th[value=" + '<?php echo $orderName; ?>' + "]").append('▲');<?php
+                ?>$("th[value=" + '<?php echo $orderName; ?>' + "]").append('▲');
+                <?php
                 }
             }
             ?>
@@ -263,7 +292,7 @@
                     
                     location.href = "boardview.php?post="+viewPk; 
                 });
-                //게시글 삭제
+                //게시글 삭제 경고창
                 $(document).on('click', 'body div.container .deleteButton', function() {
                     $("#alertBox").empty();
                     var thisRow = "";
@@ -272,6 +301,7 @@
                     appendDelete("&#10071;정말로 " + deletePk + "번째 게시글을 삭제하시겠습니까?", 'alertBox');
                     $("#deletewrapperpk").attr("value",deletePk);
                 });
+                //게시글 삭제
                 $(document).on('click', 'body div.container .DeleteCompleteClose', function() {
                     deletePk = $("#deletewrapperpk").attr("value");
                     $.ajax({
@@ -292,12 +322,13 @@
                         }
                     });
                 });
+                //게시글 삭제 경고창 취소
                 $(document).on('click', 'body div.container .DeleteClose', function() {
                     $("#alertBox").empty();
                     location.reload();
                 });
                 //게시글 작성
-                $(document).on('click', '#boardWrite',function(){
+                $('#boardWrite').click(function() {
                    location.href = 'boardwrite.php'; 
                 });
             });

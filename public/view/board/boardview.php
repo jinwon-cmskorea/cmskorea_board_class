@@ -10,9 +10,11 @@ if (isset($_GET['post'])) {
 } else {
     $post = 0;
 }
-//수정 유저 확인
-$postlist = $boardDBclass->getContent($post);
+//수정 유저 확인, 게시글 조회
 $userdata = $authDBclass->getMember();
+try {
+    $postlist = $boardDBclass->getContent($post);
+
 ?>
 <html>
     <head>
@@ -41,11 +43,11 @@ $userdata = $authDBclass->getMember();
                 <div class="my-5">
                     <div>
                         <div class="d-flex justify-content-between">
-                            <div class="fs-3" id="boardViewTitle"></div>
-                            <span  class="align-self-center" id="boardViewWriter"></span>
+                            <div class="fs-3" id="boardViewTitle"><?php echo $postlist['title']; ?></div>
+                            <span  class="align-self-center" id="boardViewWriter">작성자 : <?php echo $postlist['writer']; ?></span>
                         </div>
                         <div class="contentbox p-3">
-                        	<p id="boardViewContent"></p>
+                        	<p id="boardViewContent"><?php echo $postlist['content']; ?></p>
                         </div>
                     </div>
                     <div class="mt-3" style="border-bottom: 1px dashed lightgray">
@@ -60,64 +62,51 @@ $userdata = $authDBclass->getMember();
                             <div>마지막 수정시간</div>
                         </div>
                         <div class="ms-1">
-                            <div><span id="boardViewInsertTime"></span></div>
-                            <div><span id="boardViewUpdateTime"></span></div>
+                            <div><span id="boardViewInsertTime">: <?php echo $postlist['insertTime']; ?></span></div>
+                            <div><span id="boardViewUpdateTime">: <?php echo $postlist['updateTime']; ?></span></div>
                         </div>
                     </div>
-                    <?php if ($postlist['memberPk'] == $userdata['pk'] || $userdata['id'] === "root") {?>
+                    <?php
+                    if ($postlist['memberPk'] == $userdata['pk'] || $userdata['id'] === "root") {
+                    ?>
                         <div class="mx-5 mt-4 row">
                             <button class="btn btn-primary bg-warning border-warning col rounded-0 mx-1" id="postEdit">수 정</button>
                             <button class="col mx-1" style="border: solid 1px lightgray;" id="backList">리스트</button>
                         </div>
-                    <?php } else { ?> 
+                    <?php
+                    } else {
+                    ?> 
                         <div class="mx-5 mt-4 row">
                             <button class="col mx-1 btn" style="border: solid 1px lightgray;" id="backList">리스트</button>
                         </div>
-                    <?php }?>
+                    <?php
+                    }
+                    ?>
                     
                 </div>
             </div>
         </div>
     <script>
         $(document).ready(function () {
-            //게시글 조회
-            function setViewData(){
-                $.ajax ({
-                    url : '../../process/boardcheck.php',
-                    type : 'POST',
-                    dataType : 'JSON',
-                    data : {call_name:'view_post', viewPk:<?php echo $post;?>},
-                    error : function(jqXHR, textStatus, errorThrown){
-                            console.log("실패");
-                            alert("게시글 조회에 실패했습니다. ajax 실패 원인 : " + textStatus);
-                    }, success : function(result){
-                        if (!(result.hasOwnProperty('errorMessage'))) {
-                            $("#boardViewTitle").html(result['title']);
-                            $("#boardViewWriter").html("작성자 : " + result['writer']);
-                            $("#boardViewInsertTime").html(": " + result['insertTime']);
-                            $("#boardViewUpdateTime").html(": " + result['updateTime']);
-                            $("#boardViewContent").html(result['content']);
-                        } else {
-                            alert("게시글 조회에 실패했습니다! 게시글 목록 화면으로 돌아갑니다." + result['errorMessage']);
-                            location.href = "boardlist.php"; 
-                        }
-                    }
-                });
-            }
-            
-            //메인함수
-            setViewData();
-            
             //수정하기
-            $(document).on('click', '#postEdit',function() {
+            $('#postEdit').click(function() {
                location.href = "boardedit.php?post=" + <?php echo $post;?>;
             });
             
             //취소하기
-            $(document).on('click', '#backList',function() {
+            $('#backList').click(function() {
                location.href = "boardlist.php"; 
             });
         });
     </script>
     </body>
 </html>
+<?php 
+} catch (Exception $e) {
+    echo "<script>
+            alert(\"게시글 조회에 실패했습니다! 게시글 목록 화면으로 돌아갑니다. " . $e->getMessage() . "\");
+            location.href = './boardlist.php';
+        </script>";;
+
+}
+?>

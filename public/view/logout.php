@@ -1,11 +1,11 @@
 <?php 
-    require_once './../process/autoload.php';
-    
-    if (!session_id()) {
-        session_start();
-    }
-    $authDBclass = new Cmskorea_Board_Auth(HOST, USERID, PASSWORD, DATABASE);
-    if ($authDBclass->logout()) {
+require_once './../process/autoload.php';
+
+if (!session_id()) {
+    session_start();
+}
+$authDBclass = new Cmskorea_Board_Auth(HOST, USERID, PASSWORD, DATABASE);
+if ($authDBclass->logout()) {
 ?>
 <html>
     <head>
@@ -43,7 +43,7 @@
                 setTimeout(function() { 
                     location.href = './../index.php'; 
                 }, 3000);
-                $(document).on('click', '#home',function() {
+                $('#home').click(function() {
                     location.href = './../index.php'; 
                 });
             });
@@ -53,7 +53,8 @@
 <?php     
 } else {
     echo "<script>
-            alert('로그아웃에 실패했습니다 리스트 화면으로 돌아갑니다.');
+            alert('로그아웃에 실패했습니다. 리스트 화면으로 돌아갑니다.');
             location.replace('./board/boardlist.php');
         </script>";;
-}?>
+}
+?>

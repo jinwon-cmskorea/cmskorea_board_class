@@ -16,10 +16,10 @@ if ((isset($_POST['name']) && $_POST['name']) && (isset($_POST['password']) && $
     if (empty($result)) {
         echo "<script>
             location.replace('../view/board/boardlist.php');
-        </script>";
+         </script>";
     } else {
         echo "<script>
-            alert('{$result}');
+            alert(\"'{$result}'\");
             location.replace('../view/login.php');
         </script>";
     }

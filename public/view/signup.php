@@ -115,7 +115,7 @@
                 $("#signupButton").addClass("disabled");
             
                 //아이디 중복검사
-                $(document).on('keyup', 'body div.container #memberId',function() {
+                $('#memberId').keyup(function() {
                     var id = $(this).val();
                     $.ajax({
                         url : '../process/signupIdcheck.php',
@@ -140,7 +140,7 @@
                     });
                 })
                 //input 비어있지 않으면 가입 버튼 활성화
-                $(document).on('keypress', 'body div.container .inputsignup',function() {
+                $('.inputsignup').keypress(function() {
                     inputIdVal = $("#memberId").val();
                     inputPwVal = $("#memberPw").val();
                     inputNameVal = $("#memberName").val();
@@ -150,21 +150,21 @@
                     }
                 })
                 //전화번호 자동 값 입력(010-)
-                $("#memberTel").focus(function() {
+                $('#memberTel').focus(function() {
                     if(!$(this).val()){
                         $(this).val("010");
                     }
                 });
-                
-                $(document).on('click', 'body div.container #alertclose', function() {
-                    $(".alertdivbox").remove();
+                //경고창 닫기
+                $('#alertclose').click(function() {
+                    $('.alertdivbox').remove();
                 });
-                
-                $(document).on('focus', '.form-control',function() {
-					$(".alertdivbox").remove();
-                })
-                
-                $(document).on('click', '#backHTML',function() {
+                //경고창 input focus 자동 삭제
+                $('.form-control').focus(function() {
+                    $('.alertdivbox').remove();
+                });
+                //로그인 화면
+                $('#backHTML').click(function() {
                    location.href = 'login.php'; 
                 });
                 

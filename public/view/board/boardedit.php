@@ -10,15 +10,16 @@ if (isset($_GET['post'])) {
 } else {
     $post = 0;
 }
-//수정 유저 확인
-$postlist = $boardDBclass->getContent($post);
-$userdata = $authDBclass->getMember();
-if ($postlist['memberPk'] !== $userdata['pk'] && $userdata['id'] !== "root") {
-    echo "<script>
-                alert('잘못된 수정 페이지 접근입니다! 게시글 목록으로 돌아갑니다.');
-                location.replace('./boardlist.php');
-            </script>";
-}
+//수정 유저 확인, 수정할 게시글 받아오기
+try {
+    $postlist = $boardDBclass->getContent($post);
+    $userdata = $authDBclass->getMember();
+    if ($postlist['memberPk'] !== $userdata['pk'] && $userdata['id'] !== "root") {
+        echo "<script>
+                    alert('잘못된 수정 페이지 접근입니다! 게시글 목록으로 돌아갑니다.');
+                    location.replace('./boardlist.php');
+                </script>";
+    }
 ?>
 <html>
     <head>
@@ -45,24 +46,26 @@ if ($postlist['memberPk'] !== $userdata['pk'] && $userdata['id'] !== "root") {
                     <p>게시판 글을 수정합니다.</p>
                 </div>
                 <div class="p-4">
-                    <div class="mb-4">
+                    <form class="mb-4" method="post" action="../../process/boardcheck.php" id="editForm" onsubmit="return checkForm();">
+                        <input type="hidden" name="call_name" value="update_post">
+                        <input type="hidden" name="viewPk" value="<?php echo $post;?>">
                         <div class="row">
                             <div class="labelbox text-center col-1 mx-5 my-2">
                                 <span class="text-white">제 목</span>
                             </div>
-                            <input type="text" class="col-9 inputwritebox align-self-center" id="editTitle" placeholder="제목을 입력해주세요.">
+                            <input type="text" class="col-9 inputwritebox align-self-center" name="updateTitle" id="editTitle" placeholder="제목을 입력해주세요." value="<?php echo $postlist['title'];?>">
                         </div>
                         <div class="row">
                             <div class="labelbox text-center col-1 mx-5 mb-5 my-2">
                                 <span class="text-white">내 용</span>
                             </div>
-                            <textarea  class="col-9 inputwritebox my-2" style="height: 320px; resize: none;" id="editContent"  placeholder="내용을 입력해주세요."></textarea>
+                            <textarea  class="col-9 inputwritebox my-2" style="height: 320px; resize: none;" name="updateContent" id="editContent"  placeholder="내용을 입력해주세요."><?php echo str_replace("<br>", "\n", $postlist['content']); ?></textarea>
                         </div>
                         <div class="row">
                             <div class="labelbox text-center col-1 mx-5 my-2">
                                 <span class="text-white">작성자</span>
                             </div>
-                            <input type="text" class="col-2 text-secondary inputwritebox align-self-center" id="writer">
+                            <input type="text" class="col-2 text-secondary inputwritebox align-self-center" name="updateWriter" id="writer" value="<?php echo $postlist['writer']; ?>">
                         </div>
                         <div class="row">
                             <div class="labelbox text-center col-1 mx-5 my-2">
@@ -76,9 +79,9 @@ if ($postlist['memberPk'] !== $userdata['pk'] && $userdata['id'] !== "root") {
                             </div>
                             <input type="file" class="col-6 align-self-center" id="file2">
                         </div>
-                    </div>
+                    </form>
                     <div class="mx-5 row">
-                        <button class="btn btn-primary bg-warning border-warning col rounded-0 mx-1" id="postEdit">수정</button>
+                        <button type="submit" form="editForm" class="btn btn-primary bg-warning border-warning col rounded-0 mx-1" id="postEdit">수정</button>
                         <button class="col mx-1" style="border: solid 1px lightgray;" id="backPost">취소</button>
                     </div>
                 </div>
@@ -86,8 +89,8 @@ if ($postlist['memberPk'] !== $userdata['pk'] && $userdata['id'] !== "root") {
             </div>
         </div>
     <script>
-        $(document).ready(function () {
-            //경고문(입력 체크)  
+        function checkForm() {
+        //경고문(입력 체크)  
             const appendAlert = (message, type, id) => {
                 const alertPlaceholder = document.getElementById(id);
                 const wrapper = document.createElement('div');
@@ -100,74 +103,42 @@ if ($postlist['memberPk'] !== $userdata['pk'] && $userdata['id'] !== "root") {
                     
                 alertPlaceholder.append(wrapper);
             }
-            //게시글 조회
-            function setViewData(){
-                $.ajax({
-                    url : '../../process/boardcheck.php',
-                    type : 'POST',
-                    dataType : 'json',
-                    data : {call_name:'view_post', viewPk:<?php echo $post;?>},
-                    error : function(jqXHR, textStatus, errorThrown){
-                            console.log("실패");
-                            alert("게시글 수정 조회에 실패했습니다. ajax 실패 원인 : " + textStatus);
-                    }, success : function(result){
-                        if (!(result.hasOwnProperty('errorMessage'))) {
-                            $('#editTitle').val(result['title']);
-                            $('#editContent').val(result['content'].replaceAll("<br>","\n"));
-                            $('#writer').val(result['writer']);
-                        } else {
-                            alert("게시글 수정 조회에 실패했습니다! 게시글 화면으로 돌아갑니다. " + result['errorMessage']);
-                            location.href = "boardview.php?post=" + <?php echo $post;?>;
-                        }
-                    }
-                });
+            var check = false;
+            var updateTitle = $('#editTitle').val();
+            var updateContent = $('#editContent').val();
+            var updateWriter = $('#writer').val();
+            //input 검사
+            if (!updateTitle) {
+                $("#alertBox").empty();
+                appendAlert('&#9888;제목을 입력해 주세요!', 'danger', 'alertBox');
+                return check;
+            } else if (!updateContent) {
+                $("#alertBox").empty();
+                appendAlert('&#9888;내용을 입력해 주세요!', 'danger', 'alertBox');
+                return check;
+            } else if (!updateWriter) {
+                $("#alertBox").empty();
+                appendAlert('&#9888;작성자를 입력해 주세요!', 'danger', 'alertBox');
+                return check;
+            } else {
+                check = true;
             }
-            setViewData()
-            //수정 완료하기
-            $(document).on('click', '#postEdit',function(){
-                var updateTitle = $('#editTitle').val();
-                var updateContent = $('#editContent').val();
-                var updateWriter = $('#writer').val();
-                updateContent = updateContent.replaceAll(/(\n|\r\n)/g, "<br>");
-                
-                //input 검사
-                if (!updateTitle) {
-                    $("#alertBox").empty();
-                    appendAlert('&#9888;제목을 입력해 주세요!', 'danger', 'alertBox');
-                } else if (!updateContent) {
-                    $("#alertBox").empty();
-                    appendAlert('&#9888;내용을 입력해 주세요!', 'danger', 'alertBox');
-                } else if (!updateWriter) {
-                    $("#alertBox").empty();
-                    appendAlert('&#9888;작성자를 입력해 주세요!', 'danger', 'alertBox');
-                } else {
-                    $.ajax({
-                        url : '../../process/boardcheck.php',
-                        type : 'POST',
-                        dataType : 'text',
-                        data : {call_name:'update_post', viewPk:<?php echo $post;?>, 
-                            updateTitle:updateTitle, updateContent:updateContent, updateWriter:updateWriter},
-                        error : function(jqXHR, textStatus, errorThrown){
-                            console.log("실패");
-                            alert("게시글 수정에 실패했습니다. ajax 실패 원인 : " + textStatus);
-                        }, success : function(result){
-                            if (result) {
-                                alert('글이 수정되었습니다');
-                                location.href = "boardview.php?post=" + <?php echo $post;?>;
-                            } else {
-                                $(".alertmainbox").remove();
-                                appendAlert('&#9888;게시글 수정에 실패했습니다!', 'danger', 'alertBox');
-                            }
-                        }
-                    });
-                }
-            });
-            
+            return check;
+        }
+        $(document).ready(function () {
             //취소하기
-            $(document).on('click', '#backPost',function(){
+            $('#backPost').click(function() {
                location.href = "boardview.php?post=" + <?php echo $post;?>;
             });
         });
     </script>
     </body>
 </html>
+<?php 
+} catch (Exception $e) {
+    echo "<script>
+            alert(\"게시글 수정 조회에 실패했습니다! 게시글 화면으로 돌아갑니다. " . $e->getMessage() . "\");
+            location.href = './boardview.php?post='{$post};
+        </script>";
+}
+?>

@@ -1,16 +1,17 @@
 <?php
-    require_once './../../process/autoload.php';
+require_once './../../process/autoload.php';
 
-    if (!session_id()) {
-        session_start();
-    }
-    $authDBclass = new Cmskorea_Board_Auth(HOST, USERID, PASSWORD, DATABASE);
-    if (!$authDBclass->isLogin()) {
-        echo "<script>
-                alert('로그인 실패 후 접속했습니다!');
-                location.replace('../login.php');
-            </script>";
-    }
+if (!session_id()) {
+    session_start();
+}
+$authDBclass = new Cmskorea_Board_Auth(HOST, USERID, PASSWORD, DATABASE);
+//로그인 체크
+if (!$authDBclass->isLogin()) {
+    echo "<script>
+            alert('로그인 실패 후 접속했습니다!');
+            location.replace('../login.php');
+        </script>";
+}
 ?>
 <div class="header row bg-secondary">
     <h3 class="col-9  align-self-center fw-bold"><a class="text-white text-decoration-none" href="boardlist.php">CMSKOREA Board</a></h3>
@@ -21,8 +22,9 @@
 </div>
 <script>
     $(document).ready(function() {
-        $(document).on('click', '#logout', function() {
-            location.href = '../logout.php'; 
+        //로그아웃
+        $('#logout').click(function() {
+            location.href = '../logout.php';
         });
     });
 </script>
