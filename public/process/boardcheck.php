@@ -35,7 +35,7 @@ function write_post() {
     global $authDBclass;
          
     try {
-        if (!isset($_POST['writeTitle']) || !isset($_POST['writer'])) {
+        if ((!isset($_POST['writeTitle']) && $_POST['writeTitle']) || (!isset($_POST['writer']) && $_POST['writer'])) {
             throw new Exception("오류 확인 : 전달받은 값 에러! 부족한 값을 입력해주세요.");
         }
         $contentReplace = array("\n","\r\n");
@@ -63,7 +63,8 @@ function write_post() {
 function update_post() {
     global $boardDBclass;
     try{
-        if (!isset($_POST['viewPk']) || !isset($_POST['updateTitle']) || !isset($_POST['updateWriter'])) {
+        if ((!isset($_POST['viewPk']) && $_POST['viewPk']) || (!isset($_POST['updateTitle']) && $_POST['updateTitle']) 
+                || (!isset($_POST['updateWriter']) && $_POST['updateWriter'])) {
             throw new Exception("오류 확인 : 전달받은 값 에러! 부족한 값을 입력해주세요." . $_POST['updateWriter']);
         }
         $contentReplace = array("\n","\r\n");

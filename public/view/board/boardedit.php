@@ -5,7 +5,7 @@ $authDBclass = new Cmskorea_Board_Auth(HOST, USERID, PASSWORD, DATABASE);
 if (!session_id()) {
     session_start();
 }
-if (isset($_GET['post'])) {
+if (isset($_GET['post']) && $_GET['post']) {
     $post = $_GET['post'];
 } else {
     $post = 0;

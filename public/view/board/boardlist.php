@@ -12,23 +12,23 @@ if (isset($_GET['page'])) {
     $page = 1;
 }
 //검색 키워드 받기
-if (isset($_GET['searchTag']) && !empty($_GET['searchTag'])) {
+if (isset($_GET['searchTag']) && $_GET['searchTag']) {
     $searchTag = $_GET['searchTag'];
 } else {
     $searchTag = null;
 }
-if (isset($_GET['searchInput']) && !empty($_GET['searchInput'])) {
+if (isset($_GET['searchInput']) && $_GET['searchInput']) {
     $searchInput = $_GET['searchInput'];
 } else {
     $searchInput = null;
 }
 //정렬 받기
-if (isset($_GET['orderName']) && !empty($_GET['orderName'])) {
+if (isset($_GET['orderName']) && $_GET['orderName']) {
     $orderName = $_GET['orderName'];
 } else {
     $orderName = null;
 }
-if (isset($_GET['sort']) && !empty($_GET['sort'])) {
+if (isset($_GET['sort']) && $_GET['sort']) {
     $sort = $_GET['sort'];
 } else {
     $sort = null;
@@ -44,18 +44,18 @@ $search_all_count = 0;
 $search_count = 0;
 //검색, 정렬 데이터 배열에 저장
 $selectarr = array();
-if (isset($searchInput)) {
+if (!is_null($searchTag) && !is_null($searchInput)) {
     $selectarr["searchTag"] = $searchTag;
     $selectarr["searchInput"] = $searchInput;
 }
-if (isset($orderName)) {
+if (!is_null($orderName) && !is_null($sort)) {
     $selectarr["orderName"] = $orderName;
     $selectarr["sort"] = $sort;
 }
 $selectarr["start_list"] = $page;
 //쿼리 사용 데이터 가져오기
 try {
-    if (isset($searchTag) && isset($searchInput)) {
+    if (!is_null($searchTag) && !is_null($searchInput)) {
         //검색 결과 전체 페이지 수
         $pageCountArr = array();
         $search_all_count = mysqli_num_rows($boardDBclass->getContents($pageCountArr));
@@ -130,7 +130,7 @@ if ($e_pageNum > $total_page) {
                                 <input type="hidden" name="sort" value="<?php echo $sort?>">
                                 <button class="btn btn-primary me-4" id="searchButton">검색</button>
                                 <?php
-                                if(isset($searchTag) && isset($searchInput)) {
+                                if(!is_null($searchTag) && !is_null($searchInput)) {
                                 ?> 
                                     <span><?php printf("%04d", $search_count);?></span> 
                                     <span> / </span> 
@@ -162,7 +162,7 @@ if ($e_pageNum > $total_page) {
                                     if (is_string($dblist)) {
                                         throw new Exception($dblist);
                                     }
-                                    if (isset($searchTag) && isset($searchInput) && $total_page == 0) {
+                                    if (!is_null($searchTag) && !is_null($searchInput) && $total_page == 0) {
                                     ?>
                                         <tr class='align-middle' >
                                             <td class='align-middle text-center fs-3 fw-bold py-4' colspan='4'>검색결과가 존재하지 않습니다!</td>
@@ -244,12 +244,12 @@ if ($e_pageNum > $total_page) {
                     th.innerHTML = th.innerHTML.replace(/[▼▲]/g, '');
                 });
                 <?php 
-                if ($sort === 'asc' || !(isset($sort))) {
+                if ($sort === 'asc' || is_null($sort)) {
                     $sort = 'desc';
                 } else {
                     $sort = 'asc';
                 }
-                if (isset($searchTag) && isset($searchInput)) {
+                if (!is_null($searchTag) && !is_null($searchInput)) {
                 ?>
                 location.href = 'boardlist.php?page=<?php echo $page; ?>&searchTag=<?php echo $searchTag;?>&searchInput=<?php echo $searchInput ?>&orderName=' + ordername + '&sort=<?php echo $sort ?>';
                 <?php
@@ -261,7 +261,7 @@ if ($e_pageNum > $total_page) {
                 ?>
             }
             <?php 
-            if (isset($orderName) && isset($sort)) {
+            if (!is_null($orderName) && !is_null($sort)) {
                 if ($sort === 'asc') {
                 ?>$("th[value=" + '<?php echo $orderName; ?>' + "]").append('▼');
                 <?php
