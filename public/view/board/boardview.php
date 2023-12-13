@@ -14,7 +14,7 @@ if (isset($_GET['post']) && $_GET['post']) {
 $userdata = $authDBclass->getMember();
 try {
     $postlist = $boardDBclass->getContent($post);
-
+    $filelist = $boardDBclass->getFiles($post);
 ?>
 <html>
     <head>
@@ -50,12 +50,23 @@ try {
                         	<p id="boardViewContent"><?php echo $postlist['content']; ?></p>
                         </div>
                     </div>
+                    <?php
+                    if ($filelist) {
+                    ?>
                     <div class="mt-3" style="border-bottom: 1px dashed lightgray">
                         <ul>
-                            <li>등록된 파일1</li>
-                            <li>등록된 파일2</li>
+                        <?php 
+                        foreach ($filelist as $value) {
+                        ?>
+                            <li><a href="../../process/fileDownload.php?boardPk=<?php echo $post;?>&filePk=<?php echo $value['pk'];?>"><?php echo $value['filename'];?></a></li>
+                        <?php 
+                        }
+                        ?>
                         </ul>
                     </div>
+                    <?php 
+                    }
+                    ?>
                     <div class="m-3 d-flex">
                         <div class="fw-bold">
                             <div>등록시간</div>

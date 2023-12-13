@@ -179,7 +179,26 @@ class Cmskorea_Board_BoardTest extends PHPUnit_Framework_TestCase
         //echo var_dump(mysqli_fetch_all($this->board->getContents($searchtestpost)));
         $searchresult = mysqli_fetch_all($this->board->getContents($searchtestpost));
         $result = mysqli_fetch_all($this->board->getContents($testpost));
+
         $this->assertNotEquals($searchresult, $result);
+        $this->assertNotEquals($sortpost, $result);
+        $this->assertNotEquals($testpost, $result);
+    }
+    public function testAddFiles()
+    {
+       /*  $file = array(
+                'boardPk'  => '1',
+                'filename'=> '1234.jpg',
+        );
+        $result = $this->board->getFiles('4');
+        //echo var_dump($result); */
+        
+    }
+    public function testGetFiles()
+    {
+        $result = $this->board->getFiles('4');
+        //echo var_dump($result);
+        
     }
 }
 

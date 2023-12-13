@@ -65,7 +65,7 @@ function update_post() {
     try{
         if ((!isset($_POST['viewPk']) && $_POST['viewPk']) || (!isset($_POST['updateTitle']) && $_POST['updateTitle']) 
                 || (!isset($_POST['updateWriter']) && $_POST['updateWriter'])) {
-            throw new Exception("오류 확인 : 전달받은 값 에러! 부족한 값을 입력해주세요." . $_POST['updateWriter']);
+            throw new Exception("오류 확인 : 전달받은 값 에러! 부족한 값을 입력해주세요.");
         }
         $contentReplace = array("\n","\r\n");
         
@@ -74,7 +74,14 @@ function update_post() {
         $updateArr['title'] = $_POST['updateTitle'];
         $updateArr['writer'] = $_POST['updateWriter'];
         $updateArr['content'] = str_replace($contentReplace, "<br>", $_POST['updateContent']);
-        
+        for ($i = 1; $i < 3; $i++) {
+            if ((isset($_POST["filePk{$i}"]) && $_POST["filePk{$i}"]) && $_FILES["uploadFile{$i}"]['tmp_name']) {
+                $boardDBclass->delFile($_POST["filePk{$i}"]);
+                $boardDBclass->addFile($_POST['viewPk'], $_FILES["uploadFile{$i}"]);
+            } else if ($_FILES["uploadFile{$i}"]['tmp_name']) {
+                $boardDBclass->addFile($_POST['viewPk'], $_FILES["uploadFile{$i}"]);
+            }
+        }
         if ($boardDBclass->editContent($updateArr)) {
             alert_replace ("글이 수정되었습니다", '../view/board/boardview.php?post=' . $updateArr['no']);
         } else {

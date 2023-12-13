@@ -13,6 +13,7 @@ if (isset($_GET['post']) && $_GET['post']) {
 //수정 유저 확인, 수정할 게시글 받아오기
 try {
     $postlist = $boardDBclass->getContent($post);
+    $filelist = $boardDBclass->getFiles($post);
     $userdata = $authDBclass->getMember();
     if ($postlist['memberPk'] !== $userdata['pk'] && $userdata['id'] !== "root") {
         echo "<script>
@@ -46,7 +47,7 @@ try {
                     <p>게시판 글을 수정합니다.</p>
                 </div>
                 <div class="p-4">
-                    <form class="mb-4" method="post" action="../../process/boardcheck.php" id="editForm" onsubmit="return checkForm();">
+                    <form class="mb-4" method="post" enctype="multipart/form-data" action="../../process/boardcheck.php" id="editForm" onsubmit="return checkForm();">
                         <input type="hidden" name="call_name" value="update_post">
                         <input type="hidden" name="viewPk" value="<?php echo $post;?>">
                         <div class="row">
@@ -59,8 +60,34 @@ try {
                             <div class="labelbox text-center col-1 mx-5 mb-5 my-2">
                                 <span class="text-white">내 용</span>
                             </div>
-                            <textarea  class="col-9 inputwritebox my-2" style="height: 320px; resize: none;" name="updateContent" id="editContent"  placeholder="내용을 입력해주세요."><?php echo str_replace("<br>", "\n", $postlist['content']); ?></textarea>
+                            <textarea  class="col-9 inputwritebox my-2" style="height: 250px; resize: none;" name="updateContent" id="editContent"  placeholder="내용을 입력해주세요."><?php echo str_replace("<br>", "\n", $postlist['content']); ?></textarea>
                         </div>
+                            <?php
+                            if ($filelist) {
+                            ?>
+                            <div class="row">
+                                <div class="labelbox text-center col-1 mx-5 my-2">
+                                    <span class="text-white" style="font-size:15px">업로드파일</span>
+                                </div>
+                                <div class="col-9">
+                                    <ul>
+                                    <?php 
+                                    $index = 1;
+                                    foreach ($filelist as $value) {
+                                        
+                                    ?>  
+                                        <input type="hidden" name="filePk<?php echo $index;?>" value="<?php echo $value['pk'];?>">
+                                        <li><?php echo $value['filename'];?><button type='button' class='btn btn-sm btn-danger ms-1 deleteFileButton' value="<?php echo $value['pk'];?>">삭제</button></li>
+                                    <?php 
+                                        $index++;
+                                    }
+                                    ?>
+                                    </ul>
+                                </div>
+                            </div>
+                            <?php 
+                            }
+                            ?>
                         <div class="row">
                             <div class="labelbox text-center col-1 mx-5 my-2">
                                 <span class="text-white">작성자</span>
@@ -71,15 +98,23 @@ try {
                             <div class="labelbox text-center col-1 mx-5 my-2">
                                 <span class="text-white" style="font-size:15px">파일업로드</span>
                             </div>
-                            <input type="file" class="col-6 align-self-center" id="file1">
+                            <input type="file" class="col-6 align-self-center checkFile" name="uploadFile1" id="uploadFile1">
                         </div>
                         <div class="row">
                             <div class="labelbox text-center col-1 mx-5 my-2" >
                                 <span class="text-white" style="font-size:15px">파일업로드</span>
                             </div>
-                            <input type="file" class="col-6 align-self-center" id="file2">
+                            <input type="file" class="col-6 align-self-center checkFile" name="uploadFile2" id="uploadFile2">
                         </div>
                     </form>
+                    <div class="m-3 d-flex">
+                        <div class="fw-bold">
+                            <div>마지막 수정시간</div>
+                        </div>
+                        <div class="ms-1">
+                            <div><span id="boardViewUpdateTime">: <?php echo $postlist['updateTime']; ?></span></div>
+                        </div>
+                    </div>
                     <div class="mx-5 row">
                         <button type="submit" form="editForm" class="btn btn-primary bg-warning border-warning col rounded-0 mx-1" id="postEdit">수정</button>
                         <button class="col mx-1" style="border: solid 1px lightgray;" id="backPost">취소</button>
@@ -126,6 +161,43 @@ try {
             return check;
         }
         $(document).ready(function () {
+            //게시글 삭제
+            $(document).on('click', 'body .deleteFileButton', function() {
+                deletePk = $(this).attr("value");
+                console.log(deletePk);
+                $.ajax({
+                    url : '../../process/fileDelete.php',
+                    type : 'POST',
+                    dataType : 'text',
+                    data : {deletePk:deletePk},
+                    error : function(jqXHR, textStatus, errorThrown){
+                       console.log("실패");
+                       alert("파일 삭제 실패했습니다. ajax 실패 원인 : " + textStatus);
+                    }, success : function(result){
+                        if (result) {
+                            alert("파일 삭제 실패했습니다. 실패 원인 :" + result);
+                         } else {
+                             alert("파일 삭제 성공했습니다.");
+                             location.reload();
+                         }
+                    }
+                 });
+            });
+            //파일 업로드 용량, 확장자 체크
+            $(".checkFile").change(function(){
+                var uploadFile = $(this).val();
+                var fileSize = $(this)[0].files[0].size;
+                var maxSize = 3 * 1024 * 1024;
+                var ext = uploadFile.split('.').pop().toLowerCase();
+                if (fileSize > maxSize) {
+                    alert("첨부파일 사이즈는 3MB 이내로 등록 가능합니다.");
+                    $(this).val("");
+                }
+                if ($.inArray(ext, ['jpg','png','gif','pdf']) == -1) {
+                    alert("'jpg,gif,jpeg,png' 파일만 업로드 할수 있습니다.");
+                    $(this).val("");
+                }
+            });
             //취소하기
             $('#backPost').click(function() {
                location.href = "boardview.php?post=" + <?php echo $post;?>;

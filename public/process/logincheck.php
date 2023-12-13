@@ -24,6 +24,9 @@ if ((isset($_POST['name']) && $_POST['name']) && (isset($_POST['password']) && $
         </script>";
     }
 } else {
-    echo "전달 받은 값이 없습니다!";
+    echo "<script>
+            alert('전달 받은 값이 없습니다!');
+            location.replace('../view/login.php');
+        </script>";
 }
 ?>

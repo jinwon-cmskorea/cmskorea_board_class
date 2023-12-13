@@ -43,7 +43,7 @@ $memberData = $authDBclass->getMember();
                             <div class="labelbox text-center col-1 mx-5 mb-5 my-2">
                                 <span class="text-white">내 용</span>
                             </div>
-                            <textarea  class="col-9 inputwritebox my-2" style="height: 320px; resize: none;" name="writeContent" id="writeContent"  placeholder="내용을 입력해주세요."></textarea>
+                            <textarea  class="col-9 inputwritebox my-2" style="height: 250px; resize: none;" name="writeContent" id="writeContent"  placeholder="내용을 입력해주세요."></textarea>
                         </div>
                         <div class="row">
                             <div class="labelbox text-center col-1 mx-5 my-2">
@@ -122,7 +122,7 @@ $memberData = $authDBclass->getMember();
                     $(this).val("");
                 }
                 if ($.inArray(ext, ['jpg','png','gif','pdf']) == -1) {
-                    alert("'jpg,gif,jpeg,png' 파일만 업로드 할수 있습니다.");
+                    alert("'jpg, png, gif, pdf' 파일만 업로드 할수 있습니다.");
                     $(this).val("");
                 }
             });
