@@ -26,7 +26,7 @@
                     <div class="text-start grid gap-3">
                         <div class="row p-2 g-col-6">
                             <span class="col-3 align-self-center ">아이디</span>
-                            <input  type="text" class="col-8 form-control border-dark-subtle rounded-0" style="width: 70%;" id="name" name="name" >
+                            <input  type="text" class="col-8 form-control border-dark-subtle rounded-0" style="width: 70%;" id="name" name="name">
                         </div>
                         <div class="row p-2 g-col-6">
                             <span class="col-3 align-self-center">비밀번호</span>

@@ -67,10 +67,10 @@ class Cmskorea_Board_Member {
                 $rs = mysqli_query($this->_db,$query);
                 
                 if (!$rs) {
-                    throw new Exception('회원가입에 실패했습니다!' . mysqli_errno($this->_db) . ":" . mysqli_error($this->_db));
+                    throw new Exception('회원가입에 실패했습니다! 오류 확인 : ' . mysqli_errno($this->_db) . ":" . mysqli_error($this->_db));
                 }
             } else {
-                throw new Exception('회원가입에 실패했습니다!' . mysqli_errno($this->_db) . ":" . mysqli_error($this->_db));
+                throw new Exception('회원가입에 실패했습니다! 오류 확인 : ' . mysqli_errno($this->_db) . ":" . mysqli_error($this->_db));
             }
             if (!($this->getMember($datas['id']))) {
                 throw new Exception('회원가입에 실패했습니다!');

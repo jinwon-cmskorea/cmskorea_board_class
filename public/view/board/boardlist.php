@@ -34,40 +34,40 @@ if (isset($_GET['sort']) && $_GET['sort']) {
     $sort = null;
 }
 //데이터개수
-$list_num = 10;
+$listNum = 10;
 //페이지수
-$page_num = 5;
+$pageNum = 5;
 
-$total_page = 1;
+$totaPage = 1;
 //검색 결과 표시
-$search_all_count = 0;
-$search_count = 0;
+$searchAllCount = 0;
+$searchCount = 0;
 //검색, 정렬 데이터 배열에 저장
-$selectarr = array();
+$selectArr = array();
 if (!is_null($searchTag) && !is_null($searchInput)) {
-    $selectarr["searchTag"] = $searchTag;
-    $selectarr["searchInput"] = $searchInput;
+    $selectArr["searchTag"] = $searchTag;
+    $selectArr["searchInput"] = $searchInput;
 }
 if (!is_null($orderName) && !is_null($sort)) {
-    $selectarr["orderName"] = $orderName;
-    $selectarr["sort"] = $sort;
+    $selectArr["orderName"] = $orderName;
+    $selectArr["sort"] = $sort;
 }
-$selectarr["start_list"] = $page;
+$selectArr["start_list"] = $page;
 //쿼리 사용 데이터 가져오기
 try {
     if (!is_null($searchTag) && !is_null($searchInput)) {
         //검색 결과 전체 페이지 수
         $pageCountArr = array();
-        $search_all_count = mysqli_num_rows($boardDBclass->getContents($pageCountArr));
+        $searchAllCount = mysqli_num_rows($boardDBclass->getContents($pageCountArr));
         $pageCountArr["searchTag"] = $searchTag;
         $pageCountArr["searchInput"] = $searchInput;
-        $search_count = mysqli_num_rows($boardDBclass->getContents($pageCountArr));
-        $total_page = ceil($search_count / $list_num);
+        $searchCount = mysqli_num_rows($boardDBclass->getContents($pageCountArr));
+        $totaPage = ceil($searchCount / $listNum);
     } else {
         //전체 페이지 수
         $pageCountArr = array();
-        $search_all_count = mysqli_num_rows($boardDBclass->getContents($pageCountArr));
-        $total_page = ceil($search_all_count / $list_num);
+        $searchAllCount = mysqli_num_rows($boardDBclass->getContents($pageCountArr));
+        $totaPage = ceil($searchAllCount / $listNum);
     }
 } catch (Exception $e) {
     echo "<script>
@@ -75,20 +75,20 @@ try {
         </script>";
 }
 //전체 블럭 수
-$total_block = ceil($total_page / $page_num);
+$totalBlock = ceil($totaPage / $pageNum);
 //현재 페이지 번호
-$now_block = ceil($page / $page_num);
+$nowBlock = ceil($page / $pageNum);
 //블럭 당 시작 페이지 번호
-$s_pageNum = ($now_block - 1) * $page_num + 1;
+$startPageNum = ($nowBlock - 1) * $pageNum + 1;
 // 데이터가 0개인 경우
-if ($s_pageNum <= 0) {
-    $s_pageNum = 1;
+if ($startPageNum <= 0) {
+    $startPageNum = 1;
 };
 //블럭 당 마지막 페이지 번호
-$e_pageNum = $now_block *  $page_num ;
+$endPageNum = $nowBlock *  $pageNum ;
 // 마지막 번호가 전체 페이지 수를 넘지 않도록
-if ($e_pageNum > $total_page) {
-    $e_pageNum = $total_page;
+if ($endPageNum > $totaPage) {
+    $endPageNum = $totaPage;
 };
 ?>
 <html>
@@ -126,15 +126,15 @@ if ($e_pageNum > $total_page) {
                                     <option value="insertTime">작성일자</option>
                                 </select>
                                 <input  type="text" style="border: 1px solid lightgray;" id="searchBar" name="searchInput" placeholder="검색어를 입력해주세요.">
-                                <input type="hidden" name="orderName" value="<?php echo $orderName?>">
-                                <input type="hidden" name="sort" value="<?php echo $sort?>">
+                                <input type="hidden" name="orderName" value="<?php echo $orderName;?>">
+                                <input type="hidden" name="sort" value="<?php echo $sort;?>">
                                 <button class="btn btn-primary me-4" id="searchButton">검색</button>
                                 <?php
                                 if(!is_null($searchTag) && !is_null($searchInput)) {
                                 ?> 
-                                    <span><?php printf("%04d", $search_count);?></span> 
+                                    <span><?php printf("%04d", $searchCount);?></span> 
                                     <span> / </span> 
-                                    <span><?php printf("%04d", $search_all_count);?> 건</span> 
+                                    <span><?php printf("%04d", $searchAllCount);?> 건</span> 
                                 <?php
                                 }
                                 ?>
@@ -154,15 +154,15 @@ if ($e_pageNum > $total_page) {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                <?php 
+                                <?php
                                 //테이블 출력
                                 try{
-                                    $dblist = $boardDBclass->getContents($selectarr);
+                                    $dbBoardList = $boardDBclass->getContents($selectArr);
                                     //query 결과 검사
-                                    if (is_string($dblist)) {
-                                        throw new Exception($dblist);
+                                    if (is_string($dbBoardList)) {
+                                        throw new Exception($dbBoardList);
                                     }
-                                    if (!is_null($searchTag) && !is_null($searchInput) && $total_page == 0) {
+                                    if (!is_null($searchTag) && !is_null($searchInput) && $totaPage == 0) {
                                     ?>
                                         <tr class='align-middle' >
                                             <td class='align-middle text-center fs-3 fw-bold py-4' colspan='4'>검색결과가 존재하지 않습니다!</td>
@@ -170,13 +170,13 @@ if ($e_pageNum > $total_page) {
                                         </tr>
                                     <?php 
                                     } else {
-                                        foreach ($dblist as $value) { 
+                                        foreach ($dbBoardList as $value) { 
                                     ?>  
                                         <tr class='align-middle text-center' >
-                                            <th scope='row'><?php printf("%04d", $value["pk"]);?></th>
-                                            <td class="text-start"><?php echo $value["title"];?></td>
-                                            <td><?php echo $value["writer"];?></td>
-                                            <td><?php echo substr($value["insertTime"],0,10);?></td>
+                                            <th scope='row'><?php printf("%04d", $value["pk"]); ?></th>
+                                            <td class="text-start"><?php echo $value["title"]; ?></td>
+                                            <td><?php echo $value["writer"]; ?></td>
+                                            <td><?php echo substr($value["insertTime"],0,10); ?></td>
                                             <td><button type='button' class='btn btn-warning text-white viewButton'>조회</button>
                                             <button type='button' class='btn btn-danger deleteButton ms-1'>삭제</button></td>
                                         </tr>
@@ -187,41 +187,42 @@ if ($e_pageNum > $total_page) {
                                     </table>
                                     </div>
                                     <nav aria-label="Page navigation example" id="pagingnav">
-                                      <ul class="pagination justify-content-center" id="pagination">
-                                          <li class='page-item'><a class='page-link' href='boardlist.php?page=1&searchTag=<?php echo $searchTag; ?>&searchInput=<?php echo $searchInput ?>&orderName=<?php echo $orderName; ?>&sort=<?php echo $sort ?>'>First</a></li>
-                                        <?php
+                                        <ul class="pagination justify-content-center" id="pagination">
+                                            <li class='page-item'><a class='page-link' href='boardlist.php?page=1&searchTag=<?php echo $searchTag; ?>&searchInput=<?php echo $searchInput; ?>&orderName=<?php echo $orderName; ?>&sort=<?php echo $sort; ?>'>First</a></li>
+                                            <?php
                                             /* pager : 페이지 번호 출력 */
                                              if ($page <= 1) {
-                                             ?><li class='page-item'><a class='page-link' href='boardlist.php?page=1&searchTag=<?php echo $searchTag; ?>&searchInput=<?php echo $searchInput ?>&orderName=<?php echo $orderName; ?>&sort=<?php echo $sort ?>'>&lt</a></li>
+                                             ?>
+                                             <li class='page-item'><a class='page-link' href='boardlist.php?page=1&searchTag=<?php echo $searchTag; ?>&searchInput=<?php echo $searchInput; ?>&orderName=<?php echo $orderName; ?>&sort=<?php echo $sort; ?>'>&lt</a></li>
                                              <?php
                                              } else {
                                              ?>
-                                               <li class='page-item'><a class='page-link' href='boardlist.php?page=<?php echo ($page-1); ?>&searchTag=<?php echo $searchTag; ?>&searchInput=<?php echo $searchInput ?>&orderName=<?php echo $orderName; ?>&sort=<?php echo $sort ?>'>&lt</a></li>
+                                               <li class='page-item'><a class='page-link' href='boardlist.php?page=<?php echo ($page-1); ?>&searchTag=<?php echo $searchTag; ?>&searchInput=<?php echo $searchInput; ?>&orderName=<?php echo $orderName; ?>&sort=<?php echo $sort; ?>'>&lt</a></li>
                                             <?php
                                             };
-                                            for ($print_page = $s_pageNum; $print_page <= $e_pageNum; $print_page++) {
-                                                if ($page == $print_page) {
+                                            for ($printPage = $startPageNum; $printPage <= $endPageNum; $printPage++) {
+                                                if ($page == $printPage) {
                                                 ?>
-                                                    <li class='page-item'><a class='page-link  bg-info-subtle' href='boardlist.php?page=<?php echo $print_page; ?>&searchTag=<?php echo $searchTag;?>&searchInput=<?php echo $searchInput ?>&orderName=<?php echo $orderName; ?>&sort=<?php echo $sort ?>'><?php echo $print_page; ?></a></li>
+                                                    <li class='page-item'><a class='page-link  bg-info-subtle' href='boardlist.php?page=<?php echo $printPage; ?>&searchTag=<?php echo $searchTag;?>&searchInput=<?php echo $searchInput; ?>&orderName=<?php echo $orderName; ?>&sort=<?php echo $sort; ?>'><?php echo $printPage; ?></a></li>
                                                 <?php
                                                 } else {
                                                 ?>
-                                                    <li class='page-item'><a class='page-link' href='boardlist.php?page=<?php echo $print_page; ?>&searchTag=<?php echo $searchTag;?>&searchInput=<?php echo $searchInput ?>&orderName=<?php echo $orderName; ?>&sort=<?php echo $sort ?>'><?php echo $print_page; ?></a></li>
+                                                    <li class='page-item'><a class='page-link' href='boardlist.php?page=<?php echo $printPage; ?>&searchTag=<?php echo $searchTag;?>&searchInput=<?php echo $searchInput; ?>&orderName=<?php echo $orderName; ?>&sort=<?php echo $sort; ?>'><?php echo $printPage; ?></a></li>
                                             <?php
                                                 }
                                             };
                                             
-                                            if ($page >= $total_page) {
+                                            if ($page >= $totaPage) {
                                             ?>
-                                                <li class='page-item'><a class='page-link' href='boardlist.php?page=<?php echo $total_page; ?>&searchTag=<?php echo $searchTag; ?>&searchInput=<?php echo $searchInput ?>&orderName=<?php echo $orderName; ?>&sort=<?php echo $sort ?>'>&gt</a></li>
+                                                <li class='page-item'><a class='page-link' href='boardlist.php?page=<?php echo $totaPage; ?>&searchTag=<?php echo $searchTag; ?>&searchInput=<?php echo $searchInput; ?>&orderName=<?php echo $orderName; ?>&sort=<?php echo $sort; ?>'>&gt</a></li>
                                             <?php
                                             } else{ 
                                             ?>
-                                                <li class='page-item'><a class='page-link' href='boardlist.php?page=<?php echo ($page+1); ?>&searchTag=<?php echo $searchTag; ?>&searchInput=<?php echo $searchInput ?>&orderName=<?php echo $orderName; ?>&sort=<?php echo $sort ?>'>&gt</a></li>
+                                                <li class='page-item'><a class='page-link' href='boardlist.php?page=<?php echo ($page+1); ?>&searchTag=<?php echo $searchTag; ?>&searchInput=<?php echo $searchInput; ?>&orderName=<?php echo $orderName; ?>&sort=<?php echo $sort; ?>'>&gt</a></li>
                                             <?php
                                             };
                                             ?>
-                                             <li class='page-item'><a class='page-link' href='boardlist.php?page=<?php echo $total_page; ?>&searchTag=<?php echo $searchTag;?>&searchInput=<?php echo $searchInput ?>&orderName=<?php echo $orderName; ?>&sort=<?php echo $sort ?>'>Last</a></li>
+                                             <li class='page-item'><a class='page-link' href='boardlist.php?page=<?php echo $totaPage; ?>&searchTag=<?php echo $searchTag;?>&searchInput=<?php echo $searchInput; ?>&orderName=<?php echo $orderName; ?>&sort=<?php echo $sort; ?>'>Last</a></li>
                                       </ul>
                                     </nav>
                                     <?php
@@ -251,11 +252,11 @@ if ($e_pageNum > $total_page) {
                 }
                 if (!is_null($searchTag) && !is_null($searchInput)) {
                 ?>
-                location.href = 'boardlist.php?page=<?php echo $page; ?>&searchTag=<?php echo $searchTag;?>&searchInput=<?php echo $searchInput ?>&orderName=' + ordername + '&sort=<?php echo $sort ?>';
+                location.href = 'boardlist.php?page=<?php echo $page; ?>&searchTag=<?php echo $searchTag;?>&searchInput=<?php echo $searchInput; ?>&orderName=' + ordername + '&sort=<?php echo $sort; ?>';
                 <?php
                 } else {
                 ?>
-                location.href = 'boardlist.php?page=<?php echo $page; ?>&orderName=' + ordername + '&sort=<?php echo $sort ?>';
+                location.href = 'boardlist.php?page=<?php echo $page; ?>&orderName=' + ordername + '&sort=<?php echo $sort; ?>';
                 <?php
                 }
                 ?>
@@ -263,10 +264,12 @@ if ($e_pageNum > $total_page) {
             <?php 
             if (!is_null($orderName) && !is_null($sort)) {
                 if ($sort === 'asc') {
-                ?>$("th[value=" + '<?php echo $orderName; ?>' + "]").append('▼');
+                ?>
+                $("th[value=" + '<?php echo $orderName; ?>' + "]").append('▼');
                 <?php
                 } else {
-                ?>$("th[value=" + '<?php echo $orderName; ?>' + "]").append('▲');
+                ?>
+                $("th[value=" + '<?php echo $orderName; ?>' + "]").append('▲');
                 <?php
                 }
             }

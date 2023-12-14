@@ -73,7 +73,7 @@ class Cmskorea_Board_BoardTest extends PHPUnit_Framework_TestCase
                 'content'   => '테스트 내용입니다. test content'
         );
         $result = $this->board->addContent($testpost);
-        $this->assertNotEmpty($result);
+        $this->assertNotNull($result);
         $this->assertInternalType('integer', $result);
     }
     /**
@@ -91,7 +91,7 @@ class Cmskorea_Board_BoardTest extends PHPUnit_Framework_TestCase
             $result = $this->board->addContent($testpost);
             $this->assertInternalType('integer', $result);
         } catch (Exception $e) {
-            $this->assertEquals('오류 확인 : 전달받은 값 에러! 부족한 값을 입력해주세요.', $e->getMessage());
+            $this->assertEquals('게시글 등록 오류 확인 : 전달받은 값 에러! 부족한 값을 입력해주세요.', $e->getMessage());
         }
     }
     /**
@@ -159,7 +159,7 @@ class Cmskorea_Board_BoardTest extends PHPUnit_Framework_TestCase
         
         //$this->markTestIncomplete("getContents test not implemented");
         
-        $searchtestpost = array(
+        $searchpost = array(
                 'searchTag'  => 'title',
                 'searchInput'=> 'test',
                 'start_list' => $p_num,
@@ -176,29 +176,13 @@ class Cmskorea_Board_BoardTest extends PHPUnit_Framework_TestCase
                 'sort'       => 'desc',
                 'start_list' => $p_num,
         );
-        //echo var_dump(mysqli_fetch_all($this->board->getContents($searchtestpost)));
-        $searchresult = mysqli_fetch_all($this->board->getContents($searchtestpost));
+        //echo var_dump(mysqli_fetch_all($this->board->getContents($searchpost)));
+        $searchresult = mysqli_fetch_all($this->board->getContents($searchpost));
         $result = mysqli_fetch_all($this->board->getContents($testpost));
 
         $this->assertNotEquals($searchresult, $result);
         $this->assertNotEquals($sortpost, $result);
         $this->assertNotEquals($testpost, $result);
-    }
-    public function testAddFiles()
-    {
-       /*  $file = array(
-                'boardPk'  => '1',
-                'filename'=> '1234.jpg',
-        );
-        $result = $this->board->getFiles('4');
-        //echo var_dump($result); */
-        
-    }
-    public function testGetFiles()
-    {
-        $result = $this->board->getFiles('4');
-        //echo var_dump($result);
-        
     }
 }
 

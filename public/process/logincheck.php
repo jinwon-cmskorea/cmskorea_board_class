@@ -13,7 +13,7 @@ if ((isset($_POST['name']) && $_POST['name']) && (isset($_POST['password']) && $
     $authDBclass = new Cmskorea_Board_Auth(HOST, USERID, PASSWORD, DATABASE);
     $result = $authDBclass->authenticate($loginId, $loginPw);
     
-    if (empty($result)) {
+    if (!($result)) {
         echo "<script>
             location.replace('../view/board/boardlist.php');
          </script>";

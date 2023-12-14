@@ -43,6 +43,7 @@ if ($authDBclass->logout()) {
                 setTimeout(function() { 
                     location.href = './../index.php'; 
                 }, 3000);
+                //확인 버튼 클릭 후 이동
                 $('#home').click(function() {
                     location.href = './../index.php'; 
                 });

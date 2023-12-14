@@ -1,10 +1,12 @@
 <?php 
 require_once './../../process/autoload.php';
+
 if (!session_id()) {
     session_start();
 }
-$authDBclass = new Cmskorea_Board_Auth(HOST, USERID, PASSWORD, DATABASE);
-$memberData = $authDBclass->getMember();
+try {
+    $authDBclass = new Cmskorea_Board_Auth(HOST, USERID, PASSWORD, DATABASE);
+    $memberData = $authDBclass->getMember();
 ?>
 <html>
     <head>
@@ -31,7 +33,7 @@ $memberData = $authDBclass->getMember();
                     <p>게시판 글을 작성합니다.</p>
                 </div>
                 <div class="p-4">
-                    <form class="mb-4" method="post" enctype="multipart/form-data" action="../../process/boardcheck.php" id="writeForm" onsubmit="return checkForm();">
+                    <form method="post" enctype="multipart/form-data" action="../../process/boardcheck.php" id="writeForm" onsubmit="return checkForm();">
                         <input type="hidden" name="call_name" value="write_post">
                         <div class="row">
                             <div class="labelbox text-center col-1 mx-5 my-2">
@@ -63,6 +65,7 @@ $memberData = $authDBclass->getMember();
                             </div>
                             <input type="file" class="col-6 align-self-center checkFile" name="uploadFile2" id="uploadFile2">
                         </div>
+                        <div class="mb-3 row text-danger">※파일 제한 용량 : 3MB이하 | 확장자 : jpg, png, gif, pdf</div>
                     </form>
                     <div class="mx-5 row">
                         <button type="submit" form="writeForm" class="btn btn-primary col rounded-0 mx-1" id="boardWrite">작성</button>
@@ -134,3 +137,11 @@ $memberData = $authDBclass->getMember();
     </script>
     </body>
 </html>
+<?php 
+} catch (Exception $e) {
+    echo "<script>
+            alert(\"게시글 작성 페이지 접속 실패했습니다! 게시글 목록 화면으로 돌아갑니다. " . $e->getMessage() . "\");
+            location.href = './boardlist.php';
+        </script>";;
+}
+?>

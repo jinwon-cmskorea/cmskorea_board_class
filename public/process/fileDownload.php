@@ -1,13 +1,15 @@
 <?php
 require_once './autoload.php';
+
 $boardDBclass = new Cmskorea_Board_Board(HOST, USERID, PASSWORD, DATABASE);
-function alert_replace ($message, $location) {
+//alert 경고창, 페이지 이동 함수
+function alertReplace($message, $location) {
     echo "<script>
                 alert(\"'{$message}'\");
                 location.replace('{$location}');
             </script>";
 }
-
+//파일 다운로드
 if ((isset($_GET['boardPk']) && $_GET['boardPk']) && (isset($_GET['filePk']) && $_GET['filePk'])) {
     $boardFileData = $boardDBclass->getFiles($_GET['boardPk']);
     $fileData = '';
@@ -38,8 +40,8 @@ if ((isset($_GET['boardPk']) && $_GET['boardPk']) && (isset($_GET['filePk']) && 
     exit;
 } else {
     if (isset($_GET['boardPk']) && $_GET['boardPk']) {
-        alert_replace("다운로드 받을 파일 입력값이 없습니다! 게시글로 돌아갑니다.", "../view/board/boardview.php?post=" . $_GET['boardPk']);
+        alertReplace("다운로드 받을 파일 입력값이 없습니다! 게시글로 돌아갑니다.", "../view/board/boardview.php?post=" . $_GET['boardPk']);
     } else {
-        alert_replace("다운로드 받을 파일 입력값이 없습니다! 게시글 목록으로 돌아갑니다.", "../view/board/boardlist.php");
+        alertReplace("다운로드 받을 파일 입력값이 없습니다! 게시글 목록으로 돌아갑니다.", "../view/board/boardlist.php");
     }
 }

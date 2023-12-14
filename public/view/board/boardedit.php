@@ -1,5 +1,6 @@
 <?php 
 require_once './../../process/autoload.php';
+
 $boardDBclass = new Cmskorea_Board_Board(HOST, USERID, PASSWORD, DATABASE);
 $authDBclass = new Cmskorea_Board_Auth(HOST, USERID, PASSWORD, DATABASE);
 if (!session_id()) {
@@ -10,12 +11,12 @@ if (isset($_GET['post']) && $_GET['post']) {
 } else {
     $post = 0;
 }
-//수정 유저 확인, 수정할 게시글 받아오기
+//수정 유저 권한 확인, 수정할 게시글 받아오기
 try {
-    $postlist = $boardDBclass->getContent($post);
-    $filelist = $boardDBclass->getFiles($post);
-    $userdata = $authDBclass->getMember();
-    if ($postlist['memberPk'] !== $userdata['pk'] && $userdata['id'] !== "root") {
+    $postList = $boardDBclass->getContent($post);
+    $fileList = $boardDBclass->getFiles($post);
+    $userData = $authDBclass->getMember();
+    if ($postList['memberPk'] !== $userData['pk'] && $userData['id'] !== "root") {
         echo "<script>
                     alert('잘못된 수정 페이지 접근입니다! 게시글 목록으로 돌아갑니다.');
                     location.replace('./boardlist.php');
@@ -47,37 +48,36 @@ try {
                     <p>게시판 글을 수정합니다.</p>
                 </div>
                 <div class="p-4">
-                    <form class="mb-4" method="post" enctype="multipart/form-data" action="../../process/boardcheck.php" id="editForm" onsubmit="return checkForm();">
+                    <form method="post" enctype="multipart/form-data" action="../../process/boardcheck.php" id="editForm" onsubmit="return checkForm();">
                         <input type="hidden" name="call_name" value="update_post">
-                        <input type="hidden" name="viewPk" value="<?php echo $post;?>">
+                        <input type="hidden" name="viewPk" value="<?php echo $post; ?>">
                         <div class="row">
                             <div class="labelbox text-center col-1 mx-5 my-2">
                                 <span class="text-white">제 목</span>
                             </div>
-                            <input type="text" class="col-9 inputwritebox align-self-center" name="updateTitle" id="editTitle" placeholder="제목을 입력해주세요." value="<?php echo $postlist['title'];?>">
+                            <input type="text" class="col-9 inputwritebox align-self-center" name="updateTitle" id="editTitle" placeholder="제목을 입력해주세요." value="<?php echo $postList['title']; ?>">
                         </div>
                         <div class="row">
                             <div class="labelbox text-center col-1 mx-5 mb-5 my-2">
                                 <span class="text-white">내 용</span>
                             </div>
-                            <textarea  class="col-9 inputwritebox my-2" style="height: 250px; resize: none;" name="updateContent" id="editContent"  placeholder="내용을 입력해주세요."><?php echo str_replace("<br>", "\n", $postlist['content']); ?></textarea>
+                            <textarea  class="col-9 inputwritebox my-2" style="height: 250px; resize: none;" name="updateContent" id="editContent"  placeholder="내용을 입력해주세요."><?php echo str_replace("<br>", "\n", $postList['content']); ?></textarea>
                         </div>
                             <?php
-                            if ($filelist) {
+                            if ($fileList) {
                             ?>
                             <div class="row">
                                 <div class="labelbox text-center col-1 mx-5 my-2">
                                     <span class="text-white" style="font-size:15px">업로드파일</span>
                                 </div>
                                 <div class="col-9">
-                                    <ul>
+                                    <ul class="fileUl">
                                     <?php 
                                     $index = 1;
-                                    foreach ($filelist as $value) {
-                                        
-                                    ?>  
-                                        <input type="hidden" name="filePk<?php echo $index;?>" value="<?php echo $value['pk'];?>">
-                                        <li><?php echo $value['filename'];?><button type='button' class='btn btn-sm btn-danger ms-1 deleteFileButton' value="<?php echo $value['pk'];?>">삭제</button></li>
+                                    foreach ($fileList as $value) {
+                                    ?>
+                                        <input type="hidden" name="filePk<?php echo $index; ?>" value="<?php echo $value['pk']; ?>">
+                                        <li><?php echo $value['filename']; ?><button type='button' class='btn btn-sm btn-danger ms-1 deleteFileButton' value="<?php echo $value['pk']; ?>">삭제</button></li>
                                     <?php 
                                         $index++;
                                     }
@@ -92,7 +92,7 @@ try {
                             <div class="labelbox text-center col-1 mx-5 my-2">
                                 <span class="text-white">작성자</span>
                             </div>
-                            <input type="text" class="col-2 text-secondary inputwritebox align-self-center" name="updateWriter" id="writer" value="<?php echo $postlist['writer']; ?>">
+                            <input type="text" class="col-2 text-secondary inputwritebox align-self-center" name="updateWriter" id="writer" value="<?php echo $postList['writer']; ?>">
                         </div>
                         <div class="row">
                             <div class="labelbox text-center col-1 mx-5 my-2">
@@ -106,13 +106,14 @@ try {
                             </div>
                             <input type="file" class="col-6 align-self-center checkFile" name="uploadFile2" id="uploadFile2">
                         </div>
+                        <div class="text-danger">※파일 제한 용량 : 3MB이하 | 확장자 : jpg, png, gif, pdf</div>
                     </form>
                     <div class="m-3 d-flex">
                         <div class="fw-bold">
                             <div>마지막 수정시간</div>
                         </div>
                         <div class="ms-1">
-                            <div><span id="boardViewUpdateTime">: <?php echo $postlist['updateTime']; ?></span></div>
+                            <div><span id="boardViewUpdateTime">: <?php echo $postList['updateTime']; ?></span></div>
                         </div>
                     </div>
                     <div class="mx-5 row">
@@ -200,7 +201,7 @@ try {
             });
             //취소하기
             $('#backPost').click(function() {
-               location.href = "boardview.php?post=" + <?php echo $post;?>;
+               location.href = "boardview.php?post=" + <?php echo $post; ?>;
             });
         });
     </script>

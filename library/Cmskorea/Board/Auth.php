@@ -74,7 +74,7 @@ class Cmskorea_Board_Auth {
      */
     public function getMember() {
         if (!isset($_SESSION[self::SESSION_NAMESPACE]) || empty($_SESSION[self::SESSION_NAMESPACE])) {
-            throw new Exception('회원 정보가 설정되지 않았습니다.');
+            throw new Exception('오류 : 회원 정보가 설정되지 않았습니다.');
         }
 
         return $_SESSION[self::SESSION_NAMESPACE];

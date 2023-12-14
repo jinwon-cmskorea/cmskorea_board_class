@@ -1,5 +1,6 @@
 <?php 
 require_once './../../process/autoload.php';
+
 $boardDBclass = new Cmskorea_Board_Board(HOST, USERID, PASSWORD, DATABASE);
 $authDBclass = new Cmskorea_Board_Auth(HOST, USERID, PASSWORD, DATABASE);
 if (!session_id()) {
@@ -11,10 +12,10 @@ if (isset($_GET['post']) && $_GET['post']) {
     $post = 0;
 }
 //수정 유저 확인, 게시글 조회
-$userdata = $authDBclass->getMember();
 try {
-    $postlist = $boardDBclass->getContent($post);
-    $filelist = $boardDBclass->getFiles($post);
+    $userData = $authDBclass->getMember();
+    $postList = $boardDBclass->getContent($post);
+    $fileList = $boardDBclass->getFiles($post);
 ?>
 <html>
     <head>
@@ -43,22 +44,22 @@ try {
                 <div class="my-5">
                     <div>
                         <div class="d-flex justify-content-between">
-                            <div class="fs-3" id="boardViewTitle"><?php echo $postlist['title']; ?></div>
-                            <span  class="align-self-center" id="boardViewWriter">작성자 : <?php echo $postlist['writer']; ?></span>
+                            <div class="fs-3 ms-2" id="boardViewTitle"><?php echo $postList['title']; ?></div>
+                            <span  class="align-self-center fw-bold" id="boardViewWriter">작성자 : <?php echo $postList['writer']; ?></span>
                         </div>
                         <div class="contentbox p-3">
-                        	<p id="boardViewContent"><?php echo $postlist['content']; ?></p>
+                        	<p id="boardViewContent"><?php echo $postList['content']; ?></p>
                         </div>
                     </div>
                     <?php
-                    if ($filelist) {
+                    if ($fileList) {
                     ?>
                     <div class="mt-3" style="border-bottom: 1px dashed lightgray">
                         <ul>
                         <?php 
-                        foreach ($filelist as $value) {
+                        foreach ($fileList as $value) {
                         ?>
-                            <li><a href="../../process/fileDownload.php?boardPk=<?php echo $post;?>&filePk=<?php echo $value['pk'];?>"><?php echo $value['filename'];?></a></li>
+                            <li><a class="text-black text-decoration-none" href="../../process/fileDownload.php?boardPk=<?php echo $post; ?>&filePk=<?php echo $value['pk'];?>"><?php echo $value['filename'];?></a></li>
                         <?php 
                         }
                         ?>
@@ -73,12 +74,13 @@ try {
                             <div>마지막 수정시간</div>
                         </div>
                         <div class="ms-1">
-                            <div><span id="boardViewInsertTime">: <?php echo $postlist['insertTime']; ?></span></div>
-                            <div><span id="boardViewUpdateTime">: <?php echo $postlist['updateTime']; ?></span></div>
+                            <div><span id="boardViewInsertTime">: <?php echo $postList['insertTime']; ?></span></div>
+                            <div><span id="boardViewUpdateTime">: <?php echo $postList['updateTime']; ?></span></div>
                         </div>
                     </div>
                     <?php
-                    if ($postlist['memberPk'] == $userdata['pk'] || $userdata['id'] === "root") {
+                    //게시글 수정 권한 확인하기
+                    if ($postList['memberPk'] == $userData['pk'] || $userData['id'] === "root") {
                     ?>
                         <div class="mx-5 mt-4 row">
                             <button class="btn btn-primary bg-warning border-warning col rounded-0 mx-1" id="postEdit">수 정</button>
@@ -101,7 +103,7 @@ try {
         $(document).ready(function () {
             //수정하기
             $('#postEdit').click(function() {
-               location.href = "boardedit.php?post=" + <?php echo $post;?>;
+               location.href = "boardedit.php?post=" + <?php echo $post; ?>;
             });
             
             //취소하기
