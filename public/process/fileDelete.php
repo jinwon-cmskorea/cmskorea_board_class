@@ -7,7 +7,7 @@ try {
 if (isset($_POST['deletePk']) && $_POST['deletePk']) {
     $rs = $boardDBclass->delFile($_POST['deletePk']);
     if (!$rs) {
-        echo " DB query 실패했습니다!";
+        echo "삭제 함수 실행 실패";
     }
 } else {
     echo " 삭제할 파일 값이 없습니다!";

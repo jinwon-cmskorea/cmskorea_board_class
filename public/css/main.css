@@ -80,7 +80,7 @@
     margin-inline-end: 0px;
     padding-inline-start: 0px;
 }
-#preview{
+#preview {
     z-index: 9999;
     position:absolute;
     border:0px solid lightgray;
@@ -89,4 +89,7 @@
     display:none;
     color:white;
     text-align: center;
+}
+.cursorPointer {
+    cursor : pointer;
 }

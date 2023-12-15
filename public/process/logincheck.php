@@ -1,10 +1,6 @@
 <?php
 require_once './autoload.php';
 
-if (!session_id()) {
-    session_start();
-}
-
 //로그인 체크 데이터 검색
 if ((isset($_POST['name']) && $_POST['name']) && (isset($_POST['password']) && $_POST['password'])) {
     $loginId = $_POST['name'];

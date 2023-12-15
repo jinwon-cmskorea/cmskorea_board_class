@@ -37,7 +37,8 @@ class Cmskorea_Board_Board {
      */
     public function addContent(array $datas) {
         //전달받은 값 확인
-        if (!isset($datas['memberPk']) || !isset($datas['title']) || !isset($datas['writer'])) {
+        if ((!$datas['memberPk'] && empty($datas['memberPk'])) || (!$datas['title'] && empty($datas['title']))
+                || (!$datas['writer'] && empty($datas['writer']))) {
             throw new Exception("게시글 등록 오류 확인 : 전달받은 값 에러! 부족한 값을 입력해주세요.");
         }
         
@@ -68,7 +69,8 @@ class Cmskorea_Board_Board {
      */
     public function editContent(array $datas) {
         //전달받은 값 확인
-        if (!isset($datas['no']) || !isset($datas['title']) || !isset($datas['writer'])) {
+        if ((!$datas['no'] && empty($datas['no'])) || (!$datas['title'] && empty($datas['title']))
+                || (!$datas['writer'] && empty($datas['writer']))) {
                     throw new Exception("게시글 수정 오류 확인 : 전달받은 값 에러! 부족한 값을 입력해주세요.");
         }
         // updateTime 수정
@@ -96,27 +98,12 @@ class Cmskorea_Board_Board {
      * @return boolean
      */
     public function delContent($no) {
-        $result = mysqli_query($this->_db,"DELETE FROM board WHERE pk=" . $no . ";");
-        if ($result) {
-            if (mysqli_affected_rows($this->_db) > 0) {
-                //**file CASCADE 확인**
-                $select = mysqli_fetch_array(mysqli_query($this->_db, "SELECT * FROM file WHERE boardPk=" . $no . ";"));
-                if (!is_null($select)) {
-                    foreach ($select as $value) {
-                        $rs = $this->delFile($value['pk']);
-                        if (!$rs) {
-                            return false;
-                        }
-                    }
-                }
-                //*********************
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            return false;
+        mysqli_query($this->_db,"DELETE FROM board WHERE pk=" . $no . ";");
+        $select = mysqli_fetch_array(mysqli_query($this->_db, "SELECT * FROM file WHERE boardPk=" . $no . ";"));
+        foreach ($select as $value) {
+            $rs = $this->delFile($value['pk']);
         }
+        return true;
     }
 
     /**
@@ -204,7 +191,7 @@ class Cmskorea_Board_Board {
         $rs = mysqli_query($this->_db,$query);
         if ($rs) {
             //임시 파일 저장
-            $filepath = "./../../datas/";
+            $filepath = FILEPATH;
             $filename = $filepath.iconv("UTF-8", "EUC-KR",$fileInfos['name']);
             move_uploaded_file($fileInfos['tmp_name'], $filename);
             //파일 내용 업로드
@@ -239,26 +226,18 @@ class Cmskorea_Board_Board {
      *        )
      */
     public function getFiles($boardPk) {
-        if (!isset($boardPk)) {
-            throw new Exception("파일 불러오기 오류 확인 : 전달받은 값 에러! 부족한 값이 존재합니다.");
-        }
         $query = "SELECT * FROM file WHERE boardPk=" . $boardPk . ";";
         $rs = mysqli_query($this->_db,$query);
-        if ($rs) {
-            $resultArray = array();
-            $index = 0;
-            foreach ($rs as $value) {
-                $filePk = $value['pk'];
-                $filedata = $value;
-                $query = "SELECT content FROM file_details WHERE filePk=" . $filePk . ";";
-                $rs = mysqli_fetch_array(mysqli_query($this->_db, $query));
-                $filedata['content'] = $rs['content'];
-                array_push($resultArray, $filedata);
-            }
-            return $resultArray;
-        } else {
-            throw new Exception("파일 불러오기 오류 내용 : " . mysqli_error($this->_db));
+        $resultArray = array();
+        foreach ($rs as $value) {
+            $filePk = $value['pk'];
+            $filedata = $value;
+            $query = "SELECT content FROM file_details WHERE filePk=" . $filePk . ";";
+            $rs = mysqli_fetch_array(mysqli_query($this->_db, $query));
+            $filedata['content'] = $rs['content'];
+            array_push($resultArray, $filedata);
         }
+        return $resultArray;
     }
 
     /**
@@ -268,27 +247,9 @@ class Cmskorea_Board_Board {
      * @return boolean
      */
     public function delFile($filePk) {
-        $result = mysqli_query($this->_db,"DELETE FROM file WHERE pk=" . $filePk . ";");
-        if ($result) {
-            if (mysqli_affected_rows($this->_db) > 0) {
-                //file_details CASCADE 확인
-                $select = mysqli_fetch_array(mysqli_query($this->_db, "SELECT * FROM file_details WHERE filePk=" . $filePk . ";"));
-                if (!is_null($select)) {
-                    mysqli_query($this->_db,"DELETE FROM file_details WHERE filePk=" . $filePk . ";");
-                    if (mysqli_affected_rows($this->_db) > 0) {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                }
-                //************************
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            return false;
-        }
+        mysqli_query($this->_db,"DELETE FROM file WHERE pk=" . $filePk . ";");
+        mysqli_query($this->_db,"DELETE FROM file_details WHERE filePk=" . $filePk . ";");
+        return true;
     }
 }
 

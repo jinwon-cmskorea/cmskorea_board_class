@@ -1,9 +1,6 @@
 <?php 
 require_once './../../process/autoload.php';
 
-if (!session_id()) {
-    session_start();
-}
 try {
     $authDBclass = new Cmskorea_Board_Auth(HOST, USERID, PASSWORD, DATABASE);
     $memberData = $authDBclass->getMember();
@@ -75,25 +72,15 @@ try {
                 <div class="text-start" id="alertBox"></div>
             </div>
         </div>
+    <script type="text/javascript" src="../../js/appendAlert.js"></script>
     <script>
         //경고문(입력 체크)  
         function checkForm() {
-            const appendAlert = (message, type, id) => {
-            const alertPlaceholder = document.getElementById(id);
-            const wrapper = document.createElement('div');
-            wrapper.innerHTML = [
-                `<div class="alert alert-${type} alert-dismissible alertmainbox" id="alertmain" >`,
-                `   <div>${message}</div>`,
-                '   <button type="button" id="alertclose" class="btn-close close" data-bs-dismiss="alert"></button>',
-                '</div>'
-                ].join('')
-            
-            alertPlaceholder.append(wrapper);
-            }
             var check = false;
             var writeTitle = $("#writeTitle").val();
             var writeContent = $("#writeContent").val();
             var writer = $("#writer").val();
+            
             //input 검사
             if (!writeTitle) {
                 $("#alertBox").empty();
@@ -110,7 +97,6 @@ try {
             } else {
                 check = true;
             }
-            
             return check;
         }
         $(document).ready(function () {

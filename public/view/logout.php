@@ -1,9 +1,6 @@
 <?php 
 require_once './../process/autoload.php';
 
-if (!session_id()) {
-    session_start();
-}
 $authDBclass = new Cmskorea_Board_Auth(HOST, USERID, PASSWORD, DATABASE);
 if ($authDBclass->logout()) {
 ?>

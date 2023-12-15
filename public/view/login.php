@@ -45,20 +45,10 @@
                 <div class="text-start mt-4" id="alertBox"></div>
             </div>
         </div>
+        <script type="text/javascript" src="../js/appendAlert.js"></script>
         <script>
             function checkForm() {
-            //경고문 (input 입력)
-                const appendAlert = (message, type, id) => {
-                const alertPlaceholder = document.getElementById(id);
-                const wrapper = document.createElement('div');
-                    wrapper.innerHTML = [
-                      `<div class="alert alert-${type} alert-dismissible alertmainbox" id="alertmain" >`,
-                      `   <div>${message}</div>`,
-                      '   <button type="button" id="alertclose" class="btn-close close" data-bs-dismiss="alert"></button>',
-                      '</div>'
-                    ].join('')
-                    alertPlaceholder.append(wrapper);
-                  } ;
+                //경고문 (input 입력)
                 var check = false;
                 var loginName = $("#name").val();
                 var loginPassword = $("#password").val();

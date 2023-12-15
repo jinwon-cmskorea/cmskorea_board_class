@@ -7,3 +7,7 @@ spl_autoload_register(function ($className) {
     require_once $dirPath . '/../../configs/dbconfigs.php';
     include $dirPath . '/../../library/' . $className . '.php';
 });
+//세션 시작
+if (!session_id()) {
+    session_start();
+}

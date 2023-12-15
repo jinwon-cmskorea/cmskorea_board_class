@@ -1,9 +1,6 @@
 <?php
 require_once './../../process/autoload.php';
 
-if (!session_id()) {
-    session_start();
-}
 $boardDBclass = new Cmskorea_Board_Board(HOST, USERID, PASSWORD, DATABASE);
 //페이지 번호
 if (isset($_GET['page'])) {
@@ -125,7 +122,7 @@ if ($endPageNum > $totaPage) {
                                     <option value="title">제목</option>
                                     <option value="insertTime">작성일자</option>
                                 </select>
-                                <input  type="text" style="border: 1px solid lightgray;" id="searchBar" name="searchInput" placeholder="검색어를 입력해주세요.">
+                                <input  type="text" style="border: 1px solid lightgray;" id="searchBar" name="searchInput" placeholder="검색어를 입력해주세요." value="<?php echo $searchInput; ?>">
                                 <input type="hidden" name="orderName" value="<?php echo $orderName;?>">
                                 <input type="hidden" name="sort" value="<?php echo $sort;?>">
                                 <button class="btn btn-primary me-4" id="searchButton">검색</button>
@@ -146,10 +143,10 @@ if ($endPageNum > $totaPage) {
                             <table class="table" style="border-top: 1px solid lightgray;" id="boardTable">
                                 <thead>
                                     <tr class="text-center">
-                                        <th class="col-1" id="boardPk" value="pk" onClick="sortcheck('pk')">번호</th>
-                                        <th class="col-5 text-center" id="boardTitle" value="title" onClick="sortcheck('title')">제목</th>
-                                        <th class="col-2" id="boardWriter" value="writer" onClick="sortcheck('writer')">작성자</th>
-                                        <th class="col-1" id="boardInsertTime" value="insertTime" onClick="sortcheck('insertTime')">작성일자</th>
+                                        <th class="col-1 cursorPointer" id="boardPk" value="pk" onClick="sortcheck('pk')">번호</th>
+                                        <th class="col-5 text-center cursorPointer" id="boardTitle" value="title" onClick="sortcheck('title')">제목</th>
+                                        <th class="col-2 cursorPointer" id="boardWriter" value="writer" onClick="sortcheck('writer')">작성자</th>
+                                        <th class="col-1 cursorPointer" id="boardInsertTime" value="insertTime" onClick="sortcheck('insertTime')">작성일자</th>
                                         <th class="col-2" id="nosort" value="nosort">작업</th>
                                     </tr>
                                 </thead>
@@ -238,6 +235,7 @@ if ($endPageNum > $totaPage) {
                     </div>
                 </div>
             </div>
+        <script type="text/javascript" src="../../js/appendAlert.js"></script>
         <script type="text/javascript">
             //목록 정렬
             function sortcheck(ordername){
@@ -275,19 +273,6 @@ if ($endPageNum > $totaPage) {
             }
             ?>
             $(document).ready(function () {
-                //삭제 경고창
-                const appendDelete = (message, id) => {
-                    const DeletePlaceholder = document.getElementById(id);
-                    const Deletewrapper = document.createElement('div')
-                    Deletewrapper.innerHTML = [
-                        `<div class="border border-danger border-2 rounded bg-danger-subtle text-dark p-2 alertDelete" style="position: absolute" id="alertDelete">`,
-                        `   <div id="deletewrapperpk">${message}</div>`,
-                        '   <button type="button" id="DeleteCompleteClose" class="btn btn-danger DeleteCompleteClose">삭제</button>',
-                        '   <button type="button" id="DeleteClose" class="btn btn-secondary DeleteClose">취소</button>',
-                        '</div>'
-                        ].join('')
-                    DeletePlaceholder.append(Deletewrapper)
-                }
                 //게시글 조회
                 $(document).on('click', 'body div.container .viewButton', function() {
                     var thisRow = $(this).closest('tr'); 
@@ -295,13 +280,13 @@ if ($endPageNum > $totaPage) {
                     
                     location.href = "boardview.php?post="+viewPk; 
                 });
-                //게시글 삭제 경고창
+                //게시글 삭제 경고창 띄우기
                 $(document).on('click', 'body div.container .deleteButton', function() {
                     $("#alertBox").empty();
                     var thisRow = "";
                     thisRow = $(this).closest('tr'); 
                     var deletePk = parseInt(thisRow.find('th').text());
-                    appendDelete("&#10071;정말로 " + deletePk + "번째 게시글을 삭제하시겠습니까?", 'alertBox');
+                    appendDeleteAlert("&#10071;정말로 " + deletePk + "번째 게시글을 삭제하시겠습니까?", 'alertBox');
                     $("#deletewrapperpk").attr("value",deletePk);
                 });
                 //게시글 삭제
@@ -313,7 +298,6 @@ if ($endPageNum > $totaPage) {
                         dataType : 'text',
                         data : {call_name:'delete_post', deletePk:deletePk},
                         error : function(jqXHR, textStatus, errorThrown){
-                           console.log("실패");
                            alert("게시글 삭제 실패했습니다. ajax 실패 원인 : " + textStatus);
                         }, success : function(result){
                             if (result) {

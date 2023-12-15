@@ -48,21 +48,9 @@
                 <div class="text-start" id="alertBox"></div>
             </div>
         </div>
+        <script type="text/javascript" src="../js/appendAlert.js"></script>
         <script>
             //경고문(정보 체크)  
-            const appendAlert = (message, type, id) => {
-                 const alertPlaceholder = document.getElementById(id);
-                 const wrapper = document.createElement('div');
-                 wrapper.className = 'alertdivbox';
-                    wrapper.innerHTML = [
-                      `<div class="alert alert-${type} alert-dismissible alertmainbox" id="alertmain">`,
-                      `   <div>${message}</div>`,
-                      '   <button type="button" id="alertclose" class="btn-close close" data-bs-dismiss="alert"></button>',
-                      '</div>'
-                    ].join('')
-                        
-                    alertPlaceholder.append(wrapper);
-                  }
             function checkForm() {
                 //화면 유효성 검사
                 var check = false;
@@ -123,7 +111,6 @@
                         dataType : 'text',
                         data : {id:id},
                         error : function(jqXHR, textStatus, errorThrown){
-                           console.log("실패");
                            alert("아이디 중복 체크 실패했습니다. ajax 실패 원인 : " + textStatus);
                         }, success : function(result){
                             if (result) {

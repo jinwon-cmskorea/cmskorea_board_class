@@ -19,7 +19,7 @@ if ((isset($_GET['boardPk']) && $_GET['boardPk']) && (isset($_GET['filePk']) && 
         }
     }
     //임시 파일 저장
-    $filepath = "./../../datas/";
+    $filepath = FILEPATH;
     $filename = $filepath.iconv('utf-8','euc-kr', $fileData['filename']);
     file_put_contents($filename, $fileData['content']);
     //파일 다운로드 header 지정 및 다운로드

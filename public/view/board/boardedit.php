@@ -124,21 +124,10 @@ try {
                 <div class="text-start" id="alertBox"></div>
             </div>
         </div>
+    <script type="text/javascript" src="../../js/appendAlert.js"></script>
     <script>
         function checkForm() {
         //경고문(입력 체크)  
-            const appendAlert = (message, type, id) => {
-                const alertPlaceholder = document.getElementById(id);
-                const wrapper = document.createElement('div');
-                wrapper.innerHTML = [
-                    `<div class="alert alert-${type} alert-dismissible alertmainbox" id="alertmain" >`,
-                    `   <div>${message}</div>`,
-                    '   <button type="button" id="alertclose" class="btn-close close" data-bs-dismiss="alert"></button>',
-                    '</div>'
-                ].join('')
-                    
-                alertPlaceholder.append(wrapper);
-            }
             var check = false;
             var updateTitle = $('#editTitle').val();
             var updateContent = $('#editContent').val();
@@ -165,14 +154,12 @@ try {
             //게시글 삭제
             $(document).on('click', 'body .deleteFileButton', function() {
                 deletePk = $(this).attr("value");
-                console.log(deletePk);
                 $.ajax({
                     url : '../../process/fileDelete.php',
                     type : 'POST',
                     dataType : 'text',
                     data : {deletePk:deletePk},
                     error : function(jqXHR, textStatus, errorThrown){
-                       console.log("실패");
                        alert("파일 삭제 실패했습니다. ajax 실패 원인 : " + textStatus);
                     }, success : function(result){
                         if (result) {
