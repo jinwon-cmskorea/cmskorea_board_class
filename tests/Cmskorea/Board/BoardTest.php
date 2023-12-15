@@ -208,5 +208,14 @@ class Cmskorea_Board_BoardTest extends PHPUnit_Framework_TestCase
         }
         $this->assertEmpty($noresult);
     }
+    /**
+     * Tests Cmskorea_Board_Board->delReply()
+     */
+    public function testdelReply()
+    {
+        $delPk = "3";
+        $result = $this->board->delReply($delPk);
+        $this->assertTrue($result);
+    }
 }
 

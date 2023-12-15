@@ -3,9 +3,7 @@ require_once './../../process/autoload.php';
 
 $boardDBclass = new Cmskorea_Board_Board(HOST, USERID, PASSWORD, DATABASE);
 $authDBclass = new Cmskorea_Board_Auth(HOST, USERID, PASSWORD, DATABASE);
-if (!session_id()) {
-    session_start();
-}
+
 if (isset($_GET['post']) && $_GET['post']) {
     $post = $_GET['post'];
 } else {
