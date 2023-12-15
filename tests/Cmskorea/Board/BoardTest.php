@@ -182,7 +182,7 @@ class Cmskorea_Board_BoardTest extends PHPUnit_Framework_TestCase
         $this->assertNotEquals($testpost, $result);
     }
     /**
-     * Tests Cmskorea_Board_Board->getReply()
+     * Tests Cmskorea_Board_Board->addReply()
      */
     public function testAddReply()
     {

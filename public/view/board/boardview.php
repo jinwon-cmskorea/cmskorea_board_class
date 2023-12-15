@@ -161,7 +161,6 @@ try {
             //댓글 입력하기
             $('#boardReplyButton').click(function() {
                 var replyContent = $("#boardReplyContent").val();
-                console.log(replyContent);
                 $.ajax({
                     url : '../../process/boardreply.php',
                     type : 'POST',
@@ -182,7 +181,6 @@ try {
             //댓글 삭제하기
             $('.replyDelete').click(function() {
                 var replyPk = $(this).val();
-                console.log(replyPk);
                 $.ajax({
                     url : '../../process/boardreply.php',
                     type : 'POST',
