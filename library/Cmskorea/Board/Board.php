@@ -98,11 +98,20 @@ class Cmskorea_Board_Board {
      * @return boolean
      */
     public function delContent($no) {
-        mysqli_query($this->_db,"DELETE FROM board WHERE pk=" . $no . ";");
-        $select = mysqli_fetch_array(mysqli_query($this->_db, "SELECT * FROM file WHERE boardPk=" . $no . ";"));
-        foreach ($select as $value) {
-            $rs = $this->delFile($value['pk']);
+        $fileCheck = mysqli_query($this->_db, "SELECT * FROM file WHERE boardPk=" . $no . ";");
+        if ($fileCheck->num_rows > 0) {
+            foreach ($fileCheck as $value) {
+                $rs = $this->delFile($value['pk']);
+            }
         }
+        $replyCheck = mysqli_query($this->_db, "SELECT * FROM board_reply WHERE boardPk=" . $no . ";");
+        if ($replyCheck->num_rows > 0) {
+            foreach ($replyCheck as $value) {
+                $rs = $this->delReply($value['pk']);
+                
+            }
+        }
+        mysqli_query($this->_db,"DELETE FROM board WHERE pk=" . $no . ";");
         return true;
     }
 
@@ -249,6 +258,65 @@ class Cmskorea_Board_Board {
     public function delFile($filePk) {
         mysqli_query($this->_db,"DELETE FROM file WHERE pk=" . $filePk . ";");
         mysqli_query($this->_db,"DELETE FROM file_details WHERE filePk=" . $filePk . ";");
+        return true;
+    }
+    
+    /**
+     * 댓글을 작성한다.
+     * @param array 댓글 입력 내용
+     *        array(
+     *            'boardPk' => '게시물 번호'
+     *            'memberPk' => '작성자고유키'
+     *            'content' => '내용'
+     *        )
+     * @return boolean
+     */
+    public function addReply(array $datas) {
+        if ((!$datas['boardPk'] && empty($datas['boardPk'])) || (!$datas['memberPk'] && empty($datas['memberPk'])) ||  (!$datas['content'] && empty($datas['content']))) {
+                    throw new Exception("게시글 등록 오류 확인 : 전달받은 값 에러! 부족한 값을 입력해주세요.");
+                }
+        $boardPk = $datas['boardPk'];
+        $memberPk = $datas['memberPk'];
+        $strip = mysqli_real_escape_string($this->_db, strip_tags($datas['content'], '<br>'));
+        
+        $query = "INSERT INTO board_reply (boardPk, memberPk, content, insertTime) VALUES" . "( '". $datas['boardPk'] ."' ,'". $datas['memberPk'] ."' ,'". $strip . "' , now())";
+        $result = mysqli_query($this->_db, $query);
+        if ($result) {
+            return true;
+        } else {
+            throw new Exception("게시글 댓글 등록 오류 확인 : " . mysqli_error($this->_db));
+        }
+    }
+    /**
+     * 댓글을 리턴한다.
+     *
+     * @param number 글번호
+     * @return array 글번호에 해당하는 댓글 데이터 전체, 댓글 작성자 이름
+     */
+    public function getReply($boardPk) {
+        $result = mysqli_query($this->_db,"SELECT * FROM board_reply WHERE boardPk=" . $boardPk . " ORDER BY insertTime DESC;");
+        if ($result) {
+            $replyArray = array();
+            foreach ($result as $value) {
+                $replyData = $value;
+                $result = mysqli_query($this->_db,"SELECT * FROM member WHERE pk=" . $value['memberPk'] . ";");
+                $replyUser = mysqli_fetch_array($result);
+                $replyData['name'] = $replyUser['name'];
+                array_push($replyArray, $replyData);
+            }
+            return $replyArray;
+        } else {
+            throw new Exception("게시글 댓글 조회 오류 내용 : " . mysqli_error($this->_db));
+        }
+    }
+    /**
+     * 댓글을 삭제한다.
+     *
+     * @param number 댓글 번호
+     * @return boolean
+     */
+    public function delReply($no) {
+        mysqli_query($this->_db, "DELETE FROM board_reply WHERE pk=" . $no . ";");
         return true;
     }
 }

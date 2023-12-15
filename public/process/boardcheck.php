@@ -32,7 +32,6 @@ if (isset($_POST['call_name']) && $_POST['call_name']) {
 }
 //게시글 등록
 function writePost($boardClass, $authClass) {
-         
     try {
         if (!$_POST['writeTitle'] || !$_POST['writer']) {
             throw new Exception("게시글 등록 기능 오류 확인 : 전달받은 값 에러! 부족한 값을 입력해주세요.");

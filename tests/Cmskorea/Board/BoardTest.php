@@ -78,6 +78,7 @@ class Cmskorea_Board_BoardTest extends PHPUnit_Framework_TestCase
     }
     /**
      * Tests Cmskorea_Board_Board->addContent() (error)
+     * @expectedException Exception
      */
     public function testAddContentError()
     {
@@ -87,12 +88,8 @@ class Cmskorea_Board_BoardTest extends PHPUnit_Framework_TestCase
                 'content'   => '테스트 내용입니다. test content'
         );
         
-        try {
-            $result = $this->board->addContent($testpost);
-            $this->assertInternalType('integer', $result);
-        } catch (Exception $e) {
-            $this->assertEquals('게시글 등록 오류 확인 : 전달받은 값 에러! 부족한 값을 입력해주세요.', $e->getMessage());
-        }
+        $result = $this->board->addContent($testpost);
+        $this->assertInternalType('integer', $result);
     }
     /**
      * Tests Cmskorea_Board_Board->editContent()
@@ -130,10 +127,10 @@ class Cmskorea_Board_BoardTest extends PHPUnit_Framework_TestCase
     public function testDelContent()
     {
         //$this->markTestIncomplete("delContent test not implemented");
-
-        $result = $this->board->delContent("999");
-        //$this->assertTrue($result);
-        $this->assertFalse($result);
+        $delPk = "3";
+        $result = $this->board->delContent($delPk);
+        $this->assertTrue($result);
+        $this->assertNull($this->board->getContent($delPk));
     }
 
     /**
@@ -183,6 +180,33 @@ class Cmskorea_Board_BoardTest extends PHPUnit_Framework_TestCase
         $this->assertNotEquals($searchresult, $result);
         $this->assertNotEquals($sortpost, $result);
         $this->assertNotEquals($testpost, $result);
+    }
+    /**
+     * Tests Cmskorea_Board_Board->getReply()
+     */
+    public function testAddReply()
+    {
+        $testReply = array(
+                'boardPk'  => '1',
+                'memberPk'  => '1',
+                'content'   => '테스트 내용입니다. test content'
+        );
+        $this->board->addReply($testReply);
+        
+        $this->assertNotEmpty($this->board->getReply('1'));
+    }
+    
+    /**
+     * Tests Cmskorea_Board_Board->getReply()
+     */
+    public function testGetReply()
+    {
+        $okresult = $this->board->getReply("1");
+        $noresult = $this->board->getReply("999");
+        foreach ($okresult as $value) {
+            $this->assertArrayHasKey('content', $value);
+        }
+        $this->assertEmpty($noresult);
     }
 }
 

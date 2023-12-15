@@ -15,6 +15,7 @@ try {
     $postList = $boardDBclass->getContent($post);
     
     $fileList = $boardDBclass->getFiles($post);
+    $replyList = $boardDBclass->getReply($post);
 ?>
 <html>
     <head>
@@ -27,7 +28,7 @@ try {
         <title>조회 페이지</title>
     </head>
     <body>
-        <div class="container border border-secondary listcontainer">
+        <div class="container border border-secondary">
             <div class="header-include"></div>
             <?php
             include 'boardheader.php';
@@ -94,7 +95,40 @@ try {
                     <?php
                     }
                     ?>
-                    
+                    <div class="mt-5 m-3">
+                    <hr>
+                        <div class=" m-3 fw-bold text-secondary-emphasis">게시글 댓글</div>
+                        <div class="form-floating mb-3">
+                            <textarea class="form-control" style="height:80px; overflow :auto;" placeholder="댓글을 입력해주세요." id="boardReplyContent"></textarea>
+                            <label for="boardReplyContent">댓글을 입력해주세요.</label>
+                        </div>
+                        <div class="d-flex justify-content-end">
+                            <button class="btn btn-secondary" type="button" id="boardReplyButton">작성</button>
+                        </div>
+                        <hr>
+                        <?php 
+                        if ($replyList) {
+                        ?>
+                            <div style="height: 200px; overflow: auto">
+                        <?php
+                            foreach ($replyList as $value) {
+                        ?>
+                            <div class="border border-secondary-subtle rounded p-2 mb-3">
+                                <div class="ms-4 fw-bold">작성자 : <?php echo $value['name']; ?></div>
+                                <div class="border rounded p-3 mx-3 my-1" style="height:80px; overflow :auto;"><?php echo $value['content']; ?></div>
+                                <div class="text-end">
+                                    <span>등록시간 : <?php echo $value['insertTime']; ?></span>
+                                    <button value="<?php echo $value['pk']; ?>" class="btn btn-danger btn-sm replyDelete me-3" id="boardReplyDeleteButton">삭제</button>
+                                </div>
+                            </div>
+                        <?php 
+                            }
+                        ?>
+                            </div>
+                        <?php
+                        }
+                        ?>
+                    </div>
                 </div>
             </div>
         </div>
@@ -124,6 +158,48 @@ try {
             <?php
             }
             ?>
+            //댓글 입력하기
+            $('#boardReplyButton').click(function() {
+                var replyContent = $("#boardReplyContent").val();
+                console.log(replyContent);
+                $.ajax({
+                    url : '../../process/boardreply.php',
+                    type : 'POST',
+                    dataType : 'text',
+                    data : {call_name:'write_reply', boardPk:'<?php echo $post; ?>', content:replyContent},
+                    error : function(jqXHR, textStatus, errorThrown){
+                       alert("댓글 작성 실패했습니다. ajax 실패 원인 : " + textStatus);
+                    }, success : function(result){
+                        if (result) {
+                            alert("댓글 작성 성공했습니다.");
+                            location.reload();
+                        } else {
+                            alert("댓글 작성 실패했습니다.");
+                        }
+                    }
+                });
+            });
+            //댓글 삭제하기
+            $('.replyDelete').click(function() {
+                var replyPk = $(this).val();
+                console.log(replyPk);
+                $.ajax({
+                    url : '../../process/boardreply.php',
+                    type : 'POST',
+                    dataType : 'text',
+                    data : {call_name:'delete_reply', replyPk:replyPk},
+                    error : function(jqXHR, textStatus, errorThrown){
+                       alert("댓글 삭제 실패했습니다. ajax 실패 원인 : " + textStatus);
+                    }, success : function(result){
+                        if (result) {
+                            alert("댓글 삭제 성공했습니다.");
+                            location.reload();
+                        } else {
+                            alert("댓글 삭제 실패했습니다.");
+                        }
+                    }
+                });
+            });
             //수정하기
             $('#postEdit').click(function() {
                location.href = "boardedit.php?post=" + <?php echo $post; ?>;
