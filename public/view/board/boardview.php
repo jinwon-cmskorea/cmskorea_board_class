@@ -59,7 +59,7 @@ try {
                         <?php 
                         foreach ($fileList as $value) {
                         ?>
-                            <li><a class="text-black text-decoration-none" href="../../process/fileDownload.php?boardPk=<?php echo $post; ?>&filePk=<?php echo $value['pk'];?>"><?php echo $value['filename'];?></a></li>
+                            <li><a class="text-black text-decoration-none previewFile" filePk="<?php echo $value['pk'];?>" href="../../process/fileDownload.php?boardPk=<?php echo $post; ?>&filePk=<?php echo $value['pk'];?>"><?php echo $value['filename'];?></a></li>
                         <?php 
                         }
                         ?>
@@ -101,6 +101,30 @@ try {
         </div>
     <script>
         $(document).ready(function () {
+            //다운로드 이미지 미리보기
+            var xOffset = 80;
+            var yOffset = 30;
+            <?php
+            foreach ($fileList as $value) {
+            ?>  //다운로드 파일명에 마우스 오버
+                $(document).on("mouseover", ".previewFile", function(e){
+                    var pk = $(this).attr("filePk");
+                    if (pk == <?php echo $value['pk'];?>) {
+                        $("body").append("<p id='preview'><img src='data:image/png; base64, <?php echo base64_encode($value['content']);?>' width='200px' alt='이미지 불러오기 실패'/></p>");
+                        $("#preview") .css("top",(e.pageY - xOffset) + "px").css("left",(e.pageX + yOffset) + "px").fadeIn("fast");
+                    }
+                });
+                //마우스에 미리보기 사진 따라가기
+                $(document).on("mousemove", ".previewFile", function(e){
+                        $("#preview").css("top",(e.pageY - xOffset) + "px").css("left",(e.pageX + yOffset) + "px");
+                    });
+                //마우스 아웃하면 미리보기 사진 삭제
+                $(document).on("mouseout", ".previewFile", function(){
+                    $("#preview").remove();
+                });
+            <?php
+            }
+            ?>
             //수정하기
             $('#postEdit').click(function() {
                location.href = "boardedit.php?post=" + <?php echo $post; ?>;
