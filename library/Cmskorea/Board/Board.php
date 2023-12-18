@@ -276,8 +276,6 @@ class Cmskorea_Board_Board {
         if ((!$datas['boardPk'] && empty($datas['boardPk'])) || (!$datas['memberPk'] && empty($datas['memberPk'])) ||  (!$datas['content'] && empty($datas['content']))) {
                     throw new Exception("게시글 등록 오류 확인 : 전달받은 값 에러! 부족한 값을 입력해주세요.");
                 }
-        $boardPk = $datas['boardPk'];
-        $memberPk = $datas['memberPk'];
         $strip = mysqli_real_escape_string($this->_db, strip_tags($datas['content'], '<br>'));
         
         $query = "INSERT INTO board_reply (boardPk, memberPk, content, insertTime) VALUES" . "( '". $datas['boardPk'] ."' ,'". $datas['memberPk'] ."' ,'". $strip . "' , now())";
@@ -302,17 +300,9 @@ class Cmskorea_Board_Board {
      *        )
      */
     public function getReply($boardPk) {
-        $result = mysqli_query($this->_db,"SELECT * FROM board_reply WHERE boardPk=" . $boardPk . " ORDER BY insertTime DESC;");
+        $result = mysqli_query($this->_db,"SELECT board_reply.*, member.name FROM board_reply JOIN member ON board_reply.memberPk=member.pk WHERE board_reply.boardPk=" . $boardPk . " ORDER BY insertTime DESC;");
         if ($result) {
-            $replyArray = array();
-            foreach ($result as $value) {
-                $replyData = $value;
-                $result = mysqli_query($this->_db,"SELECT * FROM member WHERE pk=" . $value['memberPk'] . ";");
-                $replyUser = mysqli_fetch_array($result);
-                $replyData['name'] = $replyUser['name'];
-                array_push($replyArray, $replyData);
-            }
-            return $replyArray;
+            return $result;
         } else {
             throw new Exception("게시글 댓글 조회 오류 내용 : " . mysqli_error($this->_db));
         }

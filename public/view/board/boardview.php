@@ -139,7 +139,8 @@ try {
             var yOffset = 30;
             <?php
             foreach ($fileList as $value) {
-            ?>  //다운로드 파일명에 마우스 오버
+            ?>
+                //다운로드 파일명에 마우스 오버
                 $(document).on("mouseover", ".previewFile", function(e){
                     var pk = $(this).attr("filePk");
                     if (pk == <?php echo $value['pk'];?>) {
