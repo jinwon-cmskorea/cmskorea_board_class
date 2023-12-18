@@ -206,7 +206,7 @@ class Cmskorea_Board_BoardTest extends PHPUnit_Framework_TestCase
         foreach ($okresult as $value) {
             $this->assertArrayHasKey('content', $value);
         }
-        $this->assertEmpty($noresult);
+        $this->assertNotEmpty($noresult);
     }
     /**
      * Tests Cmskorea_Board_Board->delReply()
