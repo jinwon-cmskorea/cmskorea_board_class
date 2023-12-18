@@ -265,9 +265,10 @@ class Cmskorea_Board_Board {
      * 댓글을 작성한다.
      * @param array 댓글 입력 내용
      *        array(
-     *            'boardPk' => '게시물 번호'
-     *            'memberPk' => '작성자고유키'
-     *            'content' => '내용'
+     *            'boardPk' => '게시물 번호',
+     *            'memberPk' => '작성자고유키',
+     *            'content' => '내용',
+     *            'insertTime'  => '등록시간'
      *        )
      * @return boolean
      */
@@ -292,6 +293,13 @@ class Cmskorea_Board_Board {
      *
      * @param number 글번호
      * @return array 글번호에 해당하는 댓글 데이터 전체, 댓글 작성자 이름
+     *         array(
+     *            'pk' => '댓글 번호',
+     *            'boardPk' => '게시물 번호',
+     *            'memberPk' => '작성자고유키',
+     *            'content' => '내용',
+     *            'name' => '작성자 이름'
+     *        )
      */
     public function getReply($boardPk) {
         $result = mysqli_query($this->_db,"SELECT * FROM board_reply WHERE boardPk=" . $boardPk . " ORDER BY insertTime DESC;");

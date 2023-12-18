@@ -20,7 +20,7 @@ if (isset($_POST['call_name']) && $_POST['call_name']) {
 }
 function writeReply($boardClass, $authClass) {
     try {
-        if ((!$_POST['boardPk'] && !$_POST['boardPk']) || (!$_POST['content'] && !$_POST['content'])) {
+        if ((!isset($_POST['boardPk']) && !$_POST['boardPk']) || (!isset($_POST['content']) && !$_POST['content'])) {
             throw new Exception("게시글 등록 기능 오류 확인 : 전달받은 값 에러! 부족한 값을 입력해주세요.");
         }
         $contentReplace = array("\n","\r\n");

@@ -2,6 +2,7 @@
 require_once './autoload.php';
 
 $boardDBclass = new Cmskorea_Board_Board(HOST, USERID, PASSWORD, DATABASE);
+
 //alert 경고창, 페이지 이동 함수
 function alertReplace($message, $location) {
     echo "<script>
